@@ -1,7 +1,7 @@
 {
-  "name": "teo",
-  "version": "1.0.0",
-  "description": "Tiempo Es Oro App",
+  "name": "TEO",
+  "version": "1.0.1",
+  "description": "TEO - Tiempo Es Oro App",
   "homepage": "https://ionicframework.com/",
   "scripts": {
     "ng": "ng",
