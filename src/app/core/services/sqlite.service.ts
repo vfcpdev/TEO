@@ -4,9 +4,9 @@ import { CapacitorSQLite, SQLiteConnection, SQLiteDBConnection } from '@capacito
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { Share } from '@capacitor/share';
 
-const DATABASE_NAME = 'classapp_db';
+const DATABASE_NAME = 'teo_db';
 const DATABASE_VERSION = 2; // Incrementado para incluir perfiles y registros
-const EXPORT_FILENAME = 'classapp_backup.json';
+const EXPORT_FILENAME = 'teo_backup.json';
 
 /**
  * Esquema de la base de datos SQLite
@@ -151,6 +151,7 @@ const DB_SCHEMA = `
     alias TEXT NOT NULL,
     role TEXT NOT NULL CHECK(role IN ('padre', 'madre', 'hijo', 'hija', 'otro')),
     avatar TEXT,
+    color TEXT,
     is_primary INTEGER DEFAULT 0,
     is_active INTEGER DEFAULT 1,
     created_at TEXT NOT NULL
@@ -235,8 +236,130 @@ export class SQLiteService {
       console.log('[SQLite] Database ready');
     } catch (error) {
       console.error('[SQLite] Initialization error:', error);
-      throw error;
+
+      // Mostrar mensaje de error amigable al usuario
+      this.showUserFriendlyError(error);
+
+      // No lanzar el error para evitar que la app se rompa completamente
+      // La app puede funcionar sin SQLite en modo degradado
+      this.isReady.set(false);
     }
+  }
+
+  /**
+   * Muestra un mensaje de error amigable al usuario
+   */
+  private showUserFriendlyError(error: any): void {
+    const errorMessage = error?.message || String(error);
+
+    let userMessage = '';
+    let technicalDetails = '';
+
+    if (errorMessage.includes('jeep-sqlite')) {
+      userMessage = '⚠️ Base de Datos No Disponible';
+      technicalDetails = `
+La aplicación no puede inicializar la base de datos local en este navegador.
+
+📋 Detalles técnicos:
+• El componente jeep-sqlite no está disponible
+• Esto puede ocurrir en navegadores que no soportan Web Components
+• La aplicación funcionará con funcionalidad limitada
+
+💡 Soluciones recomendadas:
+1. Usar un navegador moderno (Chrome, Edge, Firefox, Safari)
+2. Actualizar su navegador a la última versión
+3. Usar la aplicación móvil nativa para mejor rendimiento
+
+🔧 Para desarrolladores:
+Verificar que jeep-sqlite esté correctamente importado en index.html`;
+    } else if (errorMessage.includes('Database not initialized')) {
+      userMessage = '⚠️ Error de Inicialización';
+      technicalDetails = `
+No se pudo inicializar la conexión a la base de datos.
+
+📋 Detalles: ${errorMessage}
+
+💡 Intente recargar la página o contacte al soporte técnico.`;
+    } else {
+      userMessage = '⚠️ Error Inesperado';
+      technicalDetails = `
+Ocurrió un error al configurar el almacenamiento local.
+
+📋 Detalles técnicos: ${errorMessage}
+
+💡 La aplicación continuará funcionando con funcionalidad limitada.`;
+    }
+
+    // Mostrar en consola con formato
+    console.group('%c' + userMessage, 'color: #f59e0b; font-size: 16px; font-weight: bold;');
+    console.warn(technicalDetails);
+    console.groupEnd();
+
+    // Opcional: Mostrar notificación visual al usuario
+    this.showToastNotification(userMessage, 'warning');
+  }
+
+  /**
+   * Muestra una notificación toast al usuario
+   */
+  private showToastNotification(message: string, type: 'info' | 'warning' | 'error' = 'info'): void {
+    // Crear elemento de notificación
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      max-width: 400px;
+      padding: 16px 20px;
+      background: ${type === 'error' ? '#ef4444' : type === 'warning' ? '#f59e0b' : '#3b82f6'};
+      color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 10000;
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      animation: slideIn 0.3s ease-out;
+    `;
+
+    toast.innerHTML = `
+      <div style="display: flex; align-items: start; gap: 12px;">
+        <span style="font-size: 20px;">${type === 'error' ? '❌' : type === 'warning' ? '⚠️' : 'ℹ️'}</span>
+        <div style="flex: 1;">
+          <div style="font-weight: 600; margin-bottom: 4px;">Modo Limitado</div>
+          <div style="font-size: 13px; opacity: 0.95;">
+            La base de datos local no está disponible. Algunas funciones pueden no funcionar correctamente.
+          </div>
+        </div>
+        <button onclick="this.parentElement.parentElement.remove()" style="
+          background: none;
+          border: none;
+          color: white;
+          font-size: 20px;
+          cursor: pointer;
+          padding: 0;
+          line-height: 1;
+        ">×</button>
+      </div>
+    `;
+
+    // Agregar animación
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideIn {
+        from { transform: translateX(400px); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+    `;
+    document.head.appendChild(style);
+
+    document.body.appendChild(toast);
+
+    // Auto-remover después de 8 segundos
+    setTimeout(() => {
+      toast.style.animation = 'slideIn 0.3s ease-out reverse';
+      setTimeout(() => toast.remove(), 300);
+    }, 8000);
   }
 
   /**
@@ -249,47 +372,75 @@ export class SQLiteService {
     await customElements.whenDefined('jeep-sqlite');
     console.log('[SQLite] jeep-sqlite custom element is defined');
 
-    // 2. Buscar o crear el elemento jeep-sqlite
+    // 2. Buscar o crear el elemento jeep-sqlite en el DOM
     let jeepSqlite = document.querySelector('jeep-sqlite') as any;
     if (!jeepSqlite) {
       console.log('[SQLite] Creating jeep-sqlite element...');
       jeepSqlite = document.createElement('jeep-sqlite');
       document.body.appendChild(jeepSqlite);
+      console.log('[SQLite] jeep-sqlite element created and appended');
     }
 
-    // 3. Inicializar el web store si no está inicializado
+    // 3. Crear conexión SQLite
+    this.sqliteConnection = new SQLiteConnection(CapacitorSQLite);
+    console.log('[SQLite] SQLiteConnection created');
+
+    // 4. Inicializar el web store usando SQLiteConnection (NO el elemento)
     try {
-      const isStoreOpen = await jeepSqlite.isStoreOpen();
-      console.log('[SQLite] Store open status:', isStoreOpen);
-      if (!isStoreOpen) {
-        await jeepSqlite.initWebStore();
-        console.log('[SQLite] Web store initialized');
+      await this.sqliteConnection.initWebStore();
+      console.log('[SQLite] Web store initialized successfully via SQLiteConnection');
+    } catch (e: any) {
+      // Si ya está inicializado, continuar
+      const errorMsg = e.message || String(e);
+      if (errorMsg.includes('already') || errorMsg.includes('Store already opened')) {
+        console.log('[SQLite] Web store already initialized');
+      } else {
+        console.warn('[SQLite] initWebStore error:', errorMsg);
+        // Intentar continuar de todas formas
+      }
+    }
+
+    // 5. Verificar consistencia de conexiones
+    try {
+      const ret = await this.sqliteConnection.checkConnectionsConsistency();
+      console.log('[SQLite] Connections consistency:', ret.result);
+
+      // Si hay una conexión existente, recuperarla
+      const isConn = await this.sqliteConnection.isConnection(DATABASE_NAME, false);
+      if (ret.result && isConn.result) {
+        this.db = await this.sqliteConnection.retrieveConnection(DATABASE_NAME, false);
+        console.log('[SQLite] Retrieved existing connection');
+      } else {
+        // Crear nueva conexión
+        this.db = await this.sqliteConnection.createConnection(
+          DATABASE_NAME,
+          false,
+          'no-encryption',
+          DATABASE_VERSION,
+          false
+        );
+        console.log('[SQLite] Created new connection');
       }
     } catch (e) {
-      // Si hay error, intentar inicializar de todas formas
-      console.log('[SQLite] Attempting initWebStore...');
-      await jeepSqlite.initWebStore();
-      console.log('[SQLite] Web store initialized (fallback)');
+      console.warn('[SQLite] Connection check failed, creating new:', e);
+      // Si falla, crear nueva conexión
+      this.db = await this.sqliteConnection.createConnection(
+        DATABASE_NAME,
+        false,
+        'no-encryption',
+        DATABASE_VERSION,
+        false
+      );
+      console.log('[SQLite] Created new connection (fallback)');
     }
 
-    // 4. Crear conexión SQLite
-    this.sqliteConnection = new SQLiteConnection(CapacitorSQLite);
-
-    // 5. Verificar consistencia del store
-    const ret = await this.sqliteConnection.checkConnectionsConsistency();
-    console.log('[SQLite] Connections consistency:', ret.result);
-
-    // 6. Crear/abrir conexión a la base de datos
-    this.db = await this.sqliteConnection.createConnection(
-      DATABASE_NAME,
-      false,
-      'no-encryption',
-      DATABASE_VERSION,
-      false
-    );
-
+    // 6. Abrir la conexión
     await this.db.open();
     console.log('[SQLite] Database connection opened');
+
+    // 7. Guardar al store inmediatamente
+    await this.sqliteConnection.saveToStore(DATABASE_NAME);
+    console.log('[SQLite] Database saved to store');
   }
 
   /**
@@ -328,6 +479,11 @@ export class SQLiteService {
 
     // Ejecutar esquema
     await this.db.execute(DB_SCHEMA);
+
+    // En web, guardar inmediatamente después de crear el esquema
+    if (this.platform === 'web') {
+      await this.saveToStore();
+    }
 
     console.log('[SQLite] Schema created successfully');
   }
@@ -623,7 +779,7 @@ export class SQLiteService {
       } else {
         // En móvil, guardar en Documents y compartir
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-        const filename = `classapp_backup_${timestamp}.json`;
+        const filename = `teo_backup_${timestamp}.json`;
 
         await Filesystem.writeFile({
           path: filename,
@@ -640,8 +796,8 @@ export class SQLiteService {
 
         // Ofrecer compartir el archivo
         await Share.share({
-          title: 'Backup ClassApp',
-          text: 'Copia de seguridad de ClassApp',
+          title: 'Backup TEO',
+          text: 'Copia de seguridad de TEO',
           url: fileUri.uri,
           dialogTitle: 'Exportar base de datos'
         });

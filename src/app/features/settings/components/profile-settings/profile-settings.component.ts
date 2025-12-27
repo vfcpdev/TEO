@@ -8,8 +8,6 @@ import {
   IonIcon,
   IonButton,
   IonInput,
-  IonSelect,
-  IonSelectOption,
   IonAvatar,
   IonFab,
   IonFabButton,
@@ -17,7 +15,8 @@ import {
   IonToolbar,
   IonHeader,
   IonTitle,
-  IonButtons
+  IonButtons,
+  AlertController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -45,8 +44,6 @@ import { UserProfile, CreateProfileDto } from '../../../../models/profile.model'
     IonIcon,
     IonButton,
     IonInput,
-    IonSelect,
-    IonSelectOption,
     IonAvatar,
     IonFab,
     IonFabButton,
@@ -59,13 +56,22 @@ import { UserProfile, CreateProfileDto } from '../../../../models/profile.model'
   template: `
     <div class="profiles-container">
       <div class="section-header">
-        <h3>Perfiles de Familia</h3>
-        <p>Gestiona los miembros de tu núcleo familiar para agendas compartidas.</p>
+        <div class="header-text">
+          <h3>Perfiles</h3>
+          <p>Gestiona tus perfiles y sus calendarios asociados (Personal, Trabajo, Familia, etc.).</p>
+        </div>
+        <ion-button class="ion-hide-lg-down" (click)="openAddModal()">
+          <ion-icon name="person-add-outline" slot="start"></ion-icon>
+          Nuevo Perfil
+        </ion-button>
       </div>
 
       <ion-list lines="none" class="profile-list">
         @for (profile of profiles(); track profile.id) {
           <ion-item class="profile-item shadow-sm">
+            @if (profile.color) {
+              <div class="profile-color-indicator" [style.background-color]="profile.color" slot="start"></div>
+            }
             <ion-avatar slot="start">
               <img [src]="profile.avatar || 'assets/avatars/default.png'" />
             </ion-avatar>
@@ -75,14 +81,14 @@ import { UserProfile, CreateProfileDto } from '../../../../models/profile.model'
                   <ion-icon name="star" color="warning"></ion-icon>
                 }
               </h2>
-              <p>{{ profile.role | titlecase }} ({{ profile.alias }})</p>
+              <p>{{ profile.role }} ({{ profile.alias }})</p>
             </ion-label>
             <div class="actions" slot="end">
               <ion-button fill="clear" (click)="editProfile(profile)">
                 <ion-icon name="pencil-outline" slot="icon-only"></ion-icon>
               </ion-button>
               @if (!profile.isPrimary) {
-                <ion-button fill="clear" color="danger" (click)="deleteProfile(profile.id)">
+                <ion-button fill="clear" color="danger" (click)="confirmDelete(profile.id)">
                   <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
                 </ion-button>
               }
@@ -91,14 +97,14 @@ import { UserProfile, CreateProfileDto } from '../../../../models/profile.model'
         }
       </ion-list>
 
-      <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+      <ion-fab vertical="bottom" horizontal="end" slot="fixed" class="ion-hide-lg-up">
         <ion-fab-button (click)="openAddModal()">
           <ion-icon name="person-add-outline"></ion-icon>
         </ion-fab-button>
       </ion-fab>
 
       <!-- MODAL PARA AÑADIR/EDITAR PERFIL -->
-      <ion-modal [isOpen]="isModalOpen()" (didDismiss)="closeModal()">
+      <ion-modal [isOpen]="isModalOpen()" (didDismiss)="closeModal()" class="profile-modal">
         <ng-template>
           <ion-header>
             <ion-toolbar color="primary">
@@ -133,14 +139,25 @@ import { UserProfile, CreateProfileDto } from '../../../../models/profile.model'
 
             <ion-item fill="outline" class="input-item">
               <ion-label position="floating">Rol / Parentesco</ion-label>
-              <ion-select [(ngModel)]="tempProfile.role" interface="popover">
-                <ion-select-option value="padre">Padre</ion-select-option>
-                <ion-select-option value="madre">Madre</ion-select-option>
-                <ion-select-option value="hijo">Hijo</ion-select-option>
-                <ion-select-option value="hija">Hija</ion-select-option>
-                <ion-select-option value="otro">Otro</ion-select-option>
-              </ion-select>
+              <ion-input [(ngModel)]="tempProfile.role" placeholder="Ej: Madre, Jefe, Tío, etc."></ion-input>
             </ion-item>
+
+            <div class="color-picker-section">
+              <label class="color-label">Color de Perfil</label>
+              <div class="color-swatches">
+                @for (color of availableColors; track color) {
+                  <div 
+                    class="color-swatch" 
+                    [class.selected]="tempProfile.color === color"
+                    [style.background-color]="color"
+                    (click)="selectColor(color)">
+                    @if (tempProfile.color === color) {
+                      <ion-icon name="checkmark" style="color: white; font-size: 20px;"></ion-icon>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
 
             <div class="modal-actions">
               <ion-button expand="block" (click)="saveProfile()" [disabled]="!isValid()">
@@ -160,23 +177,30 @@ import { UserProfile, CreateProfileDto } from '../../../../models/profile.model'
     }
 
     .section-header {
-      margin-bottom: 24px;
-      h3 { font-weight: 700; margin-bottom: 4px; }
-      p { color: var(--ion-color-medium); font-size: 14px; }
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .header-text {
+        h3 { font-weight: 700; margin-bottom: 4px; font-size: 1.125rem; margin-top: 0; }
+        p { color: var(--ion-color-medium); font-size: 0.8125rem; margin: 0; }
+      }
     }
 
     .profile-item {
       --background: var(--ion-card-background);
       --border-radius: 12px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       
       ion-avatar {
-        width: 48px;
-        height: 48px;
-        margin-right: 16px;
+        width: 40px;
+        height: 40px;
+        margin-right: 12px;
       }
       
-      h2 { font-weight: 600; font-size: 16px; display: flex; align-items: center; gap: 8px; }
+      h2 { font-weight: 600; font-size: 0.9375rem; display: flex; align-items: center; gap: 8px; }
+      p { font-size: 0.8125rem; margin-top: 2px; }
     }
 
     .avatar-selector {
@@ -199,30 +223,109 @@ import { UserProfile, CreateProfileDto } from '../../../../models/profile.model'
       --border-radius: 8px;
     }
 
+    .color-picker-section {
+      margin-bottom: 24px;
+      
+      .color-label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--ion-color-step-600);
+        margin-bottom: 12px;
+      }
+      
+      .color-swatches {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        
+        .color-swatch {
+          width: 48px;
+          height: 48px;
+          border-radius: 50%;
+          cursor: pointer;
+          border: 3px solid transparent;
+          transition: all 0.2s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+          
+          &:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+          }
+          
+          &.selected {
+            border-color: var(--ion-color-step-800);
+            transform: scale(1.15);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+          }
+        }
+      }
+    }
+
+    .profile-color-indicator {
+      width: 4px;
+      height: 40px;
+      border-radius: 2px;
+      margin-right: 8px;
+    }
+
     .modal-actions {
       margin-top: 32px;
     }
+
+    /* Ajuste para Modal en Desktop */
+    ::ng-deep .profile-modal {
+      --width: 100%;
+      --height: 100%;
+      
+      @media (min-width: 768px) {
+        --width: 400px;
+        --height: auto;
+        --max-height: 600px;
+        --border-radius: 16px;
+        --box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        
+        &::part(content) {
+          border-radius: 16px;
+        }
+      }
+    }
   `]
 })
-export class ProfileSettingsComponent implements OnInit {
+export class ProfileSettingsComponent {
   protected readonly registroService = inject(RegistroEstadoService);
+  private readonly alertController = inject(AlertController);
 
   profiles = this.registroService.profiles;
 
   isModalOpen = signal(false);
   editingProfileId: string | null = null;
-  tempProfile: CreateProfileDto = { name: '', alias: '', role: 'otro' };
+  tempProfile: CreateProfileDto = { name: '', alias: '', role: '', color: '#3B82F6' };
+
+  // Predefined color palette
+  availableColors = [
+    '#3B82F6', // Blue
+    '#EC4899', // Pink
+    '#8B5CF6', // Purple
+    '#10B981', // Green
+    '#F59E0B', // Amber
+    '#EF4444', // Red
+    '#06B6D4', // Cyan
+    '#F97316', // Orange
+    '#6366F1', // Indigo
+    '#14B8A6', // Teal
+  ];
 
   constructor() {
     addIcons({ personAddOutline, pencilOutline, trashOutline, star, peopleCircleOutline, closeOutline, saveOutline, cameraOutline });
   }
 
-  ngOnInit() {
-  }
-
   openAddModal() {
     this.editingProfileId = null;
-    this.tempProfile = { name: '', alias: '', role: 'otro' };
+    this.tempProfile = { name: '', alias: '', role: '', color: this.availableColors[0] };
     this.isModalOpen.set(true);
   }
 
@@ -232,19 +335,26 @@ export class ProfileSettingsComponent implements OnInit {
       name: profile.name,
       alias: profile.alias,
       role: profile.role,
-      avatar: profile.avatar
+      avatar: profile.avatar,
+      color: profile.color || this.availableColors[0]
     };
     this.isModalOpen.set(true);
+  }
+
+  selectColor(color: string) {
+    this.tempProfile.color = color;
   }
 
   closeModal() {
     this.isModalOpen.set(false);
   }
 
-  saveProfile() {
+  async saveProfile() {
     if (this.editingProfileId) {
-      // Update logic (to be added to service if needed, for now we simulate)
+      // Update existing profile
+      await this.registroService.updateProfile(this.editingProfileId, this.tempProfile);
     } else {
+      // Create new profile
       const newProfile: UserProfile = {
         ...this.tempProfile,
         id: crypto.randomUUID(),
@@ -253,13 +363,41 @@ export class ProfileSettingsComponent implements OnInit {
         createdAt: new Date(),
         config: {} as any
       };
-      this.registroService.addProfile(newProfile);
+      await this.registroService.addProfile(newProfile);
     }
     this.closeModal();
   }
 
-  deleteProfile(id: string) {
-    // Delete logic (to be added to service)
+  async confirmDelete(id: string) {
+    const alert = await this.alertController.create({
+      header: 'Confirmar eliminación',
+      message: '¿Estás seguro de que deseas eliminar este perfil?',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Eliminar',
+          role: 'destructive',
+          handler: async () => {
+            try {
+              await this.registroService.deleteProfile(id);
+            } catch (error) {
+              // Show error if trying to delete primary profile
+              const errorAlert = await this.alertController.create({
+                header: 'Error',
+                message: 'No se puede eliminar el perfil principal.',
+                buttons: ['OK']
+              });
+              await errorAlert.present();
+            }
+          }
+        }
+      ]
+    });
+
+    await alert.present();
   }
 
   isValid() {

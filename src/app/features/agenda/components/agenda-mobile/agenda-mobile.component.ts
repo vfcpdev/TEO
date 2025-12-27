@@ -194,19 +194,19 @@ import { RegistroTipoBase } from '../../../../models/registro.model';
     .agenda-mobile-container { padding: 0; }
     .agenda-accordion-header {
       --background: var(--ion-background-color);
-      --min-height: 56px;
+      --min-height: 52px;
       ion-icon { font-size: 20px; margin-right: 12px; }
-      ion-label { font-weight: 700; font-size: 16px; }
-      ion-badge { border-radius: 12px; }
+      ion-label { font-weight: 700; font-size: 0.9375rem; }
+      ion-badge { border-radius: 8px; font-size: 0.75rem; }
     }
-    .accordion-content-mobile { padding: 12px; background: var(--ion-background-color); }
+    .accordion-content-mobile { padding: 8px 12px; background: var(--ion-background-color); }
     .config-item-mobile {
       display: flex;
       align-items: center;
       background: var(--ion-color-step-50);
-      margin-bottom: 8px;
-      border-radius: 12px;
-      padding: 10px 12px;
+      margin-bottom: 6px;
+      border-radius: 10px;
+      padding: 8px 12px;
       
       &.inactive { opacity: 0.5; }
       
@@ -218,8 +218,8 @@ import { RegistroTipoBase } from '../../../../models/registro.model';
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-right: 12px;
-        ion-icon { font-size: 18px; }
+        margin-right: 10px;
+        ion-icon { font-size: 16px; }
       }
       
       .ctx-dot-mobile { width: 8px; height: 8px; border-radius: 50%; margin-right: 12px; }
@@ -228,11 +228,11 @@ import { RegistroTipoBase } from '../../../../models/registro.model';
         flex: 1;
         display: flex;
         flex-direction: column;
-        .item-name { font-weight: 600; font-size: 14px; }
-        .item-sub { font-size: 10px; color: var(--ion-color-medium); text-transform: uppercase; }
+        .item-name { font-weight: 600; font-size: 0.875rem; }
+        .item-sub { font-size: 0.75rem; color: var(--ion-color-medium); text-transform: uppercase; }
       }
       
-      .item-name { flex: 1; font-weight: 500; font-size: 15px; }
+      .item-name { flex: 1; font-weight: 500; font-size: 0.875rem; }
       .actions-mobile { display: flex; gap: 4px; }
     }
     .add-item-form-mobile {
@@ -245,9 +245,9 @@ import { RegistroTipoBase } from '../../../../models/registro.model';
       align-items: center;
       
       &.ctx-form { flex-direction: column; align-items: stretch; }
-      ion-input { --background: var(--ion-background-color); border-radius: 8px; }
+      ion-input { --background: var(--ion-background-color); border-radius: 8px; font-size: 0.875rem; }
     }
-    .add-btn-mobile { margin-top: 12px; --border-style: dashed; --border-width: 1px; }
+    .add-btn-mobile { margin-top: 12px; --border-style: dashed; --border-width: 1px; font-size: 0.875rem; }
   `]
 })
 export class AgendaMobileComponent {

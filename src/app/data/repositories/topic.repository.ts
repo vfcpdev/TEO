@@ -9,9 +9,7 @@ import { Topic } from '../../models';
 export class TopicRepository extends BaseRepository<Topic> {
   protected collectionName = 'topics';
 
-  constructor(firestore: Firestore) {
-    super(firestore);
-  }
+
 
   async getTopicsByCourse(courseId: string): Promise<Topic[]> {
     return this.getAll([

@@ -1,5 +1,5 @@
 export const APP_CONSTANTS = {
-  APP_NAME: 'ClassApp',
+  APP_NAME: 'TEO',
   VERSION: '1.0.0',
 
   // Pagination
@@ -24,10 +24,10 @@ export const APP_CONSTANTS = {
 
   // Session storage keys
   STORAGE_KEYS: {
-    USER: 'classapp_user',
-    TOKEN: 'classapp_token',
-    THEME: 'classapp_theme',
-    LAST_SYNC: 'classapp_last_sync'
+    USER: 'teo_user',
+    TOKEN: 'teo_token',
+    THEME: 'teo_theme',
+    LAST_SYNC: 'teo_last_sync'
   },
 
   // Date formats

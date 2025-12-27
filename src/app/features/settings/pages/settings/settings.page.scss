@@ -1,5 +1,393 @@
 // Settings Page Styles - Simplified Version focused on Agenda and UI
 :host {
+  // Tipografía base (móvil) - Sincronizada con tokens pero Ajustada para ser Compacta
+  --font-title: 0.9375rem; // 15px
+  --font-subtitle: 0.875rem; // 14px
+  --font-label: 0.8125rem; // 13px
+  --font-body: 0.875rem; // 14px
+  --font-caption: 0.75rem; // 12px
+  --font-tab: 0.8125rem; // 13px
+
+  --icon-lg: 1.25rem;
+  --icon-md: 1.125rem;
+  --icon-sm: 1rem;
+
+  // Radios
+  --settings-radius-sm: 8px;
+  --settings-radius-md: 10px;
+  --settings-radius-lg: 12px;
+
+  // Colores Light
+  --page-bg: #f8fafc;
+  --card-bg: #ffffff;
+  --item-bg: #ffffff;
+  --module-content-bg: #f1f5f9;
+  --item-text: #1e293b;
+  --item-text-secondary: #64748b;
+  --item-border: #e2e8f0;
+  --card-shadow: rgba(0, 0, 0, 0.06);
+
+  @media (min-width: 992px) {
+    --font-h1: 1.5rem; // 24px
+    --font-h2: 1.25rem; // 20px
+    --font-h3: 1.125rem; // 18px
+    --font-title: 1rem; // 16px
+    --font-subtitle: 0.875rem; // 14px
+    --font-body: 0.875rem; // 14px
+    --font-label: 0.8125rem; // 13px
+    --font-caption: 0.75rem; // 12px
+    --font-tab: 0.875rem; // 14px
+    --icon-lg: 28px;
+    --icon-md: 24px;
+    --icon-sm: 20px;
+  }
+
+  // Breadcrumb correction
+  .breadcrumb-title {
+    font-size: 1rem !important; // Force 16px
+    font-weight: 500;
+    color: var(--item-text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+
+    .breadcrumb-parent {
+      opacity: 0.7;
+    }
+
+    .breadcrumb-separator {
+      opacity: 0.4;
+      font-size: 0.8em;
+    }
+
+    .breadcrumb-current {
+      color: var(--ion-color-primary);
+      font-weight: 600;
+    }
+  }
+}
+
+:host-context(body.dark) {
+  --page-bg: #0B1120;
+  --card-bg: #1A2332;
+  --item-bg: #1A2332;
+  --module-content-bg: #0B1120;
+  --item-text: #F0F4F8;
+  --item-text-secondary: #B4BFCD;
+  --item-border: #3D4758;
+  --card-shadow: rgba(0, 0, 0, 0.4);
+}
+
+// Mixins
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+@mixin card-base {
+  background: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: 0 1px 6px var(--card-shadow);
+}
+
+// Layout Base
+ion-content {
+  --background: var(--page-bg);
+  --padding-top: 8px;
+  --padding-bottom: 16px;
+  --padding-start: 12px;
+  --padding-end: 12px;
+}
+
+// Mobile Tabs
+.mobile-tabs-container {
+  padding: 8px;
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--item-border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+
+  .mobile-tabs-segment {
+    --background: transparent;
+    max-width: 300px;
+    margin: 0 auto;
+
+    ion-segment-button {
+      --indicator-color: var(--ion-color-primary);
+      --color: var(--ion-color-medium);
+      --color-checked: var(--ion-color-primary);
+      min-height: 36px;
+      min-width: 48px;
+
+      ion-icon {
+        font-size: 20px;
+      }
+
+      &::part(indicator-background) {
+        height: 3px;
+        border-radius: 3px 3px 0 0;
+      }
+    }
+  }
+}
+
+// Desktop Horizontal Tabs
+.desktop-tabs-container {
+  padding: 8px 16px;
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--item-border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+
+  .desktop-tabs-segment {
+    max-width: 900px;
+    margin: 0 auto;
+    --background: transparent;
+
+    ion-segment-button {
+      --indicator-color: var(--ion-color-primary);
+      --color: var(--ion-color-medium);
+      --color-checked: var(--ion-color-primary);
+      min-height: 40px;
+      min-width: 120px;
+      text-transform: none;
+      font-weight: 500;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 6px;
+
+      ion-icon {
+        font-size: 18px;
+      }
+
+      ion-label {
+        font-size: var(--font-tab);
+        margin: 0;
+      }
+
+      &::part(indicator-background) {
+        height: 3px;
+        border-radius: 3px 3px 0 0;
+      }
+    }
+  }
+}
+
+// Desktop 2-Column Layout
+.desktop-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 16px;
+  gap: 16px;
+
+  @media (max-width: 991px) {
+    display: none;
+  }
+}
+
+.desktop-main-area {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 16px;
+  flex: 1;
+  min-height: 0;
+}
+
+// Side Panel
+.desktop-modules-panel {
+  @include card-base;
+  padding: 16px;
+  @include flex-column;
+  gap: 8px;
+
+  .panel-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 4px;
+    font-weight: 700;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: var(--item-text-secondary);
+    letter-spacing: 0.5px;
+  }
+
+  .modules-list {
+    @include flex-column;
+    gap: 4px;
+  }
+}
+
+.module-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(var(--ion-color-primary-rgb), 0.05);
+  }
+
+  &.active {
+    background: rgba(var(--ion-color-primary-rgb), 0.1);
+    color: var(--ion-color-primary);
+    font-weight: 600;
+
+    .module-icon {
+      background: var(--ion-color-primary);
+      color: white;
+    }
+  }
+
+  .module-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    @include flex-center;
+    background: rgba(var(--ion-color-medium-rgb), 0.1);
+    color: var(--ion-color-medium);
+
+    ion-icon {
+      font-size: 16px;
+    }
+  }
+}
+
+// Main Content Area
+.module-content-area {
+  @include card-base;
+  @include flex-column;
+  overflow: hidden;
+}
+
+// Empty State - Used for cleaned up modules
+.empty-state-module {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 40px;
+  text-align: center;
+  color: var(--item-text-secondary);
+
+  ion-icon {
+    font-size: 56px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+    margin: 0 0 8px;
+    color: var(--item-text);
+  }
+
+  p {
+    font-size: 0.9375rem;
+    margin: 0;
+    opacity: 0.8;
+  }
+}
+
+.empty-state-module-mobile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--item-text-secondary);
+
+  ion-icon {
+    font-size: 40px;
+    margin-bottom: 12px;
+    opacity: 0.5;
+  }
+
+  p {
+    font-size: 1rem;
+    font-weight: 500;
+  }
+}
+
+// Theme Toggle in Toolbar
+.theme-toggle-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  margin-right: 8px;
+  background: rgba(var(--ion-color-primary-rgb), 0.1);
+  border: 1px solid rgba(var(--ion-color-primary-rgb), 0.2);
+  border-radius: 20px;
+
+  ion-toggle {
+    --handle-width: 18px;
+    --handle-height: 18px;
+    width: 42px;
+  }
+}
+
+// Interface Module Styles
+.interface-module {
+  padding: 16px;
+
+  h3 {
+    margin-top: 0;
+    margin-bottom: 24px;
+    font-size: 1.125rem;
+  }
+
+  .interface-option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--item-border);
+
+    .option-info {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+
+      ion-icon {
+        font-size: 22px;
+      }
+
+      .option-text {
+        h4 {
+          margin: 0;
+          font-size: 0.9375rem; // ~15px
+        }
+
+        p {
+          margin: 0;
+          font-size: 0.8125rem; // ~13px
+          color: var(--item-text-secondary);
+        }
+      }
+    }
+  }
+}
+
+:host {
   // Tipografía base (móvil) - Sincronizada con tokens
   --font-title: var(--font-size-body);
   --font-subtitle: var(--font-size-body);

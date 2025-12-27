@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { CourseLocalRepository } from '../../../data/repositories/course-local.repository';
 import { Course, CreateCourseDto, UpdateCourseDto, CourseWithPlace, CourseGroup } from '../../../models';
 import { PlaceService } from '../../places/services/place.service';
@@ -9,10 +9,9 @@ import { map, switchMap } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class CourseService {
-  constructor(
-    private repository: CourseLocalRepository,
-    private placeService: PlaceService
-  ) {}
+  private repository = inject(CourseLocalRepository);
+  private placeService = inject(PlaceService);
+
 
   /**
    * Obtiene todos los cursos

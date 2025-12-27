@@ -9,9 +9,7 @@ import { Place, PlaceType, CreatePlaceDto, generatePlaceId } from '../../models'
 export class PlaceRepository extends BaseRepository<Place> {
   protected collectionName = 'places';
 
-  constructor(firestore: Firestore) {
-    super(firestore);
-  }
+
 
   /**
    * Crea un lugar con ID personalizado basado en el tipo

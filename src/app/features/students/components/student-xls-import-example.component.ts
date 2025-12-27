@@ -1,4 +1,20 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import {
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardContent,
+  IonButton,
+  IonIcon,
+  IonList,
+  IonItem,
+  IonLabel
+} from '@ionic/angular/standalone';
 import { StudentXlsImportService } from '../services/student-xls-import.service';
 import { StudentService } from '../services/student.service';
 import { CourseStudentService } from '../services/course-student.service';
@@ -13,8 +29,25 @@ import { XlsImportResult } from '../../../models/student.model';
  */
 
 @Component({
-    selector: 'app-student-xls-import-example',
-    template: `
+  selector: 'app-student-xls-import-example',
+  standalone: true,
+  imports: [
+    CommonModule,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonCard,
+    IonCardHeader,
+    IonCardTitle,
+    IonCardContent,
+    IonButton,
+    IonIcon,
+    IonList,
+    IonItem,
+    IonLabel
+  ],
+  template: `
     <ion-header>
       <ion-toolbar>
         <ion-title>Importar Lista de Estudiantes (XLS)</ion-title>
@@ -111,7 +144,7 @@ import { XlsImportResult } from '../../../models/student.model';
       </div>
     </ion-content>
   `,
-    styles: [`
+  styles: [`
     .import-container {
       padding: 16px;
     }
@@ -132,104 +165,102 @@ import { XlsImportResult } from '../../../models/student.model';
   `]
 })
 export class StudentXlsImportExampleComponent {
-    selectedFile: File | null = null;
-    importing = false;
-    importResult: XlsImportResult | null = null;
+  selectedFile: File | null = null;
+  importing = false;
+  importResult: XlsImportResult | null = null;
 
-    constructor(
-        private xlsImportService: StudentXlsImportService,
-        private studentService: StudentService,
-        private courseStudentService: CourseStudentService,
-        private toastService: ToastService
-    ) { }
+  private xlsImportService = inject(StudentXlsImportService);
+  private studentService = inject(StudentService);
+  private courseStudentService = inject(CourseStudentService);
+  private toastService = inject(ToastService);
 
-    /**
-     * Manejar selección de archivo
-     */
-    onFileSelected(event: Event): void {
-        const input = event.target as HTMLInputElement;
-        if (input.files && input.files.length > 0) {
-            this.selectedFile = input.files[0];
-            this.importResult = null;
-        }
+  /**
+   * Manejar selección de archivo
+   */
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedFile = input.files[0];
+      this.importResult = null;
+    }
+  }
+
+  /**
+   * Importar estudiantes desde el archivo XLS
+   */
+  async importStudents(): Promise<void> {
+    if (!this.selectedFile) {
+      await this.toastService.warning('Por favor seleccione un archivo');
+      return;
     }
 
-    /**
-     * Importar estudiantes desde el archivo XLS
-     */
-    async importStudents(): Promise<void> {
-        if (!this.selectedFile) {
-            await this.toastService.warning('Por favor seleccione un archivo');
-            return;
-        }
+    this.importing = true;
 
-        this.importing = true;
+    try {
+      // Parsear el archivo XLS
+      this.importResult = await this.xlsImportService.parseXlsFile(this.selectedFile);
 
-        try {
-            // Parsear el archivo XLS
-            this.importResult = await this.xlsImportService.parseXlsFile(this.selectedFile);
+      if (!this.importResult.success) {
+        await this.toastService.error(
+          `Error al importar: ${this.importResult.errors.length} errores encontrados`
+        );
+        return;
+      }
 
-            if (!this.importResult.success) {
-                await this.toastService.error(
-                    `Error al importar: ${this.importResult.errors.length} errores encontrados`
-                );
-                return;
-            }
+      // Si el parseo fue exitoso, guardar los estudiantes
+      await this.saveStudents(this.importResult);
 
-            // Si el parseo fue exitoso, guardar los estudiantes
-            await this.saveStudents(this.importResult);
-
-        } catch (error) {
-            console.error('Error al importar estudiantes:', error);
-            await this.toastService.error('Error al importar estudiantes');
-        } finally {
-            this.importing = false;
-        }
+    } catch (error) {
+      console.error('Error al importar estudiantes:', error);
+      await this.toastService.error('Error al importar estudiantes');
+    } finally {
+      this.importing = false;
     }
+  }
 
-    /**
-     * Guardar estudiantes en la base de datos
-     */
-    private async saveStudents(result: XlsImportResult): Promise<void> {
-        try {
-            // Guardar cada estudiante
-            for (const studentDto of result.students) {
-                await this.studentService.create(studentDto);
-            }
+  /**
+   * Guardar estudiantes en la base de datos
+   */
+  private async saveStudents(result: XlsImportResult): Promise<void> {
+    try {
+      // Guardar cada estudiante
+      for (const studentDto of result.students) {
+        await this.studentService.create(studentDto);
+      }
 
-            // Si hay matrículas, procesarlas
-            if (result.enrollments && result.enrollments.length > 0) {
-                for (const enrollment of result.enrollments) {
-                    // Obtener el ID del estudiante por su código
-                    const student = await this.studentService.getByCode(enrollment.studentCode);
+      // Si hay matrículas, procesarlas
+      if (result.enrollments && result.enrollments.length > 0) {
+        for (const enrollment of result.enrollments) {
+          // Obtener el ID del estudiante por su código
+          const student = await this.studentService.getByCode(enrollment.studentCode);
 
-                    if (student) {
-                        // Aquí deberías obtener el courseId desde el courseCode
-                        // Este es un ejemplo simplificado
-                        // Nota: El grupo se maneja en otra tabla o campo si es necesario
-                        await this.courseStudentService.enrollStudent(
-                            'course-id', // Reemplazar con el ID real del curso
-                            student.id
-                        );
-                    }
-                }
-            }
-
-            await this.toastService.success(
-                `${result.importedCount} estudiantes importados exitosamente`
+          if (student) {
+            // Aquí deberías obtener el courseId desde el courseCode
+            // Este es un ejemplo simplificado
+            // Nota: El grupo se maneja en otra tabla o campo si es necesario
+            await this.courseStudentService.enrollStudent(
+              'course-id', // Reemplazar con el ID real del curso
+              student.id
             );
-
-        } catch (error) {
-            console.error('Error al guardar estudiantes:', error);
-            await this.toastService.error('Error al guardar estudiantes');
-            throw error;
+          }
         }
-    }
+      }
 
-    /**
-     * Descargar archivo de ejemplo
-     */
-    downloadSample(): void {
-        this.xlsImportService.generateSampleXLS();
+      await this.toastService.success(
+        `${result.importedCount} estudiantes importados exitosamente`
+      );
+
+    } catch (error) {
+      console.error('Error al guardar estudiantes:', error);
+      await this.toastService.error('Error al guardar estudiantes');
+      throw error;
     }
+  }
+
+  /**
+   * Descargar archivo de ejemplo
+   */
+  downloadSample(): void {
+    this.xlsImportService.generateSampleXLS();
+  }
 }

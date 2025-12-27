@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   Auth,
   signInWithEmailAndPassword,
@@ -15,10 +15,11 @@ import { User, LoginDto, CreateUserDto } from '../../models';
   providedIn: 'root'
 })
 export class AuthService {
+  private auth = inject(Auth);
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor(private auth: Auth) {
+  constructor() {
     this.initAuthListener();
   }
 

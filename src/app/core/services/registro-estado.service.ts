@@ -1,5 +1,5 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
-import { SQLiteService } from './sqlite.service';
+import { StorageService } from './storage.service';
 import { Registro, RegistroStatus } from '../../models/registro.model';
 import { UserProfile } from '../../models/profile.model';
 
@@ -20,7 +20,7 @@ export class RegistroEstadoService {
         return id ? (this._registrosMap().get(id) || []) : [];
     });
 
-    private readonly sqlite = inject(SQLiteService);
+    private readonly storage = inject(StorageService);
 
     // Signals para perfiles
     private _profiles = signal<UserProfile[]>([]);
@@ -31,10 +31,9 @@ export class RegistroEstadoService {
     }
 
     private async initializeData() {
-        // Esperar a que SQLite esté listo
-        while (!this.sqlite.isReady()) {
-            await new Promise(resolve => setTimeout(resolve, 100));
-        }
+        // Inicializar Storage
+        await this.storage.init();
+
         await this.loadProfiles();
         await this.seedDefaultProfilesIfEmpty();
 
@@ -47,92 +46,109 @@ export class RegistroEstadoService {
 
     private async loadProfiles() {
         try {
-            const profiles = await this.sqlite.findAll<any>('profiles', 'created_at ASC');
-            const mappedProfiles: UserProfile[] = profiles.map(p => ({
-                id: p.id,
-                name: p.name,
-                alias: p.alias,
-                role: p.role,
-                avatar: p.avatar,
-                isPrimary: p.is_primary === 1,
-                isActive: p.is_active === 1,
-                createdAt: new Date(p.created_at),
-                config: {} as any
-            }));
-            this._profiles.set(mappedProfiles);
+            const profiles = await this.storage.get<UserProfile[]>('profiles');
 
-            if (mappedProfiles.length > 0 && !this._activeProfileId()) {
-                const active = mappedProfiles.find(p => p.isPrimary) || mappedProfiles[0];
-                this.setActiveProfile(active.id);
+            if (profiles && profiles.length > 0) {
+                // Convert date strings back to Date objects
+                const mappedProfiles = profiles.map(p => ({
+                    ...p,
+                    createdAt: new Date(p.createdAt)
+                }));
+
+                this._profiles.set(mappedProfiles);
+                console.log('[RegistroEstadoService] Loaded profiles:', mappedProfiles.length);
+
+                if (!this._activeProfileId()) {
+                    const active = mappedProfiles.find(p => p.isPrimary) || mappedProfiles[0];
+                    this.setActiveProfile(active.id);
+                }
+            } else {
+                this._profiles.set([]);
             }
-        } catch (err) {
-            console.error('Error loading profiles:', err);
+        } catch (error) {
+            console.error('[RegistroEstadoService] Error loading profiles:', error);
+            this._profiles.set([]);
         }
     }
 
     private async seedDefaultProfilesIfEmpty() {
-        try {
-            const count = await this.sqlite.count('profiles');
-            if (count === 0) {
-                const defaults: UserProfile[] = [
-                    { id: crypto.randomUUID(), name: 'Yo (Usuario)', alias: 'Yo', role: 'padre', isPrimary: true, isActive: true, createdAt: new Date(), config: {} as any },
-                    { id: crypto.randomUUID(), name: 'Mamá', alias: 'Mamá', role: 'madre', isPrimary: false, isActive: true, createdAt: new Date(), config: {} as any },
-                    { id: crypto.randomUUID(), name: 'Hija Mayor', alias: 'Hija 1', role: 'hija', isPrimary: false, isActive: true, createdAt: new Date(), config: {} as any },
-                    { id: crypto.randomUUID(), name: 'Hija Menor', alias: 'Hija 2', role: 'hija', isPrimary: false, isActive: true, createdAt: new Date(), config: {} as any },
+        if (this._profiles().length === 0) {
+            console.log('[RegistroEstadoService] Seeding default profiles...');
+            try {
+                const defaultProfiles: UserProfile[] = [
+                    { id: crypto.randomUUID(), name: 'Yo (Usuario)', alias: 'Yo', role: 'padre', color: '#3B82F6', isPrimary: true, isActive: true, createdAt: new Date(), config: {} as any },
+                    { id: crypto.randomUUID(), name: 'Mamá', alias: 'Mamá', role: 'madre', color: '#EC4899', isPrimary: false, isActive: true, createdAt: new Date(), config: {} as any },
+                    { id: crypto.randomUUID(), name: 'Hija Mayor', alias: 'Hija 1', role: 'hija', color: '#8B5CF6', isPrimary: false, isActive: true, createdAt: new Date(), config: {} as any },
+                    { id: crypto.randomUUID(), name: 'Hija Menor', alias: 'Hija 2', role: 'hija', color: '#10B981', isPrimary: false, isActive: true, createdAt: new Date(), config: {} as any }
                 ];
 
-                for (const p of defaults) {
-                    await this.sqlite.insert('profiles', {
-                        id: p.id,
-                        name: p.name,
-                        alias: p.alias,
-                        role: p.role,
-                        is_primary: p.isPrimary ? 1 : 0,
-                        is_active: p.isActive ? 1 : 0,
-                        created_at: p.createdAt.toISOString()
-                    });
-                }
-                await this.loadProfiles();
+                await this.storage.set('profiles', defaultProfiles);
+                this._profiles.set(defaultProfiles);
+                console.log('[RegistroEstadoService] Default profiles seeded');
+            } catch (error) {
+                console.error('[RegistroEstadoService] Error seeding profiles:', error);
             }
-        } catch (err) {
-            console.error('Error seeding profiles:', err);
         }
     }
 
     async addProfile(profile: UserProfile) {
-        await this.sqlite.insert('profiles', {
-            id: profile.id,
-            name: profile.name,
-            alias: profile.alias,
-            role: profile.role,
-            is_primary: profile.isPrimary ? 1 : 0,
-            is_active: profile.isActive ? 1 : 0,
-            created_at: profile.createdAt.toISOString()
-        });
-        await this.loadProfiles();
+        try {
+            const currentProfiles = this._profiles();
+            const updatedProfiles = [...currentProfiles, profile];
+            await this.storage.set('profiles', updatedProfiles);
+            this._profiles.set(updatedProfiles);
+            console.log('[RegistroEstadoService] Profile added:', profile.id);
+        } catch (error) {
+            console.error('[RegistroEstadoService] Error adding profile:', error);
+            throw error;
+        }
+    }
+
+    async updateProfile(id: string, updates: Partial<UserProfile>): Promise<void> {
+        try {
+            const current = this._profiles();
+            const updated = current.map(p => p.id === id ? { ...p, ...updates } : p);
+
+            await this.storage.set('profiles', updated);
+            this._profiles.set(updated);
+            console.log('[RegistroEstadoService] Profile updated:', id);
+        } catch (error) {
+            console.error('[RegistroEstadoService] Error updating profile:', error);
+            throw error;
+        }
+    }
+
+    async deleteProfile(id: string): Promise<void> {
+        // Prevent deleting primary profile
+        const profile = this._profiles().find(p => p.id === id);
+        if (profile?.isPrimary) {
+            throw new Error('Cannot delete primary profile');
+        }
+
+        try {
+            const current = this._profiles();
+            const updated = current.filter(p => p.id !== id);
+
+            await this.storage.set('profiles', updated);
+            this._profiles.set(updated);
+            console.log('[RegistroEstadoService] Profile deleted:', id);
+        } catch (error) {
+            console.error('[RegistroEstadoService] Error deleting profile:', error);
+            throw error;
+        }
     }
 
     async loadRegistrosForProfile(profileId: string) {
         try {
-            const registros = await this.sqlite.query<any>(
-                'SELECT * FROM registros WHERE profile_id = ? ORDER BY start_time ASC',
-                [profileId]
-            );
+            const allRegistros = await this.storage.get<Registro[]>('registros') || [];
+            const profileRegistros = allRegistros.filter(r => r.profileId === profileId);
 
-            const mappedRegistros: Registro[] = registros.map(r => ({
-                id: r.id,
-                name: r.name,
-                status: r.status as RegistroStatus,
-                priority: r.priority as any,
-                startTime: r.start_time ? new Date(r.start_time) : undefined,
-                endTime: r.end_time ? new Date(r.end_time) : undefined,
-                areaId: r.area_id,
-                contextoId: r.contexto_id,
-                tipoId: r.tipo_id,
-                notes: r.notes,
-                isAllDay: r.is_all_day === 1,
-                createdAt: new Date(r.created_at),
-                updatedAt: new Date(r.updated_at)
+            const mappedRegistros: Registro[] = profileRegistros.map(r => ({
+                ...r,
+                startTime: r.startTime ? new Date(r.startTime) : undefined,
+                endTime: r.endTime ? new Date(r.endTime) : undefined,
+                createdAt: new Date(r.createdAt),
+                updatedAt: new Date(r.updatedAt)
             }));
 
             this._registrosMap.update(map => {
@@ -160,10 +176,11 @@ export class RegistroEstadoService {
         if (!profileId) return;
 
         try {
-            await this.sqlite.update('registros',
-                { status: newStatus, updated_at: new Date().toISOString() },
-                'id = ?', [registroId]
+            const allRegistros = await this.storage.get<Registro[]>('registros') || [];
+            const updatedRegistros = allRegistros.map(r =>
+                r.id === registroId ? { ...r, status: newStatus, updatedAt: new Date() } : r
             );
+            await this.storage.set('registros', updatedRegistros);
             await this.loadRegistrosForProfile(profileId);
         } catch (err) {
             console.error('Error updating status:', err);
@@ -178,25 +195,19 @@ export class RegistroEstadoService {
         if (!profileId) return;
 
         try {
-            await this.sqlite.insert('registros', {
-                id: registro.id,
-                profile_id: profileId,
-                name: registro.name,
-                area_id: registro.areaId,
-                contexto_id: registro.contextoId,
-                tipo_id: registro.tipoId,
-                status: registro.status,
-                priority: registro.priority,
-                start_time: registro.startTime?.toISOString(),
-                end_time: registro.endTime?.toISOString(),
-                is_all_day: registro.isAllDay ? 1 : 0,
-                notes: registro.notes,
-                created_at: registro.createdAt.toISOString(),
-                updated_at: registro.updatedAt.toISOString()
-            });
+            // Ensure profileId is set
+            const newRegistro = { ...registro, profileId };
+
+            // Get all registros and add the new one
+            const allRegistros = await this.storage.get<Registro[]>('registros') || [];
+            const updatedRegistros = [...allRegistros, newRegistro];
+
+            await this.storage.set('registros', updatedRegistros);
             await this.loadRegistrosForProfile(profileId);
-        } catch (err) {
-            console.error('Error adding registro:', err);
+            console.log('[RegistroEstadoService] Registro added:', newRegistro.id);
+        } catch (error) {
+            console.error('[RegistroEstadoService] Error adding registro:', error);
+            throw error;
         }
     }
 

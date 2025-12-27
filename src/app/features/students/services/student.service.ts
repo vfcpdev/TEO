@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { StudentRepository } from '../../../data/repositories/student.repository';
 import { Student, CreateStudentDto, UpdateStudentDto, DocumentType } from '../../../models/student.model';
 
@@ -6,8 +6,8 @@ import { Student, CreateStudentDto, UpdateStudentDto, DocumentType } from '../..
   providedIn: 'root'
 })
 export class StudentService {
+  private studentRepository = inject(StudentRepository);
 
-  constructor(private studentRepository: StudentRepository) { }
 
   /**
    * Obtener todos los estudiantes

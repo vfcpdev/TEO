@@ -9,9 +9,7 @@ import { Attendance } from '../../models';
 export class AttendanceRepository extends BaseRepository<Attendance> {
   protected collectionName = 'attendances';
 
-  constructor(firestore: Firestore) {
-    super(firestore);
-  }
+
 
   async getAttendancesBySession(
     courseId: string,

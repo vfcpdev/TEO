@@ -110,6 +110,32 @@
       <div class="module-content-mobile">
         <app-profile-settings></app-profile-settings>
       </div>
+      } @else if (selectedModule === 'interface') {
+      <div class="module-content-mobile">
+        <div class="interface-module">
+          <h3>Configuración de Interfaz</h3>
+          <div class="interface-option">
+            <div class="option-info">
+              <ion-icon name="rocket" color="primary"></ion-icon>
+              <div class="option-text">
+                <h4>Pantalla de Bienvenida</h4>
+                <p>Mostrar animación al iniciar la app</p>
+              </div>
+            </div>
+            <ion-toggle [checked]="splashEnabled" (ionChange)="toggleSplash($event)"></ion-toggle>
+          </div>
+          <div class="interface-option">
+            <div class="option-info">
+              <ion-icon name="flash" color="warning"></ion-icon>
+              <div class="option-text">
+                <h4>Acceso Rápido</h4>
+                <p>Mostrar barra de accesos directos en el inicio</p>
+              </div>
+            </div>
+            <ion-toggle [checked]="quickAccessEnabled" (ionChange)="toggleQuickAccess($event)"></ion-toggle>
+          </div>
+        </div>
+      </div>
       } @else {
       <div class="module-content-mobile">
         <div class="empty-state-module-mobile">

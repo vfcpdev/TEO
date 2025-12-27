@@ -204,12 +204,12 @@ export class AppComponent implements OnInit {
    */
   async showAboutModal() {
     const alert = await this.alertController.create({
-      header: 'Acerca de ClassApp',
+      header: 'Acerca de TEO',
       subHeader: 'v2.0.0',
       message: `
         <div style="text-align: left;">
           <p><strong>Framework:</strong> Ionic 8 + Angular 20</p>
-          <p><strong>Autor:</strong> ClassApp Team</p>
+          <p><strong>Autor:</strong> TEO Team</p>
           <p><strong>Almacenamiento:</strong> Firebase + SQLite</p>
           <p><strong>Plataformas:</strong> iOS, Android, Web</p>
           <p><strong>Actualización:</strong> Diciembre 2025</p>

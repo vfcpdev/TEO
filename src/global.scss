@@ -714,7 +714,33 @@ ion-button {
 }
 
 // Botones en modales - estandarización
+// Botones en modales - estandarización
 ion-modal {
+  --border-radius: 16px;
+
+  // Enforce compact typography inside modals
+  h2,
+  h3,
+  .ion-title {
+    font-size: 1.125rem !important; // 18px
+  }
+
+  p,
+  .ion-label {
+    font-size: 0.875rem !important; // 14px
+  }
+
+  ion-item {
+    --min-height: 48px;
+    font-size: 0.875rem;
+  }
+
+  ion-input,
+  ion-select,
+  ion-textarea {
+    font-size: 0.875rem !important;
+  }
+
   ion-footer ion-toolbar {
     ion-button {
       font-weight: 600;

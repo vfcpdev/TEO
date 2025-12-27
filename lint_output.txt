@@ -1,0 +1,73 @@
+
+> teo@1.0.0 lint
+> ng lint
+
+
+Linting "app"...
+
+D:\CLASSAPP\src\app\core\handlers\global-error.handler.ts
+   8:9  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
+   9:9  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
+  10:9  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
+
+D:\CLASSAPP\src\app\core\services\auth.service.ts
+  21:15  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
+
+D:\CLASSAPP\src\app\core\services\firestore-control.service.ts
+  18:15  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
+
+D:\CLASSAPP\src\app\data\repositories\attendance.repository.ts
+  12:15  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
+
+D:\CLASSAPP\src\app\data\repositories\base.repository.ts
+  27:15  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
+
+D:\CLASSAPP\src\app\data\repositories\bonus.repository.ts
+  12:15  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
+
+D:\CLASSAPP\src\app\data\repositories\course-local.repository.ts
+  41:15  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
+
+D:\CLASSAPP\src\app\data\repositories\course.repository.ts
+  12:15  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
+
+D:\CLASSAPP\src\app\data\repositories\place-local.repository.ts
+  30:15  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
+
+D:\CLASSAPP\src\app\data\repositories\place.repository.ts
+  12:15  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
+
+D:\CLASSAPP\src\app\data\repositories\student.repository.ts
+  12:15  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
+
+D:\CLASSAPP\src\app\data\repositories\topic.repository.ts
+  12:15  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
+
+D:\CLASSAPP\src\app\features\agenda\components\registros-dashboard\registros-dashboard.component.ts
+  229:5  error  Lifecycle methods should not be empty  @angular-eslint/no-empty-lifecycle-method
+
+D:\CLASSAPP\src\app\features\courses\services\course.service.ts
+  13:5  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
+  14:5  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
+
+D:\CLASSAPP\src\app\features\places\services\place.service.ts
+  10:15  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
+
+D:\CLASSAPP\src\app\features\profile\pages\profile\profile.page.ts
+  65:5  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
+  66:5  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
+
+D:\CLASSAPP\src\app\features\settings\components\profile-settings\profile-settings.component.ts
+  251:3  error  Lifecycle methods should not be empty  @angular-eslint/no-empty-lifecycle-method
+
+D:\CLASSAPP\src\app\features\students\components\student-xls-import-example.component.ts
+  140:9  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
+  141:9  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
+  142:9  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
+  143:9  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
+
+D:\CLASSAPP\src\app\features\students\services\student.service.ts
+  10:15  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
+
+✖ 26 problems (26 errors, 0 warnings)
+

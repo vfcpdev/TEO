@@ -9,9 +9,7 @@ import { Bonus } from '../../models';
 export class BonusRepository extends BaseRepository<Bonus> {
   protected collectionName = 'bonuses';
 
-  constructor(firestore: Firestore) {
-    super(firestore);
-  }
+
 
   async getBonusesByCourse(courseId: string): Promise<Bonus[]> {
     return this.getAll([

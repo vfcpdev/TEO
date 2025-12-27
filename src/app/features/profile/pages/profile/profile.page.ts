@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -61,10 +61,10 @@ export class ProfilePage implements OnInit {
   userPhone = '';
   userPlace = '';
 
-  constructor(
-    private toastService: ToastService,
-    private router: Router
-  ) {
+  private toastService = inject(ToastService);
+  private router = inject(Router);
+
+  constructor() {
     addIcons({
       closeSharp,
       chevronBackSharp,

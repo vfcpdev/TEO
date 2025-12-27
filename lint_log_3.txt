@@ -1,0 +1,12 @@
+
+> teo@1.0.0 lint
+> ng lint
+
+
+Linting "app"...
+
+D:\CLASSAPP\src\app\features\agenda\components\registros-dashboard\registros-dashboard.component.ts
+  50:16  error  Parsing error: ';' expected
+
+✖ 1 problem (1 error, 0 warnings)
+

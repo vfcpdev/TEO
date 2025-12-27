@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   Firestore,
   collection,
@@ -23,8 +23,7 @@ import { Observable, from, map } from 'rxjs';
 })
 export abstract class BaseRepository<T> {
   protected abstract collectionName: string;
-
-  constructor(protected firestore: Firestore) {}
+  protected firestore = inject(Firestore);
 
   protected getCollection(): CollectionReference<DocumentData> {
     return collection(this.firestore, this.collectionName);

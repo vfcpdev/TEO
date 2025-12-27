@@ -66,33 +66,38 @@ export interface RegistroArtefacto {
  */
 export interface Registro {
     id: string;
-    name: string; // Único requisito obligatorio inicial
+    profileId: string; // ID del perfil al que pertenece este registro
+    name: string;
 
-    // Clasificación (vínculo con AgendaConfig)
+    // Clasificación
     areaId?: string;
     contextoId?: string;
-    tipoId?: string; // Vínculo con TipoConfig (que define el nombre e icono)
+    tipoId?: string;
 
     // Planificación
-    status?: RegistroStatus;
-    priority?: RegistroPrioridad;
+    status: RegistroStatus;
+    priority: RegistroPrioridad;
 
     // Tiempos
     startTime?: Date;
     endTime?: Date;
-    duration?: number; // en minutos (calculado o manual)
-    isAllDay?: boolean;
+    duration?: number; // en minutos
+    isAllDay: boolean;
 
-    // Buffers (Tiempos muertos asociados)
+    // Buffers
     bufferBefore?: RegistroBuffer;
     bufferAfter?: RegistroBuffer;
 
-    // Contenido
+    // Notas
     notes?: string;
-    checklist?: RegistroTarea[];
+
+    // Tareas (checklist)
+    tareas?: RegistroTarea[];
+
+    // Artefactos
     artefactos?: RegistroArtefacto[];
 
-    // Metadatos
+    // Metadata
     createdAt: Date;
     updatedAt: Date;
 }

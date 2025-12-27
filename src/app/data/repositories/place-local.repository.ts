@@ -1,10 +1,10 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { LocalStorageService } from '../../core/services/local-storage.service';
 import { Place, PlaceType, CreatePlaceDto, generatePlaceId } from '../../models';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-const PLACES_STORAGE_KEY = 'classapp_places';
+const PLACES_STORAGE_KEY = 'teo_places';
 
 // Tipo interno para almacenamiento (fechas como string)
 interface StoredPlace {
@@ -26,8 +26,9 @@ interface StoredPlace {
 })
 export class PlaceLocalRepository {
   private placesSubject = new BehaviorSubject<Place[]>([]);
+  private storage = inject(LocalStorageService);
 
-  constructor(private storage: LocalStorageService) {
+  constructor() {
     this.loadFromStorage();
   }
 

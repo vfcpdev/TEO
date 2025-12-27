@@ -9,9 +9,7 @@ import { Course } from '../../models';
 export class CourseRepository extends BaseRepository<Course> {
   protected collectionName = 'courses';
 
-  constructor(firestore: Firestore) {
-    super(firestore);
-  }
+
 
   async getCoursesByPlace(placeId: string): Promise<Course[]> {
     return this.getAll([

@@ -1,10 +1,10 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { LocalStorageService } from '../../core/services/local-storage.service';
 import { Course, CreateCourseDto, generateCourseId, CourseModality, DaySchedule, migrateCourseToSchedules, CourseGroup } from '../../models';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-const COURSES_STORAGE_KEY = 'classapp_courses';
+const COURSES_STORAGE_KEY = 'teo_courses';
 
 // Tipo interno para almacenamiento (fechas como string, soporta legacy y nuevo formato)
 interface StoredCourse {
@@ -37,8 +37,9 @@ interface StoredCourse {
 })
 export class CourseLocalRepository {
   private coursesSubject = new BehaviorSubject<Course[]>([]);
+  private storage = inject(LocalStorageService);
 
-  constructor(private storage: LocalStorageService) {
+  constructor() {
     this.loadFromStorage();
   }
 

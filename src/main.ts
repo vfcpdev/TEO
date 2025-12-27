@@ -21,37 +21,19 @@ import { GlobalErrorHandler } from './app/core/handlers/global-error.handler';
 async function initJeepSqlite(): Promise<void> {
   if (Capacitor.getPlatform() !== 'web') return;
 
-  // 1. Registrar el custom element
+  console.log('[main.ts] Initializing jeep-sqlite for web platform');
+
+  // 1. Registrar el custom element de Stencil
   jeepSqlite(window);
+  console.log('[main.ts] jeep-sqlite custom elements registered');
 
   // 2. Esperar a que el custom element esté definido
   await customElements.whenDefined('jeep-sqlite');
-  console.log('[main.ts] jeep-sqlite custom element defined');
+  console.log('[main.ts] jeep-sqlite custom element is defined');
 
-  // 3. Buscar o crear el elemento en el DOM
-  let jeepEl = document.querySelector('jeep-sqlite') as any;
-  if (!jeepEl) {
-    jeepEl = document.createElement('jeep-sqlite');
-    document.body.appendChild(jeepEl);
-  }
-
-  // 4. Esperar a que el componente esté listo (Stencil lifecycle)
-  if (typeof jeepEl.componentOnReady === 'function') {
-    await jeepEl.componentOnReady();
-    console.log('[main.ts] jeep-sqlite component ready');
-  } else {
-    // Fallback: esperar un pequeño delay para que el componente se inicialice
-    await new Promise(resolve => setTimeout(resolve, 100));
-    console.log('[main.ts] jeep-sqlite waited for initialization');
-  }
-
-  // 5. Inicializar el web store
-  try {
-    await jeepEl.initWebStore();
-    console.log('[main.ts] jeep-sqlite web store initialized');
-  } catch (err) {
-    console.warn('[main.ts] jeep-sqlite initWebStore error (may already be initialized):', err);
-  }
+  // 3. Dar tiempo para que Stencil complete la hidratación
+  await new Promise(resolve => setTimeout(resolve, 100));
+  console.log('[main.ts] jeep-sqlite initialization complete');
 }
 
 // Inicializar jeep-sqlite y luego arrancar Angular

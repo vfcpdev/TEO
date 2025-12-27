@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { PlaceLocalRepository } from '../../../data/repositories/place-local.repository';
 import { Place, CreatePlaceDto, UpdatePlaceDto, PlaceType } from '../../../models';
 import { Observable, from } from 'rxjs';
@@ -7,7 +7,8 @@ import { Observable, from } from 'rxjs';
   providedIn: 'root'
 })
 export class PlaceService {
-  constructor(private repository: PlaceLocalRepository) {}
+  private repository = inject(PlaceLocalRepository);
+
 
   /**
    * Obtiene todos los lugares (una vez)

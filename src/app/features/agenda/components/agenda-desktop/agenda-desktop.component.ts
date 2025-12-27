@@ -172,15 +172,15 @@ import { RegistroTipoBase } from '../../../../models/registro.model';
     }
 
     .section-desc {
-      font-size: 12px;
+      font-size: 0.75rem;
       color: var(--ion-color-medium);
       margin: -8px 0 16px;
     }
 
     .agenda-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 24px;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
     }
 
     .agenda-column {
@@ -197,18 +197,18 @@ import { RegistroTipoBase } from '../../../../models/registro.model';
     .column-header {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       margin-bottom: 16px;
       padding-bottom: 12px;
       border-bottom: 1px solid var(--ion-color-step-100);
 
       ion-icon {
-        font-size: 24px;
+        font-size: 20px;
       }
 
       h3 {
         margin: 0;
-        font-size: 18px;
+        font-size: 1rem;
         font-weight: 700;
         flex: 1;
       }
@@ -233,9 +233,9 @@ import { RegistroTipoBase } from '../../../../models/registro.model';
     .config-item {
       display: flex;
       align-items: center;
-      padding: 10px 12px;
+      padding: 8px 12px;
       background: var(--ion-color-step-50);
-      border-radius: 12px;
+      border-radius: 10px;
       transition: all 0.2s;
       border: 1px solid transparent;
 
@@ -250,18 +250,18 @@ import { RegistroTipoBase } from '../../../../models/registro.model';
       }
 
       .item-icon-circle {
-        width: 36px;
-        height: 36px;
-        border-radius: 10px;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
         color: white;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-right: 12px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        margin-right: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 
         ion-icon {
-          font-size: 20px;
+          font-size: 16px;
         }
       }
 
@@ -269,7 +269,7 @@ import { RegistroTipoBase } from '../../../../models/registro.model';
         width: 8px;
         height: 8px;
         border-radius: 50%;
-        margin-right: 16px;
+        margin-right: 12px;
         margin-left: 4px;
       }
 
@@ -280,12 +280,12 @@ import { RegistroTipoBase } from '../../../../models/registro.model';
 
         .item-name {
           font-weight: 600;
-          font-size: 14px;
+          font-size: 0.875rem;
           color: var(--ion-text-color);
         }
 
         .item-sub {
-          font-size: 11px;
+          font-size: 0.75rem;
           color: var(--ion-color-medium);
           text-transform: uppercase;
           letter-spacing: 0.5px;
@@ -294,7 +294,7 @@ import { RegistroTipoBase } from '../../../../models/registro.model';
 
       .item-actions {
         display: flex;
-        gap: 4px;
+        gap: 2px;
       }
     }
 
@@ -307,7 +307,7 @@ import { RegistroTipoBase } from '../../../../models/registro.model';
       .custom-input {
         --padding-start: 12px;
         --padding-end: 12px;
-        font-size: 14px;
+        font-size: 0.875rem;
         background: var(--ion-color-step-50);
         border-radius: 10px;
         --placeholder-color: var(--ion-color-medium);
@@ -324,7 +324,7 @@ import { RegistroTipoBase } from '../../../../models/registro.model';
             --padding-start: 8px;
             --padding-end: 0;
             min-width: 100px;
-            font-size: 13px;
+            font-size: 0.8125rem;
             background: var(--ion-color-step-50);
             border-radius: 10px;
           }

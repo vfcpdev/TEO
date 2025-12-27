@@ -1,6 +1,39 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
+  IonContent,
+  IonList,
+  IonItem,
+  IonLabel,
+  IonBadge,
+  IonSegment,
+  IonSegmentButton,
+  IonIcon,
+  IonAvatar,
+  IonChip,
+  IonCard,
+  IonCardHeader,
+  IonCardTitle,
+  IonCardContent,
+  IonText
+} from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import {
+  checkmarkCircleOutline,
+  documentTextOutline,
+  alertCircleOutline,
+  peopleOutline,
+  calendarOutline
+} from 'ionicons/icons';
+import { RegistroEstadoService } from '../../../../core/services/registro-estado.service';
+import { StatusBadgeComponent } from '../../../../shared/components/status-badge/status-badge.component';
+import { Registro, RegistroStatus } from '../../../../models/registro.model';
+
+@Component({
+  selector: 'app-registros-dashboard',
+  standalone: true,
+  imports: [
+    CommonModule,
     IonContent,
     IonList,
     IonItem,
@@ -15,43 +48,10 @@ import {
     IonCardHeader,
     IonCardTitle,
     IonCardContent,
-    IonText
-} from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import {
-    checkmarkCircleOutline,
-    documentTextOutline,
-    alertCircleOutline,
-    peopleOutline,
-    calendarOutline
-} from 'ionicons/icons';
-import { RegistroEstadoService } from '../../../../core/services/registro-estado.service';
-import { StatusBadgeComponent } from '../../../../shared/components/status-badge/status-badge.component';
-import { Registro, RegistroStatus } from '../../../../models/registro.model';
-
-@Component({
-    selector: 'app-registros-dashboard',
-    standalone: true,
-    imports: [
-        CommonModule,
-        IonContent,
-        IonList,
-        IonItem,
-        IonLabel,
-        IonBadge,
-        IonSegment,
-        IonSegmentButton,
-        IonIcon,
-        IonAvatar,
-        IonChip,
-        IonCard,
-        IonCardHeader,
-        IonCardTitle,
-        IonCardContent,
-        IonText,
-        StatusBadgeComponent
-    ],
-    template: `
+    IonText,
+    StatusBadgeComponent
+  ],
+  template: `
     <div class="dashboard-container">
       <!-- SELECTOR DE PERFIL -->
       <div class="profile-selector-bar">
@@ -59,7 +59,7 @@ import { Registro, RegistroStatus } from '../../../../models/registro.model';
           <div class="profile-tab" 
                [class.active]="activeProfileId() === profile.id"
                (click)="selectProfile(profile.id)">
-            <ion-avatar>
+            <ion-avatar [style.border-color]="profile.color || '#ccc'">
               <img [src]="profile.avatar || 'assets/avatars/default.png'" />
             </ion-avatar>
             <ion-label>{{ profile.alias }}</ion-label>
@@ -116,7 +116,7 @@ import { Registro, RegistroStatus } from '../../../../models/registro.model';
       </div>
     </div>
   `,
-    styles: [`
+  styles: [`
     .dashboard-container {
       display: flex;
       flex-direction: column;
@@ -205,48 +205,47 @@ import { Registro, RegistroStatus } from '../../../../models/registro.model';
     }
   `]
 })
-export class RegistrosDashboardComponent implements OnInit {
-    private readonly registroService = inject(RegistroEstadoService);
+export class RegistrosDashboardComponent {
+  private readonly registroService = inject(RegistroEstadoService);
 
-    profiles = this.registroService.profiles;
-    activeProfileId = this.registroService.activeProfileId;
-    selectedStatus = signal<RegistroStatus>(RegistroStatus.CONFIRMADO);
+  profiles = this.registroService.profiles;
+  activeProfileId = this.registroService.activeProfileId;
+  selectedStatus = signal<RegistroStatus>(RegistroStatus.CONFIRMADO);
 
-    filteredRegistros = computed(() => {
-        return this.registroService.getRegistrosByStatus(this.selectedStatus())();
+  filteredRegistros = computed(() => {
+    return this.registroService.getRegistrosByStatus(this.selectedStatus())();
+  });
+
+  constructor() {
+    addIcons({
+      checkmarkCircleOutline,
+      documentTextOutline,
+      alertCircleOutline,
+      peopleOutline,
+      calendarOutline
     });
+  }
 
-    constructor() {
-        addIcons({
-            checkmarkCircleOutline,
-            documentTextOutline,
-            alertCircleOutline,
-            peopleOutline,
-            calendarOutline
-        });
+
+  selectProfile(id: string) {
+    this.registroService.setActiveProfile(id);
+  }
+
+  onStatusChange(event: any) {
+    this.selectedStatus.set(event.detail.value);
+  }
+
+  getStatusColor(status: RegistroStatus): string {
+    switch (status) {
+      case RegistroStatus.CONFIRMADO: return '#1e40af';
+      case RegistroStatus.BORRADOR: return '#6b7280';
+      case RegistroStatus.ESTUDIO: return '#f59e0b';
+      default: return '#ccc';
     }
+  }
 
-    ngOnInit() { }
-
-    selectProfile(id: string) {
-        this.registroService.setActiveProfile(id);
-    }
-
-    onStatusChange(event: any) {
-        this.selectedStatus.set(event.detail.value);
-    }
-
-    getStatusColor(status: RegistroStatus): string {
-        switch (status) {
-            case RegistroStatus.CONFIRMADO: return '#1e40af';
-            case RegistroStatus.BORRADOR: return '#6b7280';
-            case RegistroStatus.ESTUDIO: return '#f59e0b';
-            default: return '#ccc';
-        }
-    }
-
-    getAreaName(id: string) {
-        // Sería ideal tener acceso a AgendaService aquí
-        return 'Área';
-    }
+  getAreaName(id: string) {
+    // Sería ideal tener acceso a AgendaService aquí
+    return 'Área';
+  }
 }

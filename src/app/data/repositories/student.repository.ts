@@ -9,9 +9,7 @@ import { Student, CourseStudent } from '../../models';
 export class StudentRepository extends BaseRepository<Student> {
   protected collectionName = 'students';
 
-  constructor(firestore: Firestore) {
-    super(firestore);
-  }
+
 
   async getStudentsByIds(studentIds: string[]): Promise<Student[]> {
     if (studentIds.length === 0) return [];

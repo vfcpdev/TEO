@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
 import { Firestore, enableNetwork, disableNetwork } from '@angular/fire/firestore';
 import { Preferences } from '@capacitor/preferences';
 
@@ -9,13 +9,14 @@ export type FirestoreMode = 'online' | 'offline';
 })
 export class FirestoreControlService {
   private readonly STORAGE_KEY = 'firestoreMode';
+  private firestore = inject(Firestore);
 
   // Estado reactivo del modo actual
   currentMode = signal<FirestoreMode>('online');
   isOnline = signal(true);
   isChangingMode = signal(false);
 
-  constructor(private firestore: Firestore) {
+  constructor() {
     this.loadSavedMode();
   }
 
