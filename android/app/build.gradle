@@ -8,7 +8,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace "com.classapp.app"
+    namespace "com.teo.app"
     compileSdk rootProject.ext.compileSdkVersion
 
     // Configuración de firma para release
