@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Storage } from '@ionic/storage-angular';
 
 /**
@@ -11,8 +11,7 @@ import { Storage } from '@ionic/storage-angular';
 export class StorageService {
     private storage: Storage | null = null;
     private initPromise: Promise<void> | null = null;
-
-    constructor(private storageInstance: Storage) { }
+    private readonly storageInstance = inject(Storage);
 
     /**
      * Initialize storage - must be called before any operations
