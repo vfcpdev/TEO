@@ -1,0 +1,741 @@
+/*
+ * App Global CSS
+ * ----------------------------------------------------------------------------
+ * Put style rules here that you want to apply globally. These styles are for
+ * the entire app and not just one component. Additionally, this file can be
+ * used as an entry point to import other CSS/Sass files to be included in the
+ * output CSS.
+ * For more information on global stylesheets, visit the documentation:
+ * https://ionicframework.com/docs/layout/global-stylesheets
+ */
+
+/**
+ * Design Tokens & Responsive Utilities (must come first with @use)
+ * -----------------------------------------------------
+ * Sistema unificado de tokens de diseño y utilities responsive
+ */
+@use "./theme/design-tokens.scss";
+@use "./theme/responsive-utilities.scss";
+@use "./theme/mixins" as *;
+@use "./theme/calendar";
+@use "./theme/forms";
+
+
+/* Core CSS required for Ionic components to work properly */
+@import "@ionic/angular/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+@import "@ionic/angular/css/normalize.css";
+@import "@ionic/angular/css/structure.css";
+@import "@ionic/angular/css/typography.css";
+@import "@ionic/angular/css/display.css";
+
+/* Optional CSS utils that can be commented out */
+@import "@ionic/angular/css/padding.css";
+@import "@ionic/angular/css/float-elements.css";
+@import "@ionic/angular/css/text-alignment.css";
+@import "@ionic/angular/css/text-transformation.css";
+@import "@ionic/angular/css/flex-utils.css";
+
+/**
+ * Ionic Dark Mode
+ * -----------------------------------------------------
+ * For more info, please see:
+ * https://ionicframework.com/docs/theming/dark-mode
+ */
+
+/* @import "@ionic/angular/css/palettes/dark.always.css"; */
+@import "@ionic/angular/css/palettes/dark.class.css";
+/* @import '@ionic/angular/css/palettes/dark.system.css'; */
+
+/**
+ * Typography Normalization System
+ * -----------------------------------------------------
+ * Sistema de normalización de tipografía para toda la app
+ * Basado en Material Design y mejores prácticas de accesibilidad
+ *
+ * JERARQUÍA DE TEXTO:
+ * - Título Principal (h1, page title): 24-28px
+ * - Título de Sección (h2, card title): 18-20px
+ * - Subtítulo (h3, list header): 14-16px
+ * - Texto de Cuerpo (p, labels): 14-15px
+ * - Texto Descriptivo (small, captions): 12-13px
+ * - Micro texto (badges, counters): 10-11px
+ *
+ * ESCALA DESKTOP: +10% en pantallas >= 992px
+ */
+
+:root {
+  // Alias de tipografía sincronizados con design-tokens.scss
+  --text-title-xl: var(--font-size-h1);
+  --text-title-lg: var(--font-size-h2);
+  --text-title-md: var(--font-size-h3);
+  --text-title-sm: var(--font-size-h4);
+  --text-body-lg: var(--font-size-body-lg);
+  --text-body: var(--font-size-body);
+  --text-body-sm: var(--font-size-small);
+  --text-caption: var(--font-size-xs);
+  --text-micro: var(--font-size-xxs);
+
+  // Semántica de pesos
+  --weight-bold: var(--font-weight-bold);
+  --weight-semibold: var(--font-weight-semibold);
+  --weight-medium: var(--font-weight-medium);
+  --weight-regular: var(--font-weight-regular);
+}
+
+// ============ NORMALIZACIÓN BASE ============
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span,
+div {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+h1 {
+  @extend .text-title-xl;
+}
+
+h2 {
+  @extend .text-title-lg;
+}
+
+h3 {
+  @extend .text-title-md;
+}
+
+h4 {
+  @extend .text-title-sm;
+}
+
+p {
+  @extend .text-body;
+  margin-bottom: var(--spacing-sm);
+}
+
+small {
+  @extend .text-body-sm;
+}
+
+// ============ UTILITY CLASSES ============
+// Títulos
+.text-title-xl {
+  font-size: var(--text-title-xl);
+  font-weight: var(--weight-bold);
+  line-height: var(--line-height-tight);
+}
+
+.text-title-lg {
+  font-size: var(--text-title-lg);
+  font-weight: var(--weight-bold);
+  line-height: var(--line-height-tight);
+}
+
+.text-title-md {
+  font-size: var(--text-title-md);
+  font-weight: var(--weight-semibold);
+  line-height: var(--line-height-tight);
+}
+
+.text-title-sm {
+  font-size: var(--text-title-sm);
+  font-weight: var(--weight-semibold);
+  line-height: var(--line-height-normal);
+}
+
+// Cuerpo
+.text-body-lg {
+  font-size: var(--text-body-lg);
+  font-weight: var(--weight-regular);
+  line-height: var(--line-height-relaxed);
+}
+
+.text-body {
+  font-size: var(--text-body);
+  font-weight: var(--weight-regular);
+  line-height: var(--line-height-normal);
+}
+
+.text-body-sm {
+  font-size: var(--text-body-sm);
+  font-weight: var(--weight-regular);
+  line-height: var(--line-height-normal);
+}
+
+// Captions y micro
+.text-caption {
+  font-size: var(--text-caption);
+  font-weight: var(--weight-medium);
+  line-height: var(--line-height-normal);
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.text-micro {
+  font-size: var(--text-micro);
+  font-weight: var(--weight-medium);
+  line-height: var(--line-height-tight);
+}
+
+.text-nano {
+  font-size: var(--text-nano);
+  font-weight: var(--weight-regular);
+  line-height: var(--line-height-tight);
+}
+
+// Labels uppercase
+.text-label {
+  font-size: var(--text-caption);
+  font-weight: var(--weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-caps);
+  color: var(--ion-color-medium);
+}
+
+/**
+ * Safe Area Support
+ * -----------------------------------------------------
+ * Soporte para notch y barras del sistema en dispositivos móviles
+ * Siguiendo las mejores prácticas de Capacitor 8+ y Android edge-to-edge
+ * @see https://capacitorjs.com/docs/apis/system-bars
+ * @see https://ionicframework.com/docs/theming/advanced#safe-area-padding
+ */
+
+// Variables de safe area con fallback para compatibilidad con Android WebView
+// Capacitor 8 inyecta --safe-area-inset-* cuando env() no funciona correctamente
+:root {
+  // Usar variables CSS de Capacitor como fallback principal, luego env(), luego 0px
+  --ion-safe-area-top: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
+  --ion-safe-area-bottom: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
+  --ion-safe-area-left: var(--safe-area-inset-left, env(safe-area-inset-left, 0px));
+  --ion-safe-area-right: var(--safe-area-inset-right, env(safe-area-inset-right, 0px));
+}
+
+// NO aplicar padding al html para evitar doble padding en Android
+// Ionic maneja internamente las safe areas en los componentes
+html {
+  // Solo usar box-sizing para consistencia
+  box-sizing: border-box;
+}
+
+// ion-app - Ionic maneja las safe areas automáticamente
+// No se requieren estilos personalizados aquí
+
+// Asegurar que los modales y overlays también respeten safe areas
+ion-modal {
+  --ion-safe-area-top: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
+  --ion-safe-area-bottom: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
+}
+
+// FABs deben respetar safe areas
+ion-fab[vertical="bottom"] {
+  bottom: calc(var(--ion-safe-area-bottom, 0px) + 16px);
+}
+
+ion-fab[horizontal="end"] {
+  right: calc(var(--ion-safe-area-right, 0px) + 16px);
+}
+
+/**
+ * Global Utility Classes
+ * -----------------------------------------------------
+ * Clases útiles siguiendo las mejores prácticas de Ionic
+ */
+
+// Rounded corners
+.rounded {
+  border-radius: 8px;
+}
+
+.rounded-lg {
+  border-radius: 12px;
+}
+
+.rounded-full {
+  border-radius: 50%;
+}
+
+// Shadows
+.shadow-sm {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.shadow {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.shadow-lg {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+// Animaciones de entrada
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+// Clases de animación
+.fade-in {
+  animation: fadeIn 0.3s ease-in;
+}
+
+.slide-in-up {
+  animation: slideInUp 0.4s ease-out;
+}
+
+.slide-in-down {
+  animation: slideInDown 0.4s ease-out;
+}
+
+/**
+ * Custom Ionic Overrides
+ * -----------------------------------------------------
+ * Mejoras visuales globales
+ */
+
+// Toolbar customization
+ion-toolbar {
+  --padding-start: 12px;
+  --padding-end: 12px;
+
+  ion-title {
+    font-weight: 600;
+  }
+}
+
+// Headers - Ionic maneja safe areas internamente
+// ion-toolbar:first-of-type recibe automáticamente --ion-safe-area-top
+
+
+// Ajustar contenido para usar todo el espacio disponible
+ion-content {
+  // Ionic maneja safe areas automáticamente con fullscreen
+  --offset-bottom: auto;
+  // Permitir scroll por defecto
+  --overflow: auto;
+}
+
+// Safe Area Padding para ion-content (Ionic oficial)
+// Aplicar padding al scroll interno para respetar safe areas
+// NOTA: padding-top NO se aplica aquí porque ion-header ya maneja el safe area del status bar
+ion-content::part(scroll) {
+  // Padding izquierdo para notch en landscape
+  padding-left: var(--ion-safe-area-left, 0);
+  // Padding derecho para notch en landscape
+  padding-right: var(--ion-safe-area-right, 0);
+  // Padding inferior para navigation bar y home indicator
+  padding-bottom: var(--ion-safe-area-bottom, 0);
+}
+
+// Footer - Ionic aplica automáticamente --ion-safe-area-bottom
+// No se requieren estilos personalizados aquí
+
+// Ajustar FAB buttons para safe area
+ion-fab {
+  &[vertical="bottom"] {
+    bottom: calc(16px + var(--ion-safe-area-bottom, 0));
+  }
+
+  &[horizontal="end"] {
+    right: calc(16px + var(--ion-safe-area-right, 0));
+  }
+
+  &[horizontal="start"] {
+    left: calc(16px + var(--ion-safe-area-left, 0));
+  }
+}
+
+// Ajustar menú lateral para safe area
+ion-menu {
+  ion-header ion-toolbar {
+    padding-top: var(--ion-safe-area-top, 0);
+  }
+
+  ion-content {
+    --padding-bottom: var(--ion-safe-area-bottom, 0);
+  }
+}
+
+// Fix para iOS status bar - solo aplicar en iOS
+@supports (padding-top: env(safe-area-inset-top)) {
+  .ios ion-toolbar:first-of-type {
+    // Altura mínima adicional solo en iOS cuando hay safe area
+    min-height: calc(56px + env(safe-area-inset-top, 0px));
+  }
+}
+
+/**
+ * Responsive Container Adjustments
+ * -----------------------------------------------------
+ */
+
+// Router outlet principal ocupa todo el espacio
+ion-router-outlet {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+// Split pane layout
+ion-split-pane {
+  --side-width: 260px;
+  --side-min-width: 260px;
+  --side-max-width: 300px;
+}
+
+// ============ DESKTOP CENTERING ============
+@media (min-width: 1200px) {
+  ion-split-pane {
+    max-width: 1200px;
+    margin: 0 auto;
+    box-shadow: 0 0 60px rgba(0, 0, 0, 0.1);
+    height: 100vh;
+    border-left: 1px solid var(--ion-border-color);
+    border-right: 1px solid var(--ion-border-color);
+  }
+
+  // Background for the outer area
+  ion-app {
+    background-color: #f4f5f8; // Un gris muy claro para contraste
+  }
+
+  body.dark ion-app {
+    background-color: #0d0d0d; // Un negro profundo para el exterior en modo oscuro
+  }
+}
+
+// Headers sin padding extra
+ion-header ion-toolbar {
+  --padding-start: 0;
+  --padding-end: 0;
+}
+
+// Content ocupa todo el espacio disponible
+ion-content {
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+}
+
+// Contenedor principal responsive
+#container {
+  max-width: 100%;
+  height: 100%;
+  padding: var(--spacing-xl);
+  box-sizing: border-box;
+}
+
+/**
+ * Global Accordion Styles
+ * -----------------------------------------------------
+ * Estilos mejorados para secciones colapsables en toda la app
+ * Siguiendo Material Design y mejores prácticas de UX
+ */
+
+// Variables para accordions
+:root {
+  --accordion-border-radius: 12px;
+  --accordion-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --accordion-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --accordion-shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --accordion-shadow-expanded: 0 6px 20px rgba(var(--ion-color-primary-rgb), 0.15);
+}
+
+// Dark mode accordion variables
+body.dark {
+  --accordion-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  --accordion-shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.35);
+  --accordion-shadow-expanded: 0 6px 20px rgba(var(--ion-color-primary-rgb), 0.25);
+}
+
+// Estilos base para ion-accordion-group
+ion-accordion-group {
+  margin: 12px 0;
+
+  ion-accordion {
+    background: var(--ion-background-color);
+    border-radius: var(--accordion-border-radius);
+    border: 1px solid var(--ion-border-color, rgba(0, 0, 0, 0.1));
+    box-shadow: var(--accordion-shadow);
+    overflow: hidden;
+    transition: var(--accordion-transition);
+    margin-bottom: 8px;
+
+    // Estado hover
+    &:hover {
+      box-shadow: var(--accordion-shadow-hover);
+      border-color: rgba(var(--ion-color-primary-rgb), 0.3);
+    }
+
+    // Estado expandido
+    &.accordion-expanded {
+      border-color: var(--ion-color-primary);
+      box-shadow: var(--accordion-shadow-expanded);
+
+      // Gradiente sutil cuando está expandido
+      background: linear-gradient(180deg,
+          rgba(var(--ion-color-primary-rgb), 0.03) 0%,
+          var(--ion-background-color) 50%);
+    }
+
+    // Header del accordion
+    ion-item[slot="header"] {
+      --background: transparent;
+      --padding-start: 16px;
+      --padding-end: 16px;
+      --min-height: 56px;
+      --border-style: none;
+      font-weight: 600;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        --background: rgba(var(--ion-color-primary-rgb), 0.04);
+      }
+
+      // Icono del header con fondo decorativo
+      ion-icon[slot="start"] {
+        font-size: 22px;
+        margin-right: 12px;
+        padding: 8px;
+        background: linear-gradient(135deg,
+            rgba(var(--ion-color-primary-rgb), 0.12) 0%,
+            rgba(var(--ion-color-tertiary-rgb), 0.06) 100%);
+        border-radius: 10px;
+        transition: transform 0.2s ease, background 0.2s ease;
+      }
+
+      // Label del header
+      ion-label {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--ion-text-color);
+        letter-spacing: 0.3px;
+      }
+    }
+
+    // Cuando está expandido, animar el icono
+    &.accordion-expanded ion-item[slot="header"] {
+      ion-icon[slot="start"] {
+        transform: scale(1.08);
+        background: linear-gradient(135deg,
+            rgba(var(--ion-color-primary-rgb), 0.18) 0%,
+            rgba(var(--ion-color-tertiary-rgb), 0.1) 100%);
+      }
+    }
+
+    // Contenido del accordion con animación
+    [slot="content"] {
+      padding: 0 16px 16px;
+      animation: accordionSlideDown 0.3s ease-out;
+    }
+  }
+}
+
+// Animación para el contenido del accordion
+@keyframes accordionSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Dark mode específico para accordions
+body.dark ion-accordion-group ion-accordion {
+  border-color: rgba(255, 255, 255, 0.1);
+
+  &:hover {
+    border-color: rgba(var(--ion-color-primary-rgb), 0.4);
+  }
+
+  &.accordion-expanded {
+    border-color: var(--ion-color-primary);
+    background: linear-gradient(180deg,
+        rgba(var(--ion-color-primary-rgb), 0.08) 0%,
+        var(--ion-background-color) 60%);
+  }
+
+  ion-item[slot="header"] ion-icon[slot="start"] {
+    background: linear-gradient(135deg,
+        rgba(var(--ion-color-primary-rgb), 0.2) 0%,
+        rgba(var(--ion-color-tertiary-rgb), 0.12) 100%);
+  }
+}
+
+// Variante compacta para accordions
+ion-accordion-group.compact ion-accordion {
+  border-radius: 8px;
+  margin-bottom: 6px;
+
+  ion-item[slot="header"] {
+    --min-height: 48px;
+    --padding-start: 12px;
+    --padding-end: 12px;
+
+    ion-icon[slot="start"] {
+      font-size: 18px;
+      padding: 6px;
+      margin-right: 10px;
+    }
+
+    ion-label {
+      font-size: 14px;
+    }
+  }
+
+  [slot="content"] {
+    padding: 0 12px 12px;
+  }
+}
+
+// Variante con iconos de colores personalizados
+ion-accordion-group.colored-icons ion-accordion {
+  &:nth-child(1) ion-item[slot="header"] ion-icon[slot="start"] {
+    color: var(--ion-color-primary);
+    background: linear-gradient(135deg, rgba(var(--ion-color-primary-rgb), 0.15) 0%, transparent 100%);
+  }
+
+  &:nth-child(2) ion-item[slot="header"] ion-icon[slot="start"] {
+    color: var(--ion-color-secondary);
+    background: linear-gradient(135deg, rgba(var(--ion-color-secondary-rgb), 0.15) 0%, transparent 100%);
+  }
+
+  &:nth-child(3) ion-item[slot="header"] ion-icon[slot="start"] {
+    color: var(--ion-color-tertiary);
+    background: linear-gradient(135deg, rgba(var(--ion-color-tertiary-rgb), 0.15) 0%, transparent 100%);
+  }
+
+  &:nth-child(4) ion-item[slot="header"] ion-icon[slot="start"] {
+    color: var(--ion-color-success);
+    background: linear-gradient(135deg, rgba(var(--ion-color-success-rgb), 0.15) 0%, transparent 100%);
+  }
+
+  &:nth-child(5) ion-item[slot="header"] ion-icon[slot="start"] {
+    color: var(--ion-color-warning);
+    background: linear-gradient(135deg, rgba(var(--ion-color-warning-rgb), 0.15) 0%, transparent 100%);
+  }
+}
+
+// Calendar styles are now in ./theme/_calendar.scss
+// Imported via @use "./theme/calendar" at the top of this file
+
+// ===== BOTONES ESTANDARIZADOS =====
+// Botones con íconos de tamaño adecuado y accesibles
+
+ion-button {
+  // Tamaño mínimo para accesibilidad táctil
+  min-width: var(--button-min-width);
+  min-height: var(--button-min-height);
+
+  ion-icon {
+    font-size: var(--button-icon-size);
+  }
+
+  // Botones solo con ícono
+  &.icon-only {
+    --padding-start: 8px;
+    --padding-end: 8px;
+
+    ion-icon {
+      margin: 0;
+    }
+  }
+
+  // Botones grandes
+  &.button-large {
+    min-height: 48px;
+
+    ion-icon {
+      font-size: var(--button-icon-size-large);
+    }
+  }
+}
+
+// Botones en modales - estandarización
+ion-modal {
+  ion-footer ion-toolbar {
+    ion-button {
+      font-weight: 600;
+
+      // Botón primario (Guardar, Siguiente)
+      &[color="primary"],
+      &[color="success"] {
+        --background: var(--ion-color-primary);
+        --background-hover: var(--ion-color-primary-shade);
+      }
+
+      // Botón secundario (Cancelar, Anterior)
+      &[fill="outline"] {
+        --border-width: 2px;
+      }
+
+      // Botón destructivo (Eliminar)
+      &[color="danger"] {
+        --background: var(--ion-color-danger);
+        --background-hover: var(--ion-color-danger-shade);
+      }
+    }
+  }
+}

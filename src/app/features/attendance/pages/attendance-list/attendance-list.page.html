@@ -1,0 +1,146 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Lista de Asistencia</ion-title>
+    <ion-buttons slot="end">
+      @if (hasChanges()) {
+      <ion-button (click)="saveAttendance()" [disabled]="isSaving()">
+        <ion-icon slot="icon-only" name="save-outline"></ion-icon>
+      </ion-button>
+      }
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="attendance-content">
+  <!-- Selectores de curso y fecha -->
+  <div class="selectors-container">
+    <div class="selector-row">
+      <!-- Selector de Curso -->
+      <div class="selector-item">
+        <ion-icon name="book-outline" color="primary"></ion-icon>
+        <ion-select [value]="selectedCourseId()" (ionChange)="onCourseChange($event)" interface="action-sheet"
+          placeholder="Seleccionar curso" class="course-select">
+          @for (course of courses(); track course.id) {
+          <ion-select-option [value]="course.id">
+            {{ course.code }} - {{ course.name }}
+          </ion-select-option>
+          }
+        </ion-select>
+      </div>
+
+      <!-- Selector de Fecha -->
+      <div class="selector-item date-selector">
+        <ion-icon name="calendar-outline" color="secondary"></ion-icon>
+        <input type="date" [value]="sessionDate()" (change)="onDateChange($event)" class="date-input"
+          aria-label="Seleccionar fecha de sesión" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Estadísticas rápidas -->
+  @if (students().length > 0) {
+  <div class="stats-bar">
+    <div class="stat-item present">
+      <ion-icon name="checkmark-circle"></ion-icon>
+      <span>{{ attendanceStats().present }}</span>
+    </div>
+    <div class="stat-item absent">
+      <ion-icon name="close-circle"></ion-icon>
+      <span>{{ attendanceStats().absent }}</span>
+    </div>
+    <div class="stat-item late">
+      <ion-icon name="time-outline"></ion-icon>
+      <span>{{ attendanceStats().late }}</span>
+    </div>
+    <div class="stat-item justified">
+      <ion-icon name="help-circle-outline"></ion-icon>
+      <span>{{ attendanceStats().justified }}</span>
+    </div>
+    <div class="stat-total">
+      <span>{{ attendanceStats().total }} total</span>
+    </div>
+  </div>
+
+  <!-- Acciones rápidas -->
+  <div class="quick-actions">
+    <ion-button fill="outline" size="small" color="success" (click)="markAllPresent()">
+      <ion-icon slot="start" name="checkmark-done-outline"></ion-icon>
+      Todos presentes
+    </ion-button>
+    <ion-button fill="outline" size="small" color="danger" (click)="markAllAbsent()">
+      <ion-icon slot="start" name="close-circle"></ion-icon>
+      Todos ausentes
+    </ion-button>
+  </div>
+
+  <!-- Búsqueda -->
+  <ion-searchbar [value]="searchText()" (ionInput)="searchText.set($any($event).target.value)"
+    placeholder="Buscar estudiante..." debounce="300" class="student-search">
+  </ion-searchbar>
+  }
+
+  <!-- Lista de estudiantes -->
+  @if (isLoading()) {
+  <div class="loading-container">
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
+    <p>Cargando estudiantes...</p>
+  </div>
+  } @else if (students().length === 0) {
+  <div class="empty-state">
+    @if (!selectedCourseId()) {
+    <ion-icon name="book-outline" color="medium"></ion-icon>
+    <h3>Selecciona un curso</h3>
+    <p>Elige un curso para ver la lista de estudiantes</p>
+    } @else {
+    <ion-icon name="people-outline" color="medium"></ion-icon>
+    <h3>Sin estudiantes</h3>
+    <p>Este curso no tiene estudiantes registrados</p>
+    }
+  </div>
+  } @else {
+  <ion-list class="student-list">
+    @for (student of filteredStudents(); track student.studentId) {
+    <ion-item class="student-item" [class.present]="student.status === AttendanceStatus.PRESENTE"
+      [class.absent]="student.status === AttendanceStatus.AUSENTE"
+      [class.late]="student.status === AttendanceStatus.TARDANZA"
+      [class.justified]="student.status === AttendanceStatus.JUSTIFICADO" (click)="toggleStatus(student)">
+
+      <!-- Indicador de estado -->
+      <div class="status-indicator" slot="start">
+        <ion-icon [name]="getStatusIcon(student.status)" [color]="getStatusColor(student.status)">
+        </ion-icon>
+      </div>
+
+      <!-- Info del estudiante -->
+      <ion-label>
+        <h2 class="student-name">{{ student.studentLastName }}, {{ student.studentFirstName }}</h2>
+        <p class="student-code">{{ student.studentCode }}</p>
+      </ion-label>
+
+      <!-- Estado actual -->
+      <ion-chip slot="end" [color]="getStatusColor(student.status)" class="status-chip">
+        {{ getStatusLabel(student.status) }}
+      </ion-chip>
+    </ion-item>
+    }
+  </ion-list>
+  }
+</ion-content>
+
+<!-- FAB para guardar -->
+@if (hasChanges() && students().length > 0) {
+<ion-fab vertical="bottom" horizontal="end" slot="fixed">
+  <ion-fab-button color="primary" (click)="saveAttendance()" [disabled]="isSaving()">
+    @if (isSaving()) {
+    <ion-spinner name="crescent" color="light"></ion-spinner>
+    } @else {
+    <ion-icon name="save-outline"></ion-icon>
+    }
+  </ion-fab-button>
+</ion-fab>
+}

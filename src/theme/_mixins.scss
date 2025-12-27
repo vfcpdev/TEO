@@ -1,0 +1,167 @@
+/**
+ * SCSS Mixins
+ * -----------------------------------------------------
+ * Mixins reutilizables para toda la aplicación
+ * @see https://sass-lang.com/documentation/at-rules/mixin
+ */
+
+/**
+ * Calendar Stepped Colors
+ * -----------------------------------------------------
+ * ion-datetime usa --ion-color-step-X para colores internos
+ * Este mixin genera la escala completa para light/dark mode
+ * 
+ * @param {Boolean} $is-dark - Si es true, genera colores para dark mode
+ * 
+ * En light mode: step-50 es el más claro, step-950 el más oscuro
+ * En dark mode: la escala se invierte para legibilidad
+ */
+@mixin calendar-stepped-colors($is-dark: false) {
+    @if $is-dark {
+        // Dark mode: escala invertida (claro -> oscuro)
+        --ion-color-step-50: #1e293b;
+        --ion-color-step-100: #334155;
+        --ion-color-step-150: #475569;
+        --ion-color-step-200: #64748b;
+        --ion-color-step-250: #94a3b8;
+        --ion-color-step-300: #cbd5e1;
+        --ion-color-step-350: #e2e8f0;
+        --ion-color-step-400: #f1f5f9;
+        --ion-color-step-450: #f8fafc;
+        --ion-color-step-500: #ffffff;
+        --ion-color-step-550: #ffffff;
+        --ion-color-step-600: #ffffff;
+        --ion-color-step-650: #ffffff;
+        --ion-color-step-700: #ffffff;
+        --ion-color-step-750: #ffffff;
+        --ion-color-step-800: #ffffff;
+        --ion-color-step-850: #ffffff;
+        --ion-color-step-900: #ffffff;
+        --ion-color-step-950: #ffffff;
+    }
+
+    @else {
+        // Light mode: escala normal (oscuro -> claro)
+        --ion-color-step-50: #f8fafc;
+        --ion-color-step-100: #f1f5f9;
+        --ion-color-step-150: #e2e8f0;
+        --ion-color-step-200: #cbd5e1;
+        --ion-color-step-250: #94a3b8;
+        --ion-color-step-300: #64748b;
+        --ion-color-step-350: #475569;
+        --ion-color-step-400: #334155;
+        --ion-color-step-450: #1e293b;
+        --ion-color-step-500: #0f172a;
+        --ion-color-step-550: #0f172a;
+        --ion-color-step-600: #0f172a;
+        --ion-color-step-650: #0f172a;
+        --ion-color-step-700: #0f172a;
+        --ion-color-step-750: #0f172a;
+        --ion-color-step-800: #0f172a;
+        --ion-color-step-850: #0f172a;
+        --ion-color-step-900: #000000;
+        --ion-color-step-950: #000000;
+    }
+}
+
+/**
+ * Card Shadow
+ * -----------------------------------------------------
+ * Sombras consistentes para cards
+ * 
+ * @param {String} $size - 'sm', 'md', 'lg'
+ * @param {Boolean} $is-dark - Ajustar opacidad para dark mode
+ */
+@mixin card-shadow($size: 'md', $is-dark: false) {
+    $opacity-multiplier: if($is-dark, 1.5, 1);
+
+    @if $size =='sm' {
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05 * $opacity-multiplier);
+    }
+
+    @else if $size =='md' {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1 * $opacity-multiplier);
+    }
+
+    @else if $size =='lg' {
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15 * $opacity-multiplier);
+    }
+}
+
+/**
+ * Responsive Font Size
+ * -----------------------------------------------------
+ * Genera font-size responsivo con media queries
+ * 
+ * @param {Number} $mobile - Tamaño base en rem
+ * @param {Number} $desktop - Tamaño en desktop (opcional, default +10%)
+ */
+@mixin responsive-font($mobile, $desktop: null) {
+    font-size: $mobile;
+
+    @if $desktop {
+        @media (min-width: 992px) {
+            font-size: $desktop;
+        }
+    }
+
+    @else {
+        @media (min-width: 992px) {
+            font-size: $mobile * 1.1;
+        }
+    }
+}
+
+/**
+ * Truncate Text
+ * -----------------------------------------------------
+ * Truncar texto con ellipsis
+ * 
+ * @param {Number} $lines - Número de líneas (1 = single line)
+ */
+@mixin truncate($lines: 1) {
+    @if $lines ==1 {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    @else {
+        display: -webkit-box;
+        -webkit-line-clamp: $lines;
+        line-clamp: $lines;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+}
+
+/**
+ * Flex Center
+ * -----------------------------------------------------
+ * Centra contenido con flexbox
+ * 
+ * @param {String} $direction - 'row' o 'column'
+ */
+@mixin flex-center($direction: row) {
+    display: flex;
+    flex-direction: $direction;
+    align-items: center;
+    justify-content: center;
+}
+
+/**
+ * Visually Hidden
+ * -----------------------------------------------------
+ * Oculta visualmente pero accesible para screen readers
+ */
+@mixin visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}

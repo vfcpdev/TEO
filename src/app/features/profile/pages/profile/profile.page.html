@@ -1,0 +1,77 @@
+<ion-header [translucent]="true">
+    <ion-toolbar color="primary">
+        <ion-buttons slot="start">
+            <ion-back-button defaultHref="/home" text="" icon="chevron-back-sharp"></ion-back-button>
+        </ion-buttons>
+        <ion-title>Mi Perfil</ion-title>
+        <ion-buttons slot="end">
+            <ion-button (click)="closeProfile()">
+                <ion-icon slot="icon-only" name="close-sharp"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+    <ion-header collapse="condense">
+        <ion-toolbar>
+            <ion-title size="large">Mi Perfil</ion-title>
+        </ion-toolbar>
+    </ion-header>
+
+    <!-- Avatar y nombre -->
+    <div class="profile-header">
+        <ion-avatar class="profile-avatar">
+            <ion-icon name="person-circle-outline"></ion-icon>
+        </ion-avatar>
+        <h2 class="profile-name">{{ userName }}</h2>
+        <p class="profile-role">Docente</p>
+    </div>
+
+    <!-- Información personal -->
+    <ion-list-header>
+        <ion-label>Información Personal</ion-label>
+    </ion-list-header>
+
+    <ion-list class="profile-list" inset>
+        <ion-item>
+            <ion-icon slot="start" name="person-circle-outline" color="primary"></ion-icon>
+            <ion-input label="Nombre" labelPlacement="stacked" [(ngModel)]="userName" placeholder="Tu nombre completo">
+            </ion-input>
+        </ion-item>
+
+        <ion-item>
+            <ion-icon slot="start" name="mail-outline" color="secondary"></ion-icon>
+            <ion-input label="Correo electrónico" labelPlacement="stacked" type="email" [(ngModel)]="userEmail"
+                placeholder="correo@ejemplo.com">
+            </ion-input>
+        </ion-item>
+
+        <ion-item>
+            <ion-icon slot="start" name="call-outline" color="tertiary"></ion-icon>
+            <ion-input label="Teléfono" labelPlacement="stacked" type="tel" [(ngModel)]="userPhone"
+                placeholder="+51 999 999 999">
+            </ion-input>
+        </ion-item>
+
+        <ion-item lines="none">
+            <ion-icon slot="start" name="school-outline" color="success"></ion-icon>
+            <ion-input label="Lugar principal" labelPlacement="stacked" [(ngModel)]="userPlace"
+                placeholder="Universidad / Instituto">
+            </ion-input>
+        </ion-item>
+    </ion-list>
+
+    <!-- Botón guardar -->
+    <div class="save-button-container">
+        <ion-button (click)="saveProfile()" color="primary" class="save-btn">
+            <ion-icon slot="start" name="save-outline"></ion-icon>
+            Guardar Cambios
+        </ion-button>
+    </div>
+
+    <p class="info-note">
+        <small>Esta información se guarda localmente en tu dispositivo. Cuando se implemente el inicio de sesión, podrás
+            sincronizar tu perfil en la nube.</small>
+    </p>
+</ion-content>

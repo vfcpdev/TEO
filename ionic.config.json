@@ -1,0 +1,7 @@
+{
+  "name": "TEO",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}

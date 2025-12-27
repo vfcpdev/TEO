@@ -1,0 +1,257 @@
+[33m❯[39m Building...
+X [ERROR] Undefined mixin.
+     ╷
+2865 │ ┌   @include landscape {
+2866 │ │     grid-template-columns: repeat(5, 1fr);
+2867 │ │     gap: 8px;
+2868 │ └   }
+     ╵
+  src\app\features\settings\pages\settings\settings.page.scss 2865:3  root stylesheet [plugin angular-sass]
+
+
+  polyfills-TDCRLYKL.js  33.8kb
+
+Done in 4482ms
+● [DEBUG] The condition "types" here will never be used as it comes after both "import" and "require" [package.json]
+
+    node_modules/rxfire/package.json:17:6:
+      17 │       "types": "./index.d.ts"
+         ╵       ~~~~~~~
+
+  The "import" condition comes earlier and will be used for all "import" statements:
+
+    node_modules/rxfire/package.json:15:6:
+      15 │       "import": "./index.esm.js",
+         ╵       ~~~~~~~~
+
+  The "require" condition comes earlier and will be used for all "require" calls:
+
+    node_modules/rxfire/package.json:16:6:
+      16 │       "require": "./index.cjs.js",
+         ╵       ~~~~~~~~~
+
+● [DEBUG] The condition "types" here will never be used as it comes after both "import" and "require" [package.json]
+
+    node_modules/rxfire/package.json:22:6:
+      22 │       "types": "./auth/index.d.ts"
+         ╵       ~~~~~~~
+
+  The "import" condition comes earlier and will be used for all "import" statements:
+
+    node_modules/rxfire/package.json:20:6:
+      20 │       "import": "./auth/index.esm.js",
+         ╵       ~~~~~~~~
+
+  The "require" condition comes earlier and will be used for all "require" calls:
+
+    node_modules/rxfire/package.json:21:6:
+      21 │       "require": "./auth/index.cjs.js",
+         ╵       ~~~~~~~~~
+
+● [DEBUG] The condition "types" here will never be used as it comes after both "import" and "require" [package.json]
+
+    node_modules/rxfire/package.json:27:6:
+      27 │       "types": "./database/index.d.ts"
+         ╵       ~~~~~~~
+
+  The "import" condition comes earlier and will be used for all "import" statements:
+
+    node_modules/rxfire/package.json:25:6:
+      25 │       "import": "./database/index.esm.js",
+         ╵       ~~~~~~~~
+
+  The "require" condition comes earlier and will be used for all "require" calls:
+
+    node_modules/rxfire/package.json:26:6:
+      26 │       "require": "./database/index.cjs.js",
+         ╵       ~~~~~~~~~
+
+● [DEBUG] The condition "types" here will never be used as it comes after both "import" and "require" [package.json]
+
+    node_modules/rxfire/package.json:32:6:
+      32 │       "types": "./firestore/index.d.ts"
+         ╵       ~~~~~~~
+
+  The "import" condition comes earlier and will be used for all "import" statements:
+
+    node_modules/rxfire/package.json:30:6:
+      30 │       "import": "./firestore/index.esm.js",
+         ╵       ~~~~~~~~
+
+  The "require" condition comes earlier and will be used for all "require" calls:
+
+    node_modules/rxfire/package.json:31:6:
+      31 │       "require": "./firestore/index.cjs.js",
+         ╵       ~~~~~~~~~
+
+● [DEBUG] The condition "types" here will never be used as it comes after both "import" and "require" [package.json]
+
+    node_modules/rxfire/package.json:37:6:
+      37 │       "types": "./firestore/lite/index.d.ts"
+         ╵       ~~~~~~~
+
+  The "import" condition comes earlier and will be used for all "import" statements:
+
+    node_modules/rxfire/package.json:35:6:
+      35 │       "import": "./firestore/lite/index.esm.js",
+         ╵       ~~~~~~~~
+
+  The "require" condition comes earlier and will be used for all "require" calls:
+
+    node_modules/rxfire/package.json:36:6:
+      36 │       "require": "./firestore/lite/index.cjs.js",
+         ╵       ~~~~~~~~~
+
+● [DEBUG] The condition "types" here will never be used as it comes after both "import" and "require" [package.json]
+
+    node_modules/rxfire/package.json:42:6:
+      42 │       "types": "./functions/index.d.ts"
+         ╵       ~~~~~~~
+
+  The "import" condition comes earlier and will be used for all "import" statements:
+
+    node_modules/rxfire/package.json:40:6:
+      40 │       "import": "./functions/index.esm.js",
+         ╵       ~~~~~~~~
+
+  The "require" condition comes earlier and will be used for all "require" calls:
+
+    node_modules/rxfire/package.json:41:6:
+      41 │       "require": "./functions/index.cjs.js",
+         ╵       ~~~~~~~~~
+
+● [DEBUG] The condition "types" here will never be used as it comes after both "import" and "require" [package.json]
+
+    node_modules/rxfire/package.json:47:6:
+      47 │       "types": "./performance/index.d.ts"
+         ╵       ~~~~~~~
+
+  The "import" condition comes earlier and will be used for all "import" statements:
+
+    node_modules/rxfire/package.json:45:6:
+      45 │       "import": "./performance/index.esm.js",
+         ╵       ~~~~~~~~
+
+  The "require" condition comes earlier and will be used for all "require" calls:
+
+    node_modules/rxfire/package.json:46:6:
+      46 │       "require": "./performance/index.cjs.js",
+         ╵       ~~~~~~~~~
+
+● [DEBUG] The condition "types" here will never be used as it comes after both "import" and "require" [package.json]
+
+    node_modules/rxfire/package.json:52:6:
+      52 │       "types": "./remote-config/index.d.ts"
+         ╵       ~~~~~~~
+
+  The "import" condition comes earlier and will be used for all "import" statements:
+
+    node_modules/rxfire/package.json:50:6:
+      50 │       "import": "./remote-config/index.esm.js",
+         ╵       ~~~~~~~~
+
+  The "require" condition comes earlier and will be used for all "require" calls:
+
+    node_modules/rxfire/package.json:51:6:
+      51 │       "require": "./remote-config/index.cjs.js",
+         ╵       ~~~~~~~~~
+
+● [DEBUG] The condition "types" here will never be used as it comes after both "import" and "require" [package.json]
+
+    node_modules/rxfire/package.json:57:6:
+      57 │       "types": "./storage/index.d.ts"
+         ╵       ~~~~~~~
+
+  The "import" condition comes earlier and will be used for all "import" statements:
+
+    node_modules/rxfire/package.json:55:6:
+      55 │       "import": "./storage/index.esm.js",
+         ╵       ~~~~~~~~
+
+  The "require" condition comes earlier and will be used for all "require" calls:
+
+    node_modules/rxfire/package.json:56:6:
+      56 │       "require": "./storage/index.cjs.js",
+         ╵       ~~~~~~~~~
+
+● [DEBUG] Top-level "this" will be replaced with undefined since this file is an ECMAScript module [this-is-undefined-in-esm]
+
+    node_modules/@angular/fire/fesm2022/angular-fire.mjs:141:68:
+      141 │ ...njectionContext(injector, () => run(() => it.apply(this, args)));
+          │                                                       ~~~~
+          ╵                                                       undefined
+
+  This file is considered to be an ECMAScript module because of the "export" keyword here:
+
+    node_modules/@angular/fire/fesm2022/angular-fire.mjs:208:0:
+      208 │ export { LogLevel, VERSION, setLogLevel, ɵAngularFireSchedulers,...
+          ╵ ~~~~~~
+
+▲ [WARNING] The glob pattern import("./**/*.entry.js*") did not match any files [empty-glob]
+
+    node_modules/@stencil/core/internal/client/index.js:169:2:
+      169 │   `./${bundleId}.entry.js${BUILD5.hotModuleReplacement && hmrVers...
+          ╵   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+● [DEBUG] This "import" expression will not be bundled because the argument is not a string literal [unsupported-dynamic-import]
+
+    node_modules/ionicons/dist/esm-es5/index-b72adede.js:1197:9:
+      1197 │   return import("./".concat(a, ".entry.js").concat("")).then(fun...
+           ╵          ~~~~~~
+
+● [DEBUG] Resolving import "crypto" in directory "D:\\CLASSAPP\\node_modules\\jeep-sqlite\\dist\\esm" of type "require-call"
+
+  Checking for package alias matches
+    Failed to find any package alias matches
+  Read 12 entries for directory "D:\\CLASSAPP\\node_modules\\jeep-sqlite\\dist\\esm"
+  No "browser" map found in directory "D:\\CLASSAPP\\node_modules\\jeep-sqlite\\dist\\esm"
+  Searching for "crypto" in "node_modules" directories starting from "D:\\CLASSAPP\\node_modules\\jeep-sqlite\\dist\\esm"
+    Parsed package name "crypto" and package subpath "."
+    Checking for a package in the directory "D:\\CLASSAPP\\node_modules\\crypto"
+    Read 736 entries for directory "D:\\CLASSAPP\\node_modules"
+    Failed to read directory "D:\\CLASSAPP\\node_modules\\crypto": open D:\CLASSAPP\node_modules\crypto: The system cannot find the file specified.
+    Failed to read directory "D:\\CLASSAPP\\node_modules\\crypto"
+    Attempting to load "D:\\CLASSAPP\\node_modules\\crypto" as a file
+      Checking for file "crypto"
+      Checking for file "crypto.mjs"
+      Checking for file "crypto.js"
+      Checking for file "crypto.cjs"
+      Checking for file "crypto.ts"
+      Checking for file "crypto.tsx"
+      Failed to find file "crypto"
+    Attempting to load "D:\\CLASSAPP\\node_modules\\crypto" as a directory
+      Failed to read directory "D:\\CLASSAPP\\node_modules\\crypto"
+
+● [DEBUG] Importing "crypto" was allowed even though it could not be resolved because dynamic import failures appear to be handled here: [ignored-dynamic-import]
+
+    node_modules/jeep-sqlite/dist/esm/jeep-sqlite.entry.js:2900:28:
+      2900 │             var a = require("crypto");
+           ╵                             ~~~~~~~~
+
+  The handler for dynamic import failures is here:
+
+    node_modules/jeep-sqlite/dist/esm/jeep-sqlite.entry.js:2904:12:
+      2904 │           } catch (c) {}
+           ╵             ~~~~~
+
+1 warning and 1 error
+[32m✔[39m Building...
+Application bundle generation failed. [5.841 seconds] - 2025-12-19T13:23:40.658Z
+
+▲ [WARNING] The glob pattern import("./**/*.entry.js*") did not match any files [empty-glob]
+
+    node_modules/@stencil/core/internal/client/index.js:169:2:
+      169 │   `./${bundleId}.entry.js${BUILD5.hotModuleReplacement && hmrVers...
+          ╵   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] Undefined mixin.
+     ╷
+2865 │ ┌   @include landscape {
+2866 │ │     grid-template-columns: repeat(5, 1fr);
+2867 │ │     gap: 8px;
+2868 │ └   }
+     ╵
+  src\app\features\settings\pages\settings\settings.page.scss 2865:3  root stylesheet [plugin angular-sass]
+
+

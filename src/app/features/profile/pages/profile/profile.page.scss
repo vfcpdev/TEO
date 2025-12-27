@@ -1,0 +1,173 @@
+// Profile Page Styles
+
+// ============ TYPOGRAPHY NORMALIZATION ============
+// Títulos principales: 24px móvil, 26px desktop
+// Subtítulos: 14-16px móvil, 15-17px desktop
+// Texto descriptivo: 12-14px móvil, 13-15px desktop
+// Labels/Captions: 11-12px móvil, 12-13px desktop
+
+:host {
+  // Variables de tipografía
+  --profile-title-size: 24px;
+  --profile-subtitle-size: 14px;
+  --profile-text-size: 14px;
+  --profile-caption-size: 12px;
+  --profile-label-size: 12px;
+
+  // Desktop (+10%)
+  @media (min-width: 992px) {
+    --profile-title-size: 26px;
+    --profile-subtitle-size: 15px;
+    --profile-text-size: 15px;
+    --profile-caption-size: 13px;
+    --profile-label-size: 13px;
+  }
+}
+
+// Enable scroll
+:host {
+  ion-content {
+    --overflow: auto;
+  }
+}
+
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 16px;
+  text-align: center;
+}
+
+.profile-avatar {
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-primary-shade));
+  margin-bottom: 16px;
+
+  ion-icon {
+    font-size: 100px;
+    color: var(--ion-color-primary-contrast);
+  }
+}
+
+.profile-name {
+  font-size: var(--profile-title-size);
+  font-weight: 600;
+  margin: 0 0 4px;
+  color: var(--ion-text-color);
+}
+
+.profile-role {
+  font-size: var(--profile-subtitle-size);
+  color: var(--ion-color-medium);
+  margin: 0;
+}
+
+// List headers
+ion-list-header {
+  padding: 20px 12px 10px;
+
+  ion-label {
+    font-size: var(--profile-label-size);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--ion-color-medium);
+  }
+}
+
+// Profile list
+.profile-list {
+  margin: 0 12px 16px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+  ion-item {
+    --padding-start: 12px;
+    --padding-end: 12px;
+    --min-height: 70px;
+    --inner-padding-end: 12px;
+    --background: var(--ion-card-background);
+
+    ion-icon {
+      font-size: 24px;
+      margin-right: 12px;
+    }
+
+    ion-input {
+      --padding-top: 8px;
+      --padding-bottom: 8px;
+      font-size: var(--profile-text-size);
+    }
+
+    &:first-of-type {
+      border-radius: 10px 10px 0 0;
+    }
+
+    &:last-of-type {
+      border-radius: 0 0 10px 10px;
+    }
+  }
+
+  // Desktop: limitar ancho máximo
+  @media (min-width: 992px) {
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.save-button-container {
+  padding: 16px;
+
+  ion-button, .save-btn {
+    --border-radius: 10px;
+    font-weight: 600;
+    height: 48px;
+    font-size: var(--profile-text-size);
+    // Móvil: ancho completo
+    width: 100%;
+  }
+
+  // Desktop: botón más pequeño, centrado
+  @media (min-width: 992px) {
+    display: flex;
+    justify-content: center;
+
+    ion-button, .save-btn {
+      width: auto;
+      min-width: 200px;
+      max-width: 280px;
+      height: 44px;
+    }
+  }
+}
+
+.info-note {
+  padding: 0 16px;
+  text-align: center;
+  color: var(--ion-color-medium);
+  line-height: 1.4;
+
+  small {
+    font-size: var(--profile-caption-size);
+  }
+
+  // Desktop: limitar ancho
+  @media (min-width: 992px) {
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+// Dark mode
+.dark {
+  .profile-list {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+  }
+}

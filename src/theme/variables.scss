@@ -1,0 +1,223 @@
+// Ionic Variables and Theming.
+// For more information on creating custom themes, please refer to:
+// https://ionicframework.com/docs/theming/
+
+/** Ionic CSS Variables - Tema "Bosque Profundo" **/
+:root {
+  /** Primary Color - Azul Profundo (Profesional & Moderno) **/
+  --ion-color-primary: #1e40af;
+  /* Blue 800 */
+  --ion-color-primary-rgb: 30, 64, 175;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #1a389a;
+  --ion-color-primary-tint: #3553b7;
+
+  /** Secondary Color - Indigo Suave **/
+  --ion-color-secondary: #6366f1;
+  /* Indigo 500 */
+  --ion-color-secondary-rgb: 99, 102, 241;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #575ac0;
+  --ion-color-secondary-tint: #7375f2;
+
+  /** Tertiary Color - Amber 500 (Material Design) **/
+  --ion-color-tertiary: #f59e0b;
+  --ion-color-tertiary-rgb: 245, 158, 11;
+  --ion-color-tertiary-contrast: #000000;
+  --ion-color-tertiary-contrast-rgb: 0, 0, 0;
+  --ion-color-tertiary-shade: #d97706;
+  --ion-color-tertiary-tint: #f6a723;
+
+  /** Success Color - Oliva (Ajustado para mejor contraste) **/
+  --ion-color-success: #15803d;
+  --ion-color-success-rgb: 21, 128, 61;
+  --ion-color-success-contrast: #ffffff;
+  --ion-color-success-contrast-rgb: 255, 255, 255;
+  --ion-color-success-shade: #127337;
+  --ion-color-success-tint: #2c8d50;
+
+  /** Warning Color - Ocre (Ajustado para WCAG AA 4.5:1+) **/
+  --ion-color-warning: #b8751e;
+  --ion-color-warning-rgb: 184, 117, 30;
+  --ion-color-warning-contrast: #ffffff;
+  --ion-color-warning-contrast-rgb: 255, 255, 255;
+  --ion-color-warning-shade: #a2671a;
+  --ion-color-warning-tint: #bf8335;
+
+  /** Danger Color - Ladrillo **/
+  --ion-color-danger: #991b1b;
+  --ion-color-danger-rgb: 153, 27, 27;
+  --ion-color-danger-contrast: #ffffff;
+  --ion-color-danger-contrast-rgb: 255, 255, 255;
+  --ion-color-danger-shade: #871818;
+  --ion-color-danger-tint: #a33232;
+
+  /** Light Color - Azul Hielo **/
+  --ion-color-light: #f0f9ff;
+  --ion-color-light-rgb: 240, 249, 255;
+  --ion-color-light-contrast: #000000;
+  --ion-color-light-contrast-rgb: 0, 0, 0;
+  --ion-color-light-shade: #d3dbe0;
+  --ion-color-light-tint: #f2faff;
+
+  /** Medium Color **/
+  --ion-color-medium: #4b5563;
+  --ion-color-medium-rgb: 75, 85, 99;
+  --ion-color-medium-contrast: #ffffff;
+  --ion-color-medium-contrast-rgb: 255, 255, 255;
+  --ion-color-medium-shade: #424b57;
+  --ion-color-medium-tint: #5d6673;
+
+  /** Dark Color **/
+  --ion-color-dark: #1f2937;
+  --ion-color-dark-rgb: 31, 41, 55;
+  --ion-color-dark-contrast: #ffffff;
+  --ion-color-dark-contrast-rgb: 255, 255, 255;
+  --ion-color-dark-shade: #1b2430;
+  --ion-color-dark-tint: #35404b;
+
+  /** Fondos y Bordes - Modo Claro **/
+  --ion-background-color: #f8fafc;
+  --ion-background-color-rgb: 248, 250, 252;
+  --ion-text-color: #1f2937;
+  --ion-text-color-rgb: 31, 41, 55;
+  --ion-border-color: #cbd5e1;
+  --ion-card-background: #ffffff;
+
+  /** Variables Globales para Botones **/
+  --button-icon-size: 24px;
+  --button-icon-size-large: 32px;
+  --button-min-width: 44px;
+  --button-min-height: 44px;
+
+  /** Variables para Segment Buttons - WCAG 2.1 AA Compliant **/
+  // Modo claro: texto oscuro (Gray 700) 8.59:1 sobre blanco
+  --segment-text-color: #374151;
+  --segment-text-color-hover: #1f2937;
+  // Tab activo: BLANCO sobre fondo primary blue (iOS usa fondo sólido)
+  // En iOS mode el indicador es un fondo sólido azul, requiere texto blanco
+  --segment-text-color-checked: #ffffff;
+  // Modo oscuro: texto claro (Gray 300) 10.76:1 sobre #1e1e1e
+  --segment-text-color-dark: #d1d5db;
+  --segment-text-color-dark-hover: #f3f4f6;
+  // Modo oscuro: tab activo usa blanco sobre fondo primary
+  --segment-text-color-dark-checked: #ffffff;
+}
+
+/** Dark Theme - Tema Bosque Profundo Oscuro **/
+/** Siguiendo Material Design 3: Surface colors #121212, #1e1e1e **/
+.dark {
+  /** Primary - Azul Vibrante para contraste en oscuro **/
+  --ion-color-primary: #3b82f6;
+  /* Blue 500 - más brillante para dark mode */
+  --ion-color-primary-rgb: 59, 130, 246;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #3472d8;
+  --ion-color-primary-tint: #4f8ef7;
+
+  /** Secondary - Celeste **/
+  --ion-color-secondary: #0ea5e9;
+  /* Sky 500 */
+  --ion-color-secondary-rgb: 14, 165, 233;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #0c91cd;
+  --ion-color-secondary-tint: #26aee9;
+
+  /** Tertiary - Ámbar más vibrante **/
+  --ion-color-tertiary: #fbbf24;
+  --ion-color-tertiary-rgb: 251, 191, 36;
+  --ion-color-tertiary-contrast: #000000;
+  --ion-color-tertiary-contrast-rgb: 0, 0, 0;
+  --ion-color-tertiary-shade: #dd9e10;
+  --ion-color-tertiary-tint: #fccb50;
+
+  /** Medium - Más claro en dark mode para lectura óptima (WCAG AA) **/
+  --ion-color-medium: #cbd5e1;
+  --ion-color-medium-rgb: 203, 213, 225;
+  --ion-color-medium-contrast: #000000;
+  --ion-color-medium-contrast-rgb: 0, 0, 0;
+  --ion-color-medium-shade: #b2bbca;
+  --ion-color-medium-tint: #d0dae6;
+
+  /** Fondos y Bordes - Modo Oscuro (Material Design 3) **/
+  --ion-background-color: #121212;
+  --ion-background-color-rgb: 18, 18, 18;
+  --ion-text-color: #f1f5f9;
+  --ion-text-color-rgb: 241, 245, 249;
+  --ion-border-color: #404040;
+  --ion-card-background: #1e1e1e;
+
+  --ion-toolbar-background: #1e1e1e;
+  --ion-item-background: #121212;
+}
+
+// ===== ESTILOS GLOBALES PARA ION-SEGMENT =====
+// Contraste WCAG 2.1 AA usando variables CSS
+
+// Modo claro - estilos base para todos los segments
+body:not(.dark) ion-segment {
+  ion-segment-button {
+    --color: var(--segment-text-color);
+    --color-hover: var(--segment-text-color-hover);
+    // Por defecto: texto blanco para iOS pill-style (fondo azul sólido)
+    --color-checked: var(--segment-text-color-checked);
+    --indicator-color: var(--ion-color-primary);
+    --indicator-color-checked: var(--ion-color-primary);
+  }
+
+  // Caso especial: main-segment usa MD style (solo línea indicadora)
+  // Necesita texto oscuro/primary para contraste sobre fondo claro
+  &.main-segment ion-segment-button {
+    --color-checked: var(--ion-color-primary);
+  }
+}
+
+// Dark mode - fondo oscuro forzado con texto claro
+body.dark ion-segment {
+  --background: var(--ion-card-background);
+  background: var(--ion-card-background);
+
+  ion-segment-button {
+    --color: var(--segment-text-color-dark);
+    --color-hover: var(--segment-text-color-dark-hover);
+    --color-checked: var(--segment-text-color-dark-checked);
+    --indicator-color: var(--ion-color-primary);
+    --indicator-color-checked: var(--ion-color-primary);
+    --background: transparent;
+    --background-hover: rgba(255, 255, 255, 0.1);
+  }
+}
+
+// ===== MEJORAS DE CONTRASTE PARA ION-DATETIME =====
+ion-datetime {
+  --background: var(--ion-card-background);
+  --background-rgb: var(--ion-card-background-rgb);
+
+  // Mejorar visibilidad de días del mes
+  .calendar-day {
+    color: var(--ion-text-color);
+    font-weight: 500;
+  }
+
+  .calendar-day-today {
+    background: var(--ion-color-primary);
+    color: var(--ion-color-primary-contrast);
+    font-weight: 700;
+  }
+
+  .calendar-day-active {
+    background: var(--ion-color-primary-tint);
+    color: var(--ion-color-primary-contrast);
+  }
+}
+
+// Dark mode datetime
+.dark ion-datetime {
+  .calendar-day {
+    color: var(--ion-text-color);
+  }
+}

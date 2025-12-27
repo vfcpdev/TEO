@@ -1,0 +1,107 @@
+/**
+ * Form Styles
+ * -----------------------------------------------------
+ * Estilos globales para formularios y controles de entrada
+ */
+
+@use './mixins' as *;
+
+/**
+ * Ion-Input Styles
+ * -----------------------------------------------------
+ * Normalización de estilos para ion-input
+ */
+ion-input {
+    // Estilos base para todos los inputs
+    --padding-start: 12px;
+    --padding-end: 12px;
+
+    // Label placement stacked
+    &[label-placement="stacked"] {
+        --padding-top: 8px;
+    }
+}
+
+/**
+ * Ion-Select Styles
+ * -----------------------------------------------------
+ */
+ion-select {
+    --padding-start: 12px;
+    --padding-end: 12px;
+}
+
+/**
+ * Ion-Textarea Styles
+ * -----------------------------------------------------
+ */
+ion-textarea {
+    --padding-start: 12px;
+    --padding-end: 12px;
+    --padding-top: 12px;
+    --padding-bottom: 12px;
+}
+
+/**
+ * Form Item Styles
+ * -----------------------------------------------------
+ * Estilos para ion-item en contexto de formulario
+ */
+ion-item.form-item {
+    --background: var(--ion-card-background);
+    --border-radius: 8px;
+    --padding-start: 16px;
+    --inner-padding-end: 16px;
+    margin-bottom: 12px;
+
+    &.item-has-focus {
+        --border-color: var(--ion-color-primary);
+    }
+}
+
+/**
+ * Validation States
+ * -----------------------------------------------------
+ * Estilos para estados de validación
+ */
+.ion-invalid.ion-touched {
+    --border-color: var(--ion-color-danger);
+
+    ion-note[slot="error"] {
+        display: block;
+        color: var(--ion-color-danger);
+        font-size: var(--text-caption, 0.75rem);
+        padding-top: 4px;
+    }
+}
+
+.ion-valid.ion-touched {
+    --border-color: var(--ion-color-success);
+}
+
+/**
+ * Readonly Input Styles
+ * -----------------------------------------------------
+ * Estilos para inputs de solo lectura
+ */
+ion-input[readonly="true"],
+ion-input[readonly] {
+    --background: rgba(var(--ion-color-medium-rgb), 0.05);
+    opacity: 0.9;
+}
+
+/**
+ * Selected Date Input
+ * -----------------------------------------------------
+ * Estilo específico para el campo de fecha seleccionada
+ */
+.selected-date-input {
+    --padding-start: 12px;
+    --background: transparent;
+    --color: var(--ion-text-color);
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    --label-color: var(--ion-color-medium);
+    --highlight-color-focused: var(--ion-color-primary);
+}

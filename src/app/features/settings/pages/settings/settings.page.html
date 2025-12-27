@@ -1,0 +1,153 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Ajustes</ion-title>
+    <ion-buttons slot="end">
+      <div class="theme-toggle-container">
+        <ion-icon name="moon-outline" color="primary"></ion-icon>
+        <ion-toggle [checked]="darkMode" (ionChange)="toggleTheme($event)"></ion-toggle>
+        <ion-icon name="sunny-outline" color="warning"></ion-icon>
+      </div>
+      <ion-button routerLink="/home">
+        <ion-icon slot="icon-only" name="close-sharp"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="settings-content">
+  <!-- ========== LAYOUT DESKTOP ========== -->
+  <div class="desktop-layout ion-hide-lg-down">
+    <div class="desktop-tabs-container">
+      <ion-segment [value]="selectedModule" (ionChange)="onSegmentChange($event)" class="desktop-tabs-segment">
+        @for (module of modules; track module.id) {
+        <ion-segment-button [value]="module.id">
+          <ion-icon [name]="module.icon" [color]="module.color"></ion-icon>
+          <ion-label>{{module.title}}</ion-label>
+        </ion-segment-button>
+        }
+      </ion-segment>
+    </div>
+
+    <div class="module-content-area">
+      <div class="module-content-header">
+        <h2 class="breadcrumb-title">
+          <span class="breadcrumb-parent">Ajustes</span>
+          <span class="breadcrumb-separator">›</span>
+          <span class="breadcrumb-current">{{getSelectedModuleTitle()}}</span>
+        </h2>
+      </div>
+      <div class="module-content-body">
+        @if (selectedModule === 'agenda') {
+        <div class="agenda-template-layout">
+          <app-agenda-desktop></app-agenda-desktop>
+        </div>
+        } @else if (selectedModule === 'profiles') {
+        <div class="profiles-template-layout">
+          <app-profile-settings></app-profile-settings>
+        </div>
+        } @else if (selectedModule === 'courses') {
+        <div class="empty-state-module">
+          <ion-icon name="book-outline" color="medium"></ion-icon>
+          <h2>Módulo de Cursos limpiado</h2>
+          <p>Enfoque actual: Sistema de Agenda y Registros.</p>
+        </div>
+        } @else if (selectedModule === 'students') {
+        <div class="empty-state-module">
+          <ion-icon name="people-outline" color="medium"></ion-icon>
+          <h2>Módulo de Estudiantes limpiado</h2>
+          <p>Enfoque actual: Sistema de Agenda y Registros.</p>
+        </div>
+        } @else if (selectedModule === 'interface') {
+        <div class="interface-module">
+          <h3>Configuración de Interfaz</h3>
+          <div class="interface-option">
+            <div class="option-info">
+              <ion-icon name="rocket" color="primary"></ion-icon>
+              <div class="option-text">
+                <h4>Pantalla de Bienvenida</h4>
+                <p>Mostrar animación al iniciar la app</p>
+              </div>
+            </div>
+            <ion-toggle [checked]="splashEnabled" (ionChange)="toggleSplash($event)"></ion-toggle>
+          </div>
+          <div class="interface-option">
+            <div class="option-info">
+              <ion-icon name="flash" color="warning"></ion-icon>
+              <div class="option-text">
+                <h4>Acceso Rápido</h4>
+                <p>Mostrar barra de accesos directos en el inicio</p>
+              </div>
+            </div>
+            <ion-toggle [checked]="quickAccessEnabled" (ionChange)="toggleQuickAccess($event)"></ion-toggle>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== LAYOUT MÓVIL ========== -->
+  <div class="settings-container ion-hide-lg-up">
+    <div class="mobile-tabs-container">
+      <ion-segment [value]="selectedModule" (ionChange)="onSegmentChange($event)" class="mobile-tabs-segment">
+        @for (module of modules; track module.id) {
+        <ion-segment-button [value]="module.id">
+          <ion-icon [name]="module.icon" [color]="module.color"></ion-icon>
+        </ion-segment-button>
+        }
+      </ion-segment>
+    </div>
+
+    <div class="module-content-area-mobile">
+      @if (selectedModule === 'agenda') {
+      <div class="module-content-mobile agenda-module-mobile">
+        <app-agenda-mobile></app-agenda-mobile>
+      </div>
+      } @else if (selectedModule === 'profiles') {
+      <div class="module-content-mobile">
+        <app-profile-settings></app-profile-settings>
+      </div>
+      } @else {
+      <div class="module-content-mobile">
+        <div class="empty-state-module-mobile">
+          <ion-icon
+            [name]="selectedModule === 'courses' ? 'book-outline' : (selectedModule === 'students' ? 'people-outline' : 'settings-outline')"
+            color="medium"></ion-icon>
+          <p>Módulo de {{getSelectedModuleTitle()}} limpiado</p>
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+
+  <!-- Modal Selector de Hora -->
+  <ion-modal [isOpen]="timePickerOpen()" (didDismiss)="cancelTimePicker()" [breakpoints]="[0, 1]"
+    [initialBreakpoint]="1" class="time-picker-modal">
+    <ng-template>
+      <div class="time-picker-container">
+        <div class="time-picker-header">
+          <h3>{{ timePickerField() === 'startTime' ? 'Hora de Inicio' : 'Hora de Fin' }}</h3>
+          <ion-button fill="clear" size="small" (click)="cancelTimePicker()">
+            <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+          </ion-button>
+        </div>
+        <ion-datetime #timePicker presentation="time" [preferWheel]="true"
+          [value]="'2024-01-01T' + timePickerValue() + ':00'" hourCycle="h12" locale="es-ES" size="cover"
+          minuteValues="0,5,10,15,20,25,30,35,40,45,50,55" class="time-datetime">
+          <span slot="time-label">Hora</span>
+        </ion-datetime>
+        <div class="time-picker-actions">
+          <ion-button fill="outline" color="medium" (click)="cancelTimePicker()">
+            Cancelar
+          </ion-button>
+          <ion-button fill="solid" color="primary" (click)="confirmTimePickerManual(timePicker)">
+            Confirmar
+          </ion-button>
+        </div>
+      </div>
+    </ng-template>
+  </ion-modal>
+</ion-content>

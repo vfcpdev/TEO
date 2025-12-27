@@ -1,0 +1,184 @@
+> ng.cmd run app:build
+[33m❯[39m Building...
+[32m✔[39m Building...
+Application bundle generation failed. [6.066 seconds] - 2025-12-26T05:20:41.509Z
+
+▲ [WARNING] NG8113: IonAccordion is not used within the template of SettingsPage [plugin angular-compiler]
+
+    src/app/features/settings/pages/settings/settings.page.ts:156:4:
+      156 │     IonAccordion,
+          ╵     ~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8113: IonAccordionGroup is not used within the template of SettingsPage [plugin angular-compiler]
+
+    src/app/features/settings/pages/settings/settings.page.ts:157:4:
+      157 │     IonAccordionGroup,
+          ╵     ~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8113: IonHeader is not used within the template of HomePage [plugin angular-compiler]
+
+    src/app/home/home.page.ts:107:4:
+      107 │     IonHeader,
+          ╵     ~~~~~~~~~
+
+
+▲ [WARNING] NG8113: IonToolbar is not used within the template of HomePage [plugin angular-compiler]
+
+    src/app/home/home.page.ts:108:4:
+      108 │     IonToolbar,
+          ╵     ~~~~~~~~~~
+
+
+▲ [WARNING] NG8113: IonTitle is not used within the template of HomePage [plugin angular-compiler]
+
+    src/app/home/home.page.ts:109:4:
+      109 │     IonTitle,
+          ╵     ~~~~~~~~
+
+
+▲ [WARNING] NG8113: IonContent is not used within the template of HomePage [plugin angular-compiler]
+
+    src/app/home/home.page.ts:110:4:
+      110 │     IonContent,
+          ╵     ~~~~~~~~~~
+
+
+▲ [WARNING] NG8113: IonButtons is not used within the template of HomePage [plugin angular-compiler]
+
+    src/app/home/home.page.ts:111:4:
+      111 │     IonButtons,
+          ╵     ~~~~~~~~~~
+
+
+▲ [WARNING] NG8113: IonIcon is not used within the template of HomePage [plugin angular-compiler]
+
+    src/app/home/home.page.ts:112:4:
+      112 │     IonIcon,
+          ╵     ~~~~~~~
+
+
+▲ [WARNING] NG8113: IonMenuButton is not used within the template of HomePage [plugin angular-compiler]
+
+    src/app/home/home.page.ts:113:4:
+      113 │     IonMenuButton,
+          ╵     ~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8113: IonButton is not used within the template of HomePage [plugin angular-compiler]
+
+    src/app/home/home.page.ts:114:4:
+      114 │     IonButton,
+          ╵     ~~~~~~~~~
+
+
+▲ [WARNING] NG8113: IonInput is not used within the template of HomePage [plugin angular-compiler]
+
+    src/app/home/home.page.ts:115:4:
+      115 │     IonInput,
+          ╵     ~~~~~~~~
+
+
+▲ [WARNING] NG8113: IonItem is not used within the template of HomePage [plugin angular-compiler]
+
+    src/app/home/home.page.ts:116:4:
+      116 │     IonItem,
+          ╵     ~~~~~~~
+
+
+▲ [WARNING] NG8113: IonList is not used within the template of HomePage [plugin angular-compiler]
+
+    src/app/home/home.page.ts:117:4:
+      117 │     IonList,
+          ╵     ~~~~~~~
+
+
+▲ [WARNING] NG8113: IonLabel is not used within the template of HomePage [plugin angular-compiler]
+
+    src/app/home/home.page.ts:118:4:
+      118 │     IonLabel,
+          ╵     ~~~~~~~~
+
+
+▲ [WARNING] NG8113: IonDatetime is not used within the template of HomePage [plugin angular-compiler]
+
+    src/app/home/home.page.ts:119:4:
+      119 │     IonDatetime,
+          ╵     ~~~~~~~~~~~
+
+
+▲ [WARNING] NG8113: IonDatetimeButton is not used within the template of HomePage [plugin angular-compiler]
+
+    src/app/home/home.page.ts:120:4:
+      120 │     IonDatetimeButton,
+          ╵     ~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8113: IonSegmentButton is not used within the template of HomePage [plugin angular-compiler]
+
+    src/app/home/home.page.ts:121:4:
+      121 │     IonSegmentButton,
+          ╵     ~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8113: IonModal is not used within the template of HomePage [plugin angular-compiler]
+
+    src/app/home/home.page.ts:122:4:
+      122 │     IonModal,
+          ╵     ~~~~~~~~
+
+
+▲ [WARNING] NG8113: IonSegment is not used within the template of HomePage [plugin angular-compiler]
+
+    src/app/home/home.page.ts:123:4:
+      123 │     IonSegment,
+          ╵     ~~~~~~~~~~
+
+
+▲ [WARNING] NG8113: IonFooter is not used within the template of HomePage [plugin angular-compiler]
+
+    src/app/home/home.page.ts:124:4:
+      124 │     IonFooter,
+          ╵     ~~~~~~~~~
+
+
+▲ [WARNING] NG8113: AnalogClockPickerComponent is not used within the template of HomePage [plugin angular-compiler]
+
+    src/app/home/home.page.ts:126:4:
+      126 │     AnalogClockPickerComponent,
+          ╵     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8113: IonButton is not used within the template of AnalogClockPickerComponent [plugin angular-compiler]
+
+    src/app/shared/components/analog-clock-picker/analog-clock-picker.component.ts:11:41:
+      11 │     imports: [CommonModule, FormsModule, IonButton]
+         ╵                                          ~~~~~~~~~
+
+
+▲ [WARNING] The glob pattern import("./**/*.entry.js*") did not match any files [empty-glob]
+
+    node_modules/@stencil/core/internal/client/index.js:169:2:
+      169 │   `./${bundleId}.entry.js${BUILD5.hotModuleReplacement && hmrVers...
+          ╵   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Unexpected closing block. The block may have been closed earlier. If you meant to write the } character, you should use the "&#125;" HTML entity instead. [plugin angular-compiler]
+
+    src/app/home/home.page.html:280:10:
+      280 │           }
+          ╵           ^
+
+  Error occurs in the template of component HomePage.
+
+    src/app/home/home.page.ts:102:15:
+      102 │   templateUrl: 'home.page.html',
+          ╵                ~~~~~~~~~~~~~~~~
+
+
+[ERROR] An error occurred while running subprocess ng.
+        
+        ng.cmd run app:build exited with exit code 1.
+        
+        Re-running this command with the --verbose flag may provide more information.

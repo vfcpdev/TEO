@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es" dir="ltr">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="description"
+    content="Sistema de gestión académica para docentes universitarios. Gestiona asistencia, bonificaciones, cursos y calendarios." />
+  <meta name="author" content="ClassApp by VC" />
+
+  <base href="/" />
+  <title>TEO</title>
+  <!-- Theme and viewport -->
+  <meta name="color-scheme" content="light dark" />
+  <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="msapplication-tap-highlight" content="no" />
+
+  <!-- Icons and manifest -->
+  <link rel="icon" type="image/png" href="assets/icon/favicon.png" />
+  <link rel="apple-touch-icon" href="assets/icon/favicon.png" />
+
+  <!-- PWA capabilities -->
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="ClassApp" />
+  <link rel="manifest" href="manifest.webmanifest">
+</head>
+
+<body>
+  <!-- SQLite Web Component for browser support -->
+  <jeep-sqlite></jeep-sqlite>
+  <app-root role="application" aria-label="ClassApp - Sistema de Gestión Académica"></app-root>
+  <noscript>
+    <div style="text-align: center; padding: 2rem; font-family: sans-serif;">
+      <h1>JavaScript Requerido</h1>
+      <p>Esta aplicación requiere JavaScript para funcionar correctamente. Por favor, habilita JavaScript en tu
+        navegador.</p>
+    </div>
+  </noscript>
+</body>
+
+</html>

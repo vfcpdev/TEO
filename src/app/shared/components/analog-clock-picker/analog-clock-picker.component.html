@@ -1,0 +1,55 @@
+<div class="clock-container">
+    <!-- Reloj SVG -->
+    <svg #clockSvg viewBox="0 0 200 200" class="clock-svg" [class.interactive]="interactive">
+        <!-- Fondo del reloj -->
+        <circle cx="100" cy="100" r="95" class="clock-face" />
+
+        <!-- Marcas de las horas -->
+        @for (i of hourIndices; track i) {
+        <line class="hour-mark" [attr.x1]="getMarkX1(i)" [attr.y1]="getMarkY1(i)" [attr.x2]="getMarkX2(i)"
+            [attr.y2]="getMarkY2(i)" />
+        }
+
+        <!-- Números de las horas -->
+        @for (num of hourNumbers; track num; let idx = $index) {
+        <text class="hour-number" [attr.x]="getNumberX(idx)" [attr.y]="getNumberY(idx)" text-anchor="middle">{{ num
+            }}</text>
+        }
+
+        <!-- Manecilla de la hora -->
+        <line class="hand hour-hand" [class.dragging]="dragTarget === 'hour'" x1="100" y1="100" x2="100" y2="50"
+            [attr.transform]="'rotate(' + hourRotation + ' 100 100)'" (pointerdown)="onPointerDown($event, 'hour')" />
+
+        <!-- Manecilla de los minutos -->
+        <line class="hand minute-hand" [class.dragging]="dragTarget === 'minute'" x1="100" y1="100" x2="100" y2="25"
+            [attr.transform]="'rotate(' + minuteRotation + ' 100 100)'"
+            (pointerdown)="onPointerDown($event, 'minute')" />
+
+        <!-- Manecilla de los segundos (opcional) -->
+        @if (showSeconds) {
+        <line class="hand second-hand" x1="100" y1="100" x2="100" y2="20"
+            [attr.transform]="'rotate(' + secondRotation + ' 100 100)'" />
+        }
+
+        <!-- Centro del reloj -->
+        <circle cx="100" cy="100" r="6" class="clock-center" />
+    </svg>
+
+    <!-- Controles digitales -->
+    <div class="digital-controls">
+        <div class="time-display">
+            <div class="time-segment">
+                <button class="adj-btn" (click)="incrementHour()">▲</button>
+                <span class="time-value">{{ hours.toString().padStart(2, '0') }}</span>
+                <button class="adj-btn" (click)="decrementHour()">▼</button>
+            </div>
+            <span class="separator">:</span>
+            <div class="time-segment">
+                <button class="adj-btn" (click)="incrementMinute()">▲</button>
+                <span class="time-value">{{ minutes.toString().padStart(2, '0') }}</span>
+                <button class="adj-btn" (click)="decrementMinute()">▼</button>
+            </div>
+            <button class="ampm-btn" (click)="toggleAmPm()">{{ amPmLabel }}</button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,141 @@
+> ng.cmd run app:build
+[33m❯[39m Building...
+[32m✔[39m Building...
+Application bundle generation failed. [7.232 seconds] - 2025-12-26T05:21:51.394Z
+
+▲ [WARNING] NG8113: IonAccordion is not used within the template of SettingsPage [plugin angular-compiler]
+
+    src/app/features/settings/pages/settings/settings.page.ts:156:4:
+      156 │     IonAccordion,
+          ╵     ~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8113: IonAccordionGroup is not used within the template of SettingsPage [plugin angular-compiler]
+
+    src/app/features/settings/pages/settings/settings.page.ts:157:4:
+      157 │     IonAccordionGroup,
+          ╵     ~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8113: IonButton is not used within the template of AnalogClockPickerComponent [plugin angular-compiler]
+
+    src/app/shared/components/analog-clock-picker/analog-clock-picker.component.ts:11:41:
+      11 │     imports: [CommonModule, FormsModule, IonButton]
+         ╵                                          ~~~~~~~~~
+
+
+▲ [WARNING] The glob pattern import("./**/*.entry.js*") did not match any files [empty-glob]
+
+    node_modules/@stencil/core/internal/client/index.js:169:2:
+      169 │   `./${bundleId}.entry.js${BUILD5.hotModuleReplacement && hmrVers...
+          ╵   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG8001: 'ion-badge' is not a known element:
+1. If 'ion-badge' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'ion-badge' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
+
+    src/app/home/home.page.html:71:12:
+      71 │             <ion-badge color="primary">{{ item.code }}</ion-badge>
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component HomePage.
+
+    src/app/home/home.page.ts:102:15:
+      102 │   templateUrl: 'home.page.html',
+          ╵                ~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG8001: 'ion-item-sliding' is not a known element:
+1. If 'ion-item-sliding' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'ion-item-sliding' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
+
+    src/app/home/home.page.html:102:6:
+      102 │       <ion-item-sliding>
+          ╵       ~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component HomePage.
+
+    src/app/home/home.page.ts:102:15:
+      102 │   templateUrl: 'home.page.html',
+          ╵                ~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG8001: 'ion-item-options' is not a known element:
+1. If 'ion-item-options' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'ion-item-options' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
+
+    src/app/home/home.page.html:146:8:
+      146 │         <ion-item-options side="start">
+          ╵         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component HomePage.
+
+    src/app/home/home.page.ts:102:15:
+      102 │   templateUrl: 'home.page.html',
+          ╵                ~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG8001: 'ion-item-option' is not a known element:
+1. If 'ion-item-option' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'ion-item-option' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
+
+    src/app/home/home.page.html:147:10:
+      147 │           <ion-item-option color="primary" (click)="editarRegistr...
+          ╵           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component HomePage.
+
+    src/app/home/home.page.ts:102:15:
+      102 │   templateUrl: 'home.page.html',
+          ╵                ~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG8001: 'ion-item-options' is not a known element:
+1. If 'ion-item-options' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'ion-item-options' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
+
+    src/app/home/home.page.html:152:8:
+      152 │         <ion-item-options side="end">
+          ╵         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component HomePage.
+
+    src/app/home/home.page.ts:102:15:
+      102 │   templateUrl: 'home.page.html',
+          ╵                ~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG8001: 'ion-item-option' is not a known element:
+1. If 'ion-item-option' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'ion-item-option' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. [plugin angular-compiler]
+
+    src/app/home/home.page.html:153:10:
+      153 │           <ion-item-option color="danger" (click)="eliminarRegist...
+          ╵           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component HomePage.
+
+    src/app/home/home.page.ts:102:15:
+      102 │   templateUrl: 'home.page.html',
+          ╵                ~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Unsupported expression in a two-way binding [plugin angular-compiler]
+
+    src/app/home/home.page.html:263:24:
+      263 │ ...    <ion-toggle [(ngModel)]="includeEndDate()" (ionChange)="va...
+          ╵                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component HomePage.
+
+    src/app/home/home.page.ts:102:15:
+      102 │   templateUrl: 'home.page.html',
+          ╵                ~~~~~~~~~~~~~~~~
+
+
+[ERROR] An error occurred while running subprocess ng.
+        
+        ng.cmd run app:build exited with exit code 1.
+        
+        Re-running this command with the --verbose flag may provide more information.

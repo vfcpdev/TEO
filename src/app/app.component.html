@@ -1,0 +1,60 @@
+<ion-app>
+  <ion-split-pane contentId="main-content" when="lg">
+    <!-- Side Menu -->
+    <ion-menu contentId="main-content" type="overlay">
+      <ion-content>
+        <!-- Menú de navegación -->
+        <ion-list lines="none" class="menu-list">
+          @for (item of menuItems; track item.url) {
+          <ion-menu-toggle [autoHide]="false">
+            <ion-item [routerLink]="item.url" routerLinkActive="selected" [detail]="false" button class="menu-item">
+              <ion-icon slot="start" [name]="item.icon" [color]="item.color"></ion-icon>
+              <ion-label>{{ item.title }}</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+          }
+
+          <!-- Usuario -->
+          <ion-menu-toggle [autoHide]="false">
+            <ion-item button class="menu-item" (click)="navigateToProfile()">
+              <ion-icon slot="start" name="person-outline" color="tertiary"></ion-icon>
+              <ion-label>Usuario</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+
+          <!-- Cerrar sesión -->
+          <ion-menu-toggle [autoHide]="false">
+            <ion-item button class="menu-item logout-item" (click)="logout()">
+              <ion-icon slot="start" name="log-out" color="danger"></ion-icon>
+              <ion-label color="danger">Cerrar Sesión</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+        </ion-list>
+      </ion-content>
+
+      <!-- Footer del menú -->
+      <ion-footer class="menu-footer-container">
+        <!-- Toggle de tema claro/oscuro -->
+        <ion-item class="theme-toggle-item" lines="none">
+          <ion-icon slot="start" [name]="darkMode ? 'moon' : 'sunny'"
+            [color]="darkMode ? 'warning' : 'primary'"></ion-icon>
+          <ion-label>{{ darkMode ? 'Tema Oscuro' : 'Tema Claro' }}</ion-label>
+          <ion-toggle [checked]="darkMode" (ionChange)="toggleTheme($event)" slot="end"></ion-toggle>
+        </ion-item>
+
+        <!-- Acerca de ClassApp -->
+        <ion-item button class="about-menu-item" (click)="showAboutModal()">
+          <ion-icon slot="start" name="information-circle-outline" color="primary"></ion-icon>
+          <ion-label>Acerca de</ion-label>
+        </ion-item>
+        <!-- Versión de la app -->
+        <div class="app-version">
+          <small>ClassApp v2.0.0</small>
+        </div>
+      </ion-footer>
+    </ion-menu>
+
+    <!-- Main Content -->
+    <ion-router-outlet id="main-content"></ion-router-outlet>
+  </ion-split-pane>
+</ion-app>

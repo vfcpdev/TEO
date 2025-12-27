@@ -1,0 +1,137 @@
+/**
+ * Calendar Styles
+ * -----------------------------------------------------
+ * Estilos globales para ion-datetime en modales y vistas inline
+ * @see https://ionicframework.com/docs/api/datetime
+ * @see https://ionicframework.com/docs/api/modal#styling
+ */
+
+@use './mixins' as *;
+
+/**
+ * Calendar Modal Styles
+ * -----------------------------------------------------
+ * Los modales se renderizan en la raíz de la app, fuera del DOM del componente
+ * Por eso estos estilos DEBEN ser globales
+ */
+ion-modal.calendar-modal {
+    // Default height for portrait mode
+    --height: 600px;
+    --min-height: 600px;
+
+    // Full width on mobile
+    --width: 100%;
+
+    // Tablet and desktop
+    @media (min-width: 768px) {
+        --width: 420px;
+        --border-radius: 16px;
+    }
+
+    // Mobile landscape - reduce height, make scrollable
+    @media (orientation: landscape) and (max-height: 500px) {
+        --height: 100%;
+        --min-height: auto;
+        --max-height: 100vh;
+
+        ion-content {
+            --overflow: auto;
+        }
+    }
+
+    // ion-datetime responsive height
+    ion-datetime {
+        min-height: 380px;
+        height: auto;
+
+        // Compact height in landscape
+        @media (orientation: landscape) and (max-height: 500px) {
+            min-height: 320px;
+        }
+    }
+}
+
+
+// Footer button icons sizing for calendar modal
+ion-modal.calendar-modal ion-footer ion-button ion-icon {
+    font-size: 28px;
+}
+
+/**
+ * Main Calendar View Styles
+ * -----------------------------------------------------
+ * Calendario inline en la página principal
+ */
+.main-viewdatetime {
+    padding: 16px;
+    display: flex;
+    justify-content: center;
+
+    ion-datetime {
+        --background: var(--ion-card-background, #ffffff);
+        border-radius: 16px;
+        @include card-shadow('md', false);
+        width: 100%;
+
+        // Mobile portrait - full width with max
+        max-width: 100%;
+
+        // Tablet and desktop - constrained width
+        @media (min-width: 576px) {
+            max-width: 400px;
+        }
+
+        // Small mobile screens - reduce padding
+        @media (max-width: 360px) {
+            border-radius: 12px;
+        }
+    }
+
+    // Landscape - side-by-side friendly
+    @media (orientation: landscape) and (max-height: 500px) {
+        padding: 8px 16px;
+
+        ion-datetime {
+            max-width: 350px;
+        }
+    }
+}
+
+
+/**
+ * Light Mode Calendar Styles
+ * -----------------------------------------------------
+ * Estilos por defecto (modo claro)
+ */
+ion-modal.calendar-modal ion-datetime,
+.main-viewdatetime ion-datetime {
+    --background: var(--ion-card-background, #ffffff);
+    @include calendar-stepped-colors(false);
+}
+
+/**
+ * Dark Mode Calendar Styles
+ * -----------------------------------------------------
+ * Estilos para tema oscuro
+ */
+body.dark {
+
+    ion-modal.calendar-modal ion-datetime,
+    .main-viewdatetime ion-datetime {
+        --background: var(--ion-card-background, #1e293b);
+        @include calendar-stepped-colors(true);
+    }
+
+    .main-viewdatetime ion-datetime {
+        @include card-shadow('md', true);
+    }
+}
+
+/**
+ * Holiday Highlight Styles
+ * -----------------------------------------------------
+ * Estilos para días festivos resaltados
+ * Usados por highlightedDates callback en ion-datetime
+ */
+// Nota: Los estilos de holiday-highlight se aplican via el callback
+// highlightedDates que retorna textColor y backgroundColor

@@ -1,0 +1,552 @@
+// Settings Page - Optimized for Ionic Framework
+// Uses Ionic CSS Variables + Utility Classes for minimal bundle size
+
+// ============ CSS VARIABLES (usando las de Ionic cuando existe) ============
+:host {
+  // Solo definimos lo que Ionic no proporciona nativamente
+  --settings-radius-sm: 8px;
+  --settings-radius-md: 10px;
+  --settings-radius-lg: 12px;
+  --settings-transition: 0.15s ease;
+}
+
+// Dark mode - solo sobrescrituras necesarias
+:host-context(body.dark) {
+  --ion-item-background: var(--ion-background-color-step-100);
+}
+
+// ============ CONTENIDO PRINCIPAL ============
+ion-content {
+  --padding-top: 8px;
+  --padding-bottom: 16px;
+  --padding-start: 12px;
+  --padding-end: 12px;
+}
+
+// ============ CARDS IONIC NATIVAS ============
+.settings-card {
+  margin-bottom: 12px;
+  --background: var(--ion-card-background, var(--ion-item-background));
+  border-radius: var(--settings-radius-lg);
+
+  ion-card-header { --padding-top: 12px; --padding-bottom: 8px; }
+  ion-card-title {
+    font-size: 14px;
+    font-weight: 700;
+    ion-icon { font-size: 18px; margin-right: 8px; }
+  }
+}
+
+// ============ LAYOUT DESKTOP (992px+) ============
+.desktop-layout {
+  display: none;
+  @media (min-width: 992px) {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 16px;
+    gap: 16px;
+  }
+}
+
+.desktop-main-area {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 16px;
+  flex: 1;
+  min-height: 0;
+}
+
+// Panel de módulos desktop
+.desktop-modules-panel {
+  background: var(--ion-card-background);
+  border-radius: var(--settings-radius-lg);
+  padding: 12px;
+
+  .panel-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: var(--ion-text-color-step-400);
+    letter-spacing: 0.5px;
+  }
+}
+
+.module-item-desktop {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--settings-radius-sm);
+  cursor: pointer;
+  transition: background var(--settings-transition);
+
+  &:hover { background: rgba(var(--ion-color-primary-rgb), 0.06); }
+  &.active {
+    background: rgba(var(--ion-color-primary-rgb), 0.12);
+    .module-icon { background: var(--ion-color-primary); ion-icon { color: white; } }
+  }
+
+  .module-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--settings-radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(var(--ion-color-primary-rgb), 0.1);
+    ion-icon { font-size: 16px; color: var(--ion-color-primary); }
+  }
+  span { font-size: 13px; font-weight: 500; }
+}
+
+// Área de contenido del módulo
+.module-content-area {
+  background: var(--ion-card-background);
+  border-radius: var(--settings-radius-lg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.module-content-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--ion-border-color);
+  h2 { margin: 0; font-size: 16px; font-weight: 600; }
+}
+
+.module-content-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+// ============ LAYOUT LISTA + DETALLE (Places & Courses) ============
+.places-desktop-layout,
+.courses-desktop-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 16px;
+  height: 100%;
+  overflow: hidden;
+}
+
+// Lista compacta
+.places-list-compact,
+.courses-list-compact {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+// Items de lista
+.place-item-compact,
+.course-item-compact {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--settings-radius-sm);
+  cursor: pointer;
+  transition: all var(--settings-transition);
+  background: var(--ion-item-background);
+  border: 1px solid transparent;
+
+  &:hover { background: rgba(var(--ion-color-primary-rgb), 0.04); }
+  &.selected {
+    border-color: var(--ion-color-primary);
+    background: rgba(var(--ion-color-primary-rgb), 0.08);
+  }
+}
+
+// Iconos de items
+.place-item-icon,
+.course-item-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--settings-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  ion-icon { font-size: 18px; }
+}
+
+// Info de items
+.place-item-info,
+.course-item-info {
+  flex: 1;
+  min-width: 0;
+  .place-item-name,
+  .course-item-name { font-weight: 500; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .place-item-type,
+  .course-item-code { font-size: 0.75rem; color: var(--ion-text-color-step-450); }
+}
+
+.place-item-gps { font-size: 14px; }
+
+// Panel de detalle
+.place-detail-panel,
+.course-detail-panel {
+  background: var(--ion-card-background);
+  border-radius: var(--settings-radius-lg);
+  border: 1px solid var(--ion-border-color);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.place-detail-content,
+.course-detail-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 100%;
+}
+
+.place-detail-header,
+.course-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--ion-border-color);
+
+  h3 { margin: 0 0 4px; font-size: 1.1rem; font-weight: 600; }
+}
+
+.place-detail-icon,
+.course-detail-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: var(--settings-radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  ion-icon { font-size: 24px; color: white; }
+  &.type-W, &.presencial { background: var(--ion-color-primary); }
+  &.type-P, &.virtual { background: var(--ion-color-tertiary); }
+}
+
+.place-detail-title,
+.course-detail-title { flex: 1; }
+
+// Filas de detalle
+.place-detail-info,
+.course-detail-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.detail-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  > ion-icon { font-size: 18px; color: var(--ion-color-medium); margin-top: 2px; }
+}
+
+.detail-content {
+  flex: 1;
+  label { display: block; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--ion-text-color-step-450); margin-bottom: 2px; }
+  .detail-value { font-size: 0.9rem; font-weight: 500; }
+  .detail-value.coordinates { font-family: monospace; font-size: 0.8rem; }
+  .detail-value.no-data { color: var(--ion-text-color-step-450); font-style: italic; }
+}
+
+// Acciones
+.place-detail-actions,
+.course-detail-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--ion-border-color);
+  ion-button { flex: 1; --border-radius: var(--settings-radius-sm); }
+}
+
+// Estado vacío
+.place-detail-empty,
+.course-detail-empty,
+.empty-state-module {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--ion-text-color-step-450);
+  padding: 40px;
+  text-align: center;
+  ion-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
+  p, h3 { margin: 0; }
+}
+
+// Loading
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 150px;
+  color: var(--ion-text-color-step-450);
+  p { margin: 8px 0 0; font-size: 0.85rem; }
+}
+
+// Badges
+.place-type-badge,
+.course-code-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: rgba(var(--ion-color-primary-rgb), 0.1);
+  color: var(--ion-color-primary);
+}
+
+// ============ FORMULARIOS ============
+.place-form-container,
+.course-form-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+  padding: 16px;
+  ion-list { margin-bottom: 8px; }
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+  .section-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--ion-text-color-step-450);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+  .form-section-half { flex: 1; }
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 16px;
+  ion-button { flex: 1; }
+}
+
+// Selector de lugar
+.place-select-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 8px;
+}
+
+.place-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 2px solid var(--ion-border-color);
+  border-radius: var(--settings-radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: var(--ion-item-background);
+  span { font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  &:hover { border-color: var(--ion-color-primary); }
+  &.selected { border-color: var(--ion-color-primary); background: rgba(var(--ion-color-primary-rgb), 0.1); span { font-weight: 600; } }
+}
+
+.no-places-warning {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: rgba(var(--ion-color-warning-rgb), 0.1);
+  border-radius: var(--settings-radius-sm);
+  color: var(--ion-color-warning-shade);
+  span { font-size: 0.85rem; }
+}
+
+// Selector de días
+.weekdays-grid {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.weekday-chip {
+  padding: 8px 14px;
+  border-radius: 20px;
+  border: 2px solid var(--ion-border-color);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.8rem;
+  font-weight: 500;
+  background: var(--ion-item-background);
+  &:hover { border-color: var(--ion-color-primary); }
+  &.selected { border-color: var(--ion-color-primary); background: var(--ion-color-primary); color: white; }
+}
+
+// Coordenadas
+.coordinates-text { font-family: monospace; font-size: 0.75rem; color: var(--ion-text-color-step-450); }
+
+// ============ MOBILE LAYOUT ============
+.mobile-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  @media (min-width: 992px) { display: none; }
+}
+
+// Grid de módulos mobile
+.modules-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  @media (max-width: 359px) { grid-template-columns: repeat(2, 1fr); }
+  @media (max-height: 500px) and (orientation: landscape) { grid-template-columns: repeat(5, 1fr); gap: 8px; }
+}
+
+.module-card {
+  background: var(--ion-card-background);
+  border-radius: var(--settings-radius-md);
+  padding: 12px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  &:active { transform: scale(0.96); }
+  &.disabled { opacity: 0.5; }
+  span { font-size: 11px; font-weight: 500; text-align: center; }
+}
+
+.icon-wrapper {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--settings-radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  ion-icon { font-size: 20px; color: white; }
+  &.primary-bg { background: var(--ion-color-primary); }
+  &.secondary-bg { background: var(--ion-color-secondary); }
+  &.tertiary-bg { background: var(--ion-color-tertiary); }
+  &.success-bg { background: var(--ion-color-success); }
+  &.warning-bg { background: var(--ion-color-warning); }
+}
+
+// ============ LISTAS IONIC NATIVAS ============
+.interface-list,
+.about-list {
+  padding: 0 !important;
+  ion-item {
+    --background: transparent;
+    --padding-start: 0;
+    --padding-end: 0;
+    --min-height: 44px;
+    font-size: 12px;
+  }
+}
+
+// Toggle usando variables Ionic nativas
+ion-toggle {
+  --track-background: var(--ion-color-step-300, #cbd5e1);
+  --track-background-checked: var(--ion-color-primary);
+  --handle-background: var(--ion-background-color);
+}
+
+// ============ ACCORDIONS MOBILE ============
+.interface-accordion,
+.about-accordion {
+  margin: 0;
+  ion-accordion {
+    background: var(--ion-card-background);
+    border-radius: var(--settings-radius-lg);
+    ion-item {
+      --background: transparent;
+      --padding-start: 12px;
+      --min-height: 44px;
+      font-weight: 600;
+      ion-label { font-size: 12px; font-weight: 700; }
+    }
+    .ion-padding { padding: 0 12px 12px !important; }
+  }
+  @media (min-width: 992px) { display: none; }
+}
+
+// About grid
+.about-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.about-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 8px;
+  background: var(--ion-item-background);
+  border-radius: var(--settings-radius-sm);
+  ion-icon { font-size: 24px; margin-bottom: 6px; }
+  .about-label { font-size: 9px; color: var(--ion-text-color-step-450); text-transform: uppercase; margin-bottom: 2px; }
+  .about-value { font-size: 11px; font-weight: 600; }
+}
+
+// Logout button
+.logout-button-mobile {
+  margin: 0;
+  --border-radius: var(--settings-radius-md);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: none;
+  ion-icon { margin-right: 6px; }
+  @media (min-width: 992px) { display: none; }
+}
+
+// Footer desktop
+.desktop-footer {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  .card-footer { margin: 0; }
+}
+
+// Quick access config
+.quick-access-config .coming-soon-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  border: 2px dashed var(--ion-border-color);
+  border-radius: var(--settings-radius-sm);
+  text-align: center;
+  ion-icon { font-size: 32px; color: var(--ion-color-medium); margin-bottom: 8px; }
+  p { margin: 0; font-size: 0.85rem; color: var(--ion-text-color-step-450); }
+}

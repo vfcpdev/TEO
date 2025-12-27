@@ -1,0 +1,43 @@
+{
+  "typescript.preferences.autoImportFileExcludePatterns": ["@ionic/angular/common", "@ionic/angular"],
+  "html.validate.styles": false,
+  "html.validate.scripts": false,
+  "css.validate": false,
+  "css.lint.compatibleVendorPrefixes": "ignore",
+  "css.lint.vendorPrefix": "ignore",
+  "html.customData": [".vscode/html.json"],
+  "[html]": {
+    "editor.formatOnSave": true
+  },
+  "[markdown]": {
+    "editor.formatOnSave": false
+  },
+  "files.exclude": {
+    "**/.angular": true,
+    "**/node_modules": true
+  },
+  "java.configuration.updateBuildConfiguration": "disabled",
+  "java.project.sourcePaths": [],
+  "java.import.exclusions": [
+    "**/android/**",
+    "**/node_modules/**",
+    "**/.metadata/**",
+    "**/archetype-resources/**",
+    "**/META-INF/maven/**"
+  ],
+  "java.autobuild.enabled": false,
+  "java.project.resourceFilters": [
+    "android"
+  ],
+  
+  // Deshabilitar completamente el Language Server de Java para este workspace
+  "java.server.launchMode": "LightWeight",
+  "java.validation.enabled": false,
+
+  // Deshabilitar análisis de Gradle en VS Code
+  "gradle.nestedProjects": false,
+  "gradle.autoDetect": "off",
+  "java.import.gradle.enabled": false,
+  "java.import.gradle.wrapper.enabled": false,
+  "java.gradle.buildServer.enabled": "off"
+}
