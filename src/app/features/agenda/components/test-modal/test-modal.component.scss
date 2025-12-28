@@ -53,11 +53,12 @@
   text-align: center;
 }
 
-// Close button OUTSIDE the circle
+// Close button CENTERED inside the circle
 .close-button-external {
   position: absolute;
-  top: -8px;
-  right: -8px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   width: 40px;
   height: 40px;
   background: var(--ion-color-danger);
@@ -72,12 +73,12 @@
   transition: transform 0.2s, box-shadow 0.2s;
 
   &:hover {
-    transform: scale(1.1);
+    transform: translate(-50%, -50%) scale(1.1);
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
   }
 
   &:active {
-    transform: scale(0.95);
+    transform: translate(-50%, -50%) scale(0.95);
   }
 
   ion-icon {
@@ -350,8 +351,7 @@
   .close-button-external {
     width: 32px;
     height: 32px;
-    top: -5px;
-    right: -5px;
+    // El botón sigue centrado con el transform de la versión desktop
 
     ion-icon {
       font-size: 18px;

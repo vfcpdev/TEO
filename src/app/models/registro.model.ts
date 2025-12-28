@@ -97,8 +97,13 @@ export interface Registro {
     // Artefactos
     artefactos?: RegistroArtefacto[];
 
+    // Campos para Tiempo Libre Auto-generado
+    esAutoGenerado?: boolean; // true si es un bloque de tiempo libre generado automáticamente
+    categoriaTiempoLibre?: 'disponible' | 'tiempoBuffer'; // Categorización de tiempo libre
+
     // Metadata e Historial
     metadata?: Record<string, any>;
     createdAt: Date;
     updatedAt: Date;
 }
+

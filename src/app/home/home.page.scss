@@ -798,6 +798,36 @@ ion-segment {
   padding: 16px;
 }
 
+// Toggle de Tiempo Libre
+.free-time-toggle-container {
+  margin-bottom: 16px;
+  background: var(--ion-card-background);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+
+  .free-time-toggle {
+    --background: var(--ion-card-background);
+    --padding-start: 16px;
+    --padding-end: 16px;
+    --min-height: 56px;
+
+    ion-label {
+      font-weight: 600;
+      font-size: 15px;
+    }
+
+    ion-icon {
+      margin-right: 8px;
+    }
+
+    ion-toggle {
+      --handle-width: 26px;
+      --handle-height: 26px;
+    }
+  }
+}
+
 .timeline-card {
   display: flex;
   background: var(--ion-card-background);
@@ -806,6 +836,12 @@ ion-segment {
   margin-bottom: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   border-left: 4px solid transparent;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
 
   &.type-course {
     border-left-color: var(--ion-color-primary);
@@ -816,15 +852,32 @@ ion-segment {
   }
 
   &.type-free {
-    background: rgba(var(--ion-color-success-rgb), 0.1);
+    background: linear-gradient(135deg, rgba(var(--ion-color-success-rgb), 0.08), rgba(var(--ion-color-success-rgb), 0.12));
     border: 1px dashed var(--ion-color-success);
-    opacity: 1;
+    border-left: 4px solid var(--ion-color-success);
+    opacity: 0.95;
+    animation: fadeInScale 0.4s ease-out;
 
     .start-time,
-    .duration,
-    .event-header h3,
-    .free-text {
+    .duration {
+      color: var(--ion-color-success);
+      font-weight: 600;
+    }
+
+    .event-header h3 {
       color: var(--ion-color-success-shade);
+      font-style: italic;
+    }
+
+    .free-text {
+      color: var(--ion-color-success-tint);
+      font-style: italic;
+      font-size: 13px;
+    }
+
+    ion-badge {
+      font-size: 11px;
+      padding: 4px 10px;
     }
   }
 
@@ -902,10 +955,23 @@ ion-segment {
     }
 
     .free-text {
-      margin: 0;
-      font-style: italic;
-      font-size: 14px;
+      margin: 4px 0 0;
+      font-size: 13px;
+      font-weight: 500;
     }
+  }
+}
+
+// Animación para bloques de tiempo libre
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 0.95;
+    transform: scale(1);
   }
 }
 

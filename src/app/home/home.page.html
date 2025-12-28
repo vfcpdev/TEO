@@ -64,6 +64,17 @@
   <!-- Vista Registros (Timeline) -->
   @if (vistaActual === 'registros') {
   <div class="timeline-container">
+    <!-- Toggle para mostrar/ocultar tiempo libre -->
+    <div class="free-time-toggle-container">
+      <ion-item lines="none" class="free-time-toggle">
+        <ion-icon name="time-outline" slot="start" color="success"></ion-icon>
+        <ion-label>Mostrar Tiempo Libre</ion-label>
+        <ion-toggle slot="end" [checked]="mostrarTiempoLibre()" (ionChange)="toggleMostrarTiempoLibre($event)"
+          color="success">
+        </ion-toggle>
+      </ion-item>
+    </div>
+
     @if (getTimelineItems().length === 0) {
     <div class="empty-state">
       <ion-icon name="time-outline" size="large" color="medium"></ion-icon>
@@ -90,6 +101,9 @@
             <h3>{{ item.name }}</h3>
             @if (item.type === 'course') {
             <ion-badge color="primary">{{ item.code }}</ion-badge>
+            }
+            @if (item.type === 'free') {
+            <ion-badge color="success">Disponible</ion-badge>
             }
           </div>
           @if (item.type === 'free') {

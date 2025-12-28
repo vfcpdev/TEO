@@ -23,7 +23,9 @@ import {
   IonRow,
   IonCol,
   IonFab,
-  IonFabButton
+  IonFabButton,
+  IonItem,
+  IonToggle
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -92,6 +94,7 @@ import { HolidayService } from '../core/services/holiday.service';
 import { AnalogClockPickerComponent } from '../shared/components/analog-clock-picker/analog-clock-picker.component';
 import { RegistroWizardComponent } from '../features/agenda/components/registro-wizard/registro-wizard.component';
 import { TestModalComponent } from '../features/agenda/components/test-modal/test-modal.component';
+import { FreeTimeGeneratorService } from '../core/services/free-time-generator.service';
 
 @Component({
   selector: 'app-home',
@@ -116,6 +119,8 @@ import { TestModalComponent } from '../features/agenda/components/test-modal/tes
     IonGrid,
     IonRow,
     IonCol,
+    IonItem,
+    IonToggle,
     RouterModule,
     IonLabel,
     AnalogClockPickerComponent,
@@ -137,6 +142,7 @@ export class HomePage implements OnInit, ViewWillEnter {
   private readonly holidayService = inject(HolidayService);
   private readonly errorLogger = inject(ErrorLoggerService);
   private readonly registroEstadoService = inject(RegistroEstadoService);
+  private readonly freeTimeGenerator = inject(FreeTimeGeneratorService);
 
   showSplash = signal(false);
   quickAccessEnabled = signal(true);
@@ -177,9 +183,41 @@ export class HomePage implements OnInit, ViewWillEnter {
   // Signals para registros
   registros = computed(() => this.agendaService.registros());
 
-  // Registros filtrados por estado
+  // Configuración de Tiempo Libre
+  mostrarTiempoLibre = signal(true); // Toggle para mostrar/ocultar tiempo libre
+  huecoMinimoTiempoLibre = signal(30); // Minutos mínimos para generar bloque
+
+  // Rango de tiempo libre: desde ahora hasta 7 días adelante a las 11:59 PM
+  rangoTiempoLibre = computed(() => {
+    const ahora = new Date();
+    const fin = new Date(ahora);
+    fin.setDate(fin.getDate() + 7);
+    fin.setHours(23, 59, 59, 999);
+    return { inicio: ahora, fin };
+  });
+
+  // Bloques de tiempo libre autogenerados
+  bloquesTiempoLibre = computed(() => {
+    if (!this.mostrarTiempoLibre()) return [];
+
+    const { inicio, fin } = this.rangoTiempoLibre();
+    return this.freeTimeGenerator.generarTiempoLibre(
+      inicio,
+      fin,
+      this.huecoMinimoTiempoLibre()
+    );
+  });
+
+  // Todos los registros incluyendo tiempo libre
+  todosRegistrosConTiempoLibre = computed(() => {
+    const regulares = this.registros();
+    const tiempoLibre = this.bloquesTiempoLibre();
+    return [...regulares, ...tiempoLibre];
+  });
+
+  // Registros filtrados por estado (excluyendo tiempo libre autogenerado)
   registrosFiltrados = computed(() => {
-    const todos = this.registros();
+    const todos = this.registros().filter(r => !r.esAutoGenerado);
     const filtro = this.estadoTabActivo();
     if (filtro === 'todos') return todos;
     return todos.filter(r => r.status === filtro);
@@ -288,10 +326,11 @@ export class HomePage implements OnInit, ViewWillEnter {
       .sort((a, b) => a.schedule!.startTime.localeCompare(b.schedule!.startTime));
   });
 
-  // Eventos manuales del día seleccionado (computed)
+  // Eventos manuales del día seleccionado (computed) - INCLUYE TIEMPO LIBRE
   manualEventsOfDay = computed(() => {
     const selectedDateStr = this.selectedDate().toDateString();
-    return this.agendaService.registros()
+    const todosEventos = this.todosRegistrosConTiempoLibre();
+    return todosEventos
       .filter(registro => {
         if (!registro.startTime) return false;
         const regDate = typeof registro.startTime === 'string' ? new Date(registro.startTime) : registro.startTime;
@@ -319,12 +358,26 @@ export class HomePage implements OnInit, ViewWillEnter {
   constructor() {
     addIcons({ schoolOutline, todayOutline, saveOutline, add, timeOutline, checkboxOutline, closeOutline, createOutline, swapHorizontalOutline, trashOutline, closeCircleOutline, calendarOutline, ellipsisVertical, create, trash, close, checkmark, checkmarkDone, addCircle, arrowBack, arrowForward, checkmarkCircle, playCircle, time, peopleOutline });
 
+    // Efecto para actualizar calendario cuando cambian los registros
     effect(() => {
       // Dependencia: registros()
       const _ = this.agendaService.registros();
       // Forzar actualización cambiando la referencia de la función
       this.highlightedDates = (iso) => this.calculateHighlights(iso);
     });
+
+    // Efecto para invalidar caché de tiempo libre cuando cambian los registros
+    effect(() => {
+      this.registros(); // Dependencia
+      this.freeTimeGenerator.invalidarCache();
+    });
+
+    // Actualización automática cada minuto para refrescar bloques de tiempo libre
+    setInterval(() => {
+      // Forzar recalculo del rango de tiempo libre
+      // Al cambiar la fecha actual, rangoTiempoLibre se recalcula automáticamente
+      this.freeTimeGenerator.invalidarCache();
+    }, 60000); // 60 segundos
   }
 
   async ngOnInit() {
@@ -355,6 +408,9 @@ export class HomePage implements OnInit, ViewWillEnter {
 
     // Cargar configuración de acceso rápido inicial
     await this.loadQuickAccessSettings();
+
+    // Cargar configuración de tiempo libre
+    await this.loadFreeTimeSettings();
 
     // Inicializar texto de fecha
     this.selectedDateText.set(this.formatDateToSpanish(this.selectedDate()));
@@ -725,6 +781,60 @@ export class HomePage implements OnInit, ViewWillEnter {
 
   getEnabledQuickAccessItems(): QuickAccessItem[] {
     return this.quickAccessItems().filter(item => item.enabled);
+  }
+
+  /**
+   * Cargar configuración de tiempo libre desde Preferences
+   */
+  async loadFreeTimeSettings() {
+    try {
+      // Cargar si mostrar tiempo libre está habilitado
+      const { value: showValue } = await Preferences.get({ key: 'mostrarTiempoLibre' });
+      this.mostrarTiempoLibre.set(showValue !== null ? showValue === 'true' : true);
+
+      // Cargar hueco mínimo
+      const { value: minGapValue } = await Preferences.get({ key: 'huecoMinimoTiempoLibre' });
+      if (minGapValue) {
+        const minGap = parseInt(minGapValue, 10);
+        if (!isNaN(minGap) && minGap > 0) {
+          this.huecoMinimoTiempoLibre.set(minGap);
+        }
+      }
+
+      this.errorLogger.logInfo('FreeTime', `Settings loaded: show=${this.mostrarTiempoLibre()}, minGap=${this.huecoMinimoTiempoLibre()}`);
+    } catch (error) {
+      this.errorLogger.logError('loadFreeTimeSettings', error);
+    }
+  }
+
+  /**
+   * Guardar configuración de tiempo libre en Preferences
+   */
+  async saveFreeTimeSettings() {
+    try {
+      await Preferences.set({
+        key: 'mostrarTiempoLibre',
+        value: this.mostrarTiempoLibre().toString()
+      });
+
+      await Preferences.set({
+        key: 'huecoMinimoTiempoLibre',
+        value: this.huecoMinimoTiempoLibre().toString()
+      });
+
+      this.errorLogger.logInfo('FreeTime', 'Settings saved');
+    } catch (error) {
+      this.errorLogger.logError('saveFreeTimeSettings', error);
+    }
+  }
+
+  /**
+   * Alternar visualización de tiempo libre
+   */
+  async toggleMostrarTiempoLibre(event: any) {
+    const mostrar = event.detail.checked;
+    this.mostrarTiempoLibre.set(mostrar);
+    await this.saveFreeTimeSettings();
   }
 
   async loadTheme() {
