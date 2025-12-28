@@ -91,6 +91,7 @@ import { ManualEvent } from '../models/manual-event.model';
 import { HolidayService } from '../core/services/holiday.service';
 import { AnalogClockPickerComponent } from '../shared/components/analog-clock-picker/analog-clock-picker.component';
 import { RegistroWizardComponent } from '../features/agenda/components/registro-wizard/registro-wizard.component';
+import { TestModalComponent } from '../features/agenda/components/test-modal/test-modal.component';
 
 @Component({
   selector: 'app-home',
@@ -485,17 +486,21 @@ export class HomePage implements OnInit, ViewWillEnter {
 
   // --- FASE C/D: Integración Nuevo Wizard ---
   async openRegistroWizard(registroToEdit?: Registro) {
+    // Open circular modal instead of old wizard
     const modal = await this.modalController.create({
-      component: RegistroWizardComponent,
+      component: TestModalComponent,
       componentProps: { registroToEdit },
-      breakpoints: [0, 1],
-      initialBreakpoint: 1
+      cssClass: 'transparent-modal',
+      backdropDismiss: true
     });
 
     await modal.present();
+    const result = await modal.onWillDismiss();
 
-    const { data } = await modal.onWillDismiss();
-
+    // Handle modal result if needed
+    if (result.data?.action) {
+      console.log('Modal action:', result.data.action);
+    }
     // Refresh if needed (AgendaService signals should handle it automatically)
   }
 

@@ -765,3 +765,20 @@ ion-modal {
     }
   }
 }
+
+// Transparent modal for custom shapes
+.transparent-modal {
+  --background: transparent;
+  --box-shadow: none;
+  overflow: visible !important;
+
+  .ion-page {
+    background: transparent;
+    overflow: visible !important;
+  }
+
+  ion-content {
+    --overflow: visible;
+    overflow: visible !important;
+  }
+}

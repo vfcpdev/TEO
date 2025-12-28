@@ -1,0 +1,41 @@
+<div class="modal-wrapper">
+  <!-- Close button outside the circle -->
+  <div class="close-button-external" (click)="dismiss()">
+    <ion-icon name="close"></ion-icon>
+  </div>
+
+  <div class="round-modal-content">
+    <!-- Central text -->
+    <h2 class="central-text">Registro</h2>
+
+    <!-- Border buttons -->
+    <button class="border-button borrador-btn" (click)="onBorradorClick()">
+      Borrador
+    </button>
+    <button class="border-button confirmado-btn" (click)="onConfirmadoClick()">
+      Confirmado
+    </button>
+  </div>
+
+  <!-- Secondary modal (appears to the right when Borrador is clicked) -->
+  @if (showSecondaryModal()) {
+  <div class="secondary-modal">
+    <!-- Close button for Area modal -->
+    <div class="close-button-area" (click)="closeAreaModal()">
+      <ion-icon name="close"></ion-icon>
+    </div>
+
+    <h3 class="secondary-title">Área</h3>
+  </div>
+
+  <!-- Area buttons positioned outside the circle -->
+  <div class="area-buttons-container">
+    @for (area of agendaService.areas(); track area.id; let i = $index) {
+    <button class="area-button-external" [style.background-color]="area.color"
+      [style.top.px]="calculateAreaButtonTop(i)">
+      {{ area.name }}
+    </button>
+    }
+  </div>
+  }
+</div>

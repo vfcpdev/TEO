@@ -1,0 +1,393 @@
+:host {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  pointer-events: none;
+  overflow: visible !important;
+}
+
+.modal-wrapper {
+  pointer-events: auto;
+  position: absolute;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  min-width: 600px;
+  min-height: 400px;
+  overflow: visible;
+  top: 0;
+  right: 0;
+  padding: 60px 80px 40px 20px;
+
+  // Mobile: center the modal
+  @media (max-width: 1023px) {
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+}
+
+.round-modal-content {
+  width: 170px;
+  height: 170px;
+  background: var(--ion-background-color, #ffffff);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  border: 3px solid var(--ion-color-warning);
+  overflow: visible;
+  animation: scaleFromFAB 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.central-text {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--ion-color-dark);
+  text-align: center;
+}
+
+// Close button OUTSIDE the circle
+.close-button-external {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 40px;
+  height: 40px;
+  background: var(--ion-color-danger);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  ion-icon {
+    font-size: 24px;
+  }
+}
+
+// Border buttons (rectangular labels on the edge)
+.border-button {
+  position: absolute;
+  min-width: 90px;
+  height: 40px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 3px solid var(--ion-background-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  letter-spacing: 0.5px;
+  animation: fadeInScale 0.3s ease-out 0.2s both;
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+// Position Borrador button (top right, outside circle)
+.borrador-btn {
+  background: var(--ion-color-medium);
+  left: 88px; // Adjusted: 85px (radius) + 3px (border)
+  top: 30px;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+// Position Confirmado button (bottom right, outside circle)
+.confirmado-btn {
+  background: var(--ion-color-primary);
+  left: 88px; // Adjusted: 85px (radius) + 3px (border)
+  bottom: 30px;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+@keyframes scaleFromFAB {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+
+  40% {
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+// Old scaleIn animation (keep for other elements)
+@keyframes scaleIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+// Secondary modal (circle to the right)
+.secondary-modal {
+  position: absolute;
+  left: 210px; // Adjusted: 170px (width) + 40px spacing
+  top: 50%;
+  transform: translateY(-50%);
+  width: 150px;
+  height: 150px;
+  background: var(--ion-background-color, #ffffff);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  border: 3px solid var(--ion-color-medium);
+  animation: slideInRight 0.3s ease-out;
+
+  .secondary-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--ion-color-dark);
+    text-align: center;
+  }
+}
+
+// Area buttons container (positioned outside circle)
+.area-buttons-container {
+  position: absolute;
+  left: 363px; // 210px (modal left) + 150px (modal width) + 3px (border)
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+// Individual area button (external, like Borrador/Confirmado)
+.area-button-external {
+  position: absolute;
+  min-width: 90px;
+  height: 40px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 3px solid var(--ion-background-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+// Close button for Area modal
+.close-button-area {
+  position: absolute;
+  top: -15px;
+  right: -15px;
+  width: 35px;
+  height: 35px;
+  background: var(--ion-color-danger);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  ion-icon {
+    font-size: 20px;
+  }
+}
+
+// Connection line animation
+.connection-line {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) translateX(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+// Responsive styles for Tablet and Mobile
+@media (max-width: 1023px) {
+  .modal-wrapper {
+    min-width: 400px;
+    min-height: 300px;
+  }
+
+  .round-modal-content {
+    width: 140px;
+    height: 140px;
+    border: 2px solid var(--ion-color-warning);
+  }
+
+  .central-text {
+    font-size: 1rem;
+  }
+
+  .border-button {
+    min-width: 70px;
+    height: 32px;
+    font-size: 0.6rem;
+    padding: 6px 10px;
+  }
+
+  .borrador-btn {
+    left: 72px; // Adjusted for smaller circle
+  }
+
+  .confirmado-btn {
+    left: 72px;
+  }
+
+  .close-button-external {
+    width: 32px;
+    height: 32px;
+    top: -5px;
+    right: -5px;
+
+    ion-icon {
+      font-size: 18px;
+    }
+  }
+
+  .secondary-modal {
+    width: 120px;
+    height: 120px;
+    left: 170px; // Adjusted for smaller primary circle
+
+    .secondary-title {
+      font-size: 0.85rem;
+      margin-bottom: 0;
+    }
+  }
+
+  .area-buttons-container {
+    left: 293px; // 170px (modal left) + 120px (modal width) + 3px (border)
+  }
+
+  .area-button-external {
+    min-width: 70px;
+    height: 32px;
+    font-size: 0.6rem;
+    padding: 6px 10px;
+  }
+
+  .close-button-area {
+    width: 28px;
+    height: 28px;
+    top: -10px;
+    right: -10px;
+
+    ion-icon {
+      font-size: 16px;
+    }
+  }
+}
