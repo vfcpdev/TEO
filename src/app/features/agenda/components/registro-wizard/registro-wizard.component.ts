@@ -28,11 +28,12 @@ import {
   timeOutline,
   calendarOutline,
   checkmarkCircleOutline,
-  alertCircleOutline
+  alertCircleOutline,
+  addCircleOutline
 } from 'ionicons/icons';
 import { AgendaService } from '../../../../core/services/agenda.service';
 import { RegistroEstadoService } from '../../../../core/services/registro-estado.service';
-import { Registro, RegistroStatus, RegistroPrioridad } from '../../../../models/registro.model';
+import { Registro, RegistroStatus, RegistroPrioridad, RegistroArtefacto } from '../../../../models/registro.model';
 import { AreaConfig, TipoConfig, ContextoConfig } from '../../../../models/agenda.model';
 
 @Component({
@@ -79,7 +80,6 @@ import { AreaConfig, TipoConfig, ContextoConfig } from '../../../../models/agend
         <!-- PASO 1: IDENTIDAD -->
         @if (currentStep() === 1) {
           <div class="step-section">
-            <!-- Estado primero -->
             <div class="status-selector">
               <label class="status-label">¿Qué tipo de registro es?</label>
               <ion-segment [(ngModel)]="tempRegistro.status" mode="ios">
@@ -95,12 +95,10 @@ import { AreaConfig, TipoConfig, ContextoConfig } from '../../../../models/agend
               </ion-segment>
             </div>
 
-            <!-- Nombre siempre visible -->
             <ion-item fill="outline" class="input-item">
               <ion-input [(ngModel)]="tempRegistro.name" placeholder="Nombre del registro..."></ion-input>
             </ion-item>
 
-            <!-- Clasificación siempre visible -->
             <div class="optional-fields">
               <label class="section-label">Clasificación</label>
               <div class="chips-row">
@@ -109,20 +107,59 @@ import { AreaConfig, TipoConfig, ContextoConfig } from '../../../../models/agend
                     [outline]="tempRegistro.areaId !== area.id"
                     [color]="tempRegistro.areaId === area.id ? 'primary' : 'medium'"
                     (click)="selectArea(area.id)">
+                    <ion-icon [name]="area.icon"></ion-icon>
                     {{ area.name }}
                   </ion-chip>
                 }
               </div>
-              <div class="chips-row">
-                @for (tipo of agendaService.tipos(); track tipo.id) {
-                  <ion-chip 
-                    [outline]="tempRegistro.tipoId !== tipo.id"
-                    [color]="tempRegistro.tipoId === tipo.id ? 'secondary' : 'medium'"
-                    (click)="tempRegistro.tipoId = tipo.id">
-                    {{ tipo.name }}
-                  </ion-chip>
-                }
-              </div>
+
+              @if (tempRegistro.areaId) {
+                <div class="progressive-step animated-section">
+                  <!-- Contextos vinculados -->
+                  @if (availableContextos().length > 0) {
+                    <label class="section-label">¿En qué lugar? (Contexto)</label>
+                    <div class="chips-row">
+                      @for (context of availableContextos(); track context.id) {
+                        <ion-chip 
+                          [outline]="tempRegistro.contextoId !== context.id"
+                          [color]="tempRegistro.contextoId === context.id ? 'success' : 'medium'"
+                          (click)="tempRegistro.contextoId = context.id">
+                          {{ context.name }}
+                        </ion-chip>
+                      }
+                    </div>
+                  }
+
+                  <label class="section-label">¿Qué tipo de actividad es?</label>
+                  <div class="chips-row">
+                    @for (tipo of agendaService.tipos(); track tipo.id) {
+                      <ion-chip 
+                        [outline]="tempRegistro.tipoId !== tipo.id"
+                        [color]="tempRegistro.tipoId === tipo.id ? 'secondary' : 'medium'"
+                        (click)="tempRegistro.tipoId = tipo.id">
+                        {{ tipo.name }}
+                      </ion-chip>
+                    }
+                  </div>
+
+                  <!-- Metadata Específica (Ej: Clases) -->
+                  @if (isClaseTypeSelected()) {
+                    <div class="metadata-fields animated-section">
+                       <label class="section-label">Detalles de la Clase (Artefacto Lógico)</label>
+                       <div class="grid-2-col">
+                          <ion-item fill="outline" class="input-item small-input">
+                            <ion-label position="floating">Nombre del Curso</ion-label>
+                            <ion-input [(ngModel)]="courseMetadata.name" placeholder="Ej: Cálculo I"></ion-input>
+                          </ion-item>
+                          <ion-item fill="outline" class="input-item small-input">
+                            <ion-label position="floating">Código</ion-label>
+                            <ion-input [(ngModel)]="courseMetadata.code" placeholder="Ej: MAT101"></ion-input>
+                          </ion-item>
+                       </div>
+                    </div>
+                  }
+                </div>
+              }
             </div>
           </div>
         }
@@ -147,7 +184,7 @@ import { AreaConfig, TipoConfig, ContextoConfig } from '../../../../models/agend
           </div>
         }
 
-        <!-- PASO 3: RECURSOS (Checklist) -->
+        <!-- PASO 3: RECURSOS -->
         @if (currentStep() === 3) {
           <div class="step-section">
              <div class="checklist-header">
@@ -159,15 +196,15 @@ import { AreaConfig, TipoConfig, ContextoConfig } from '../../../../models/agend
              </div>
              
              <div class="checklist-items">
-               @if (!tempRegistro.checklist || tempRegistro.checklist.length === 0) {
+               @if (!tempRegistro.tareas || tempRegistro.tareas.length === 0) {
                  <p class="empty-msg">No hay tareas asociadas.</p>
                } @else {
-                 @for (tarea of tempRegistro.checklist; track tarea.id; let i = $index) {
+                 @for (tarea of tempRegistro.tareas; track tarea.id; let i = $index) {
                    <div class="task-row">
                      <ion-checkbox [(ngModel)]="tarea.completed"></ion-checkbox>
                      <ion-input [(ngModel)]="tarea.name" placeholder="Nueva tarea..."></ion-input>
                      <ion-button fill="clear" color="danger" (click)="removeTarea(i)">
-                       <ion-icon icon="close-outline"></ion-icon>
+                       <ion-icon name="close-outline"></ion-icon>
                      </ion-button>
                    </div>
                  }
@@ -181,7 +218,7 @@ import { AreaConfig, TipoConfig, ContextoConfig } from '../../../../models/agend
           </div>
         }
 
-        <!-- PASO 4: CONFLICTOS (Mock) -->
+        <!-- PASO 4: CONFLICTOS -->
         @if (currentStep() === 4) {
           <div class="step-section conflicts-section">
              <div class="conflict-status success">
@@ -205,12 +242,12 @@ import { AreaConfig, TipoConfig, ContextoConfig } from '../../../../models/agend
           <div class="step-section summary-section">
              <h3>Resumen del Registro</h3>
              <div class="summary-card">
-               <div class="summary-row">
-                 <strong>Nombre:</strong> <span>{{ tempRegistro.name }}</span>
-               </div>
-               <div class="summary-row">
-                 <strong>Área:</strong> <span>{{ getAreaName(tempRegistro.areaId) }}</span>
-               </div>
+                <div class="summary-row">
+                  <strong>Nombre:</strong> <span>{{ tempRegistro.name }}</span>
+                </div>
+                <div class="summary-row">
+                  <strong>Área:</strong> <span>{{ getAreaName(tempRegistro.areaId) }}</span>
+                </div>
                 <div class="summary-row">
                   <strong>Tipo:</strong> <span>{{ getTipoName(tempRegistro.tipoId) }}</span>
                 </div>
@@ -232,21 +269,17 @@ import { AreaConfig, TipoConfig, ContextoConfig } from '../../../../models/agend
       <!-- FOOTER -->
       <div class="wizard-footer">
         @if (tempRegistro.status === 'borrador') {
-          <!-- Borrador: Solo botón Guardar -->
           <div class="spacer"></div>
           <ion-button fill="solid" color="primary" expand="block" (click)="quickSaveBorrador()" [disabled]="!tempRegistro.name?.trim()">
             <ion-icon slot="start" name="save-outline"></ion-icon>
             Guardar
           </ion-button>
         } @else {
-          <!-- Otros estados: Wizard completo -->
           <ion-button fill="clear" color="medium" (click)="prevStep()" [disabled]="currentStep() === 1">
             <ion-icon slot="start" name="arrow-back-outline"></ion-icon>
             Atrás
           </ion-button>
-          
           <div class="spacer"></div>
-
           @if (currentStep() < 5) {
             <ion-button fill="solid" color="primary" (click)="nextStep()" [disabled]="!canProceed()">
               Siguiente
@@ -264,180 +297,64 @@ import { AreaConfig, TipoConfig, ContextoConfig } from '../../../../models/agend
   `,
   styles: [`
     .wizard-container {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
+      display: flex; flex-direction: column; height: 100%;
       background: var(--ion-background-color);
     }
-
     .wizard-header {
-      padding: 16px;
-      border-bottom: 1px solid var(--ion-color-step-100);
-      
-      .header-top {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-      }
-
+      padding: 16px; border-bottom: 1px solid var(--ion-color-step-100);
+      .header-top { display: flex; justify-content: space-between; align-items: center; }
       .step-indicator {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        margin-bottom: 8px;
-        
-        .step-count {
-          font-size: 12px;
-          color: var(--ion-color-medium);
-          text-transform: uppercase;
-          margin-bottom: 4px;
-        }
-        
-        .step-title {
-          font-size: 18px;
-          margin: 0;
-          font-weight: 700;
-        }
+        display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 8px;
+        .step-count { font-size: 12px; color: var(--ion-color-medium); text-transform: uppercase; margin-bottom: 4px; }
+        .step-title { font-size: 18px; margin: 0; font-weight: 700; }
       }
     }
-
-    .wizard-content {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px;
-    }
-
-    .step-section {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .input-item {
-      --background: var(--ion-color-step-50);
-      --border-radius: 8px;
-    }
-
-    .grid-2-col {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .checklist-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-
+    .wizard-content { flex: 1; overflow-y: auto; padding: 16px; }
+    .step-section { display: flex; flex-direction: column; gap: 16px; }
+    .input-item { --background: var(--ion-color-step-50); --border-radius: 8px; }
+    .grid-2-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .checklist-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
     .task-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--ion-color-step-50);
-      padding: 8px;
-      border-radius: 8px;
-      margin-bottom: 8px;
-      
-      ion-input {
-        --padding-start: 8px;
-      }
+      display: flex; align-items: center; gap: 8px; background: var(--ion-color-step-50);
+      padding: 8px; border-radius: 8px; margin-bottom: 8px;
+      ion-input { --padding-start: 8px; }
     }
-    
-    .empty-msg {
-       text-align: center;
-       color: var(--ion-color-medium);
-       font-style: italic;
-    }
-
+    .empty-msg { text-align: center; color: var(--ion-color-medium); font-style: italic; }
     .conflict-status {
-      text-align: center;
-      padding: 32px;
-      border-radius: 16px;
-      background: var(--ion-color-success-contrast);
-      border: 2px dashed var(--ion-color-success);
-      
-      &.success {
-        color: var(--ion-color-success);
-        .status-icon { font-size: 48px; }
-      }
+      text-align: center; padding: 32px; border-radius: 16px;
+      background: var(--ion-color-success-contrast); border: 2px dashed var(--ion-color-success);
+      &.success { color: var(--ion-color-success); .status-icon { font-size: 48px; } }
     }
-    
     .summary-card {
-      background: var(--ion-color-step-50);
-      padding: 16px;
-      border-radius: 12px;
-      
+      background: var(--ion-color-step-50); padding: 16px; border-radius: 12px;
       .summary-row {
-        display: flex;
-        justify-content: space-between;
-        padding: 8px 0;
+        display: flex; justify-content: space-between; padding: 8px 0;
         border-bottom: 1px solid var(--ion-color-step-100);
-        
         &:last-child { border-bottom: none; }
       }
     }
-
     .status-selector {
-      .status-label {
-        display: block;
-        font-size: 12px;
-        color: var(--ion-color-medium);
-        margin-bottom: 8px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-      }
-      
-      ion-segment {
-        --background: var(--ion-color-step-50);
-        border-radius: 8px;
-      }
-      
-      ion-segment-button {
-        --indicator-color: var(--ion-color-primary);
-        // Usar estilos globales para --color-checked (heredado de variables.scss)
-        font-size: 13px;
-        min-height: 36px;
-      }
+      .status-label { display: block; font-size: 12px; color: var(--ion-color-medium); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+      ion-segment { --background: var(--ion-color-step-50); border-radius: 8px; }
+      ion-segment-button { font-size: 13px; min-height: 36px; }
     }
-
     .optional-fields {
-      padding: 12px;
-      background: var(--ion-color-step-50);
-      border-radius: 12px;
-      
-      .section-label {
-        display: block;
-        font-size: 12px;
-        color: var(--ion-color-medium);
-        margin-bottom: 8px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-      }
+      padding: 12px; background: var(--ion-color-step-50); border-radius: 12px;
+      .section-label { display: block; font-size: 12px; color: var(--ion-color-medium); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
     }
-    
-    .chips-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 12px;
-      
-      ion-chip {
-        margin: 0;
-        cursor: pointer;
-      }
+    .chips-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;
+      ion-chip { margin: 0; cursor: pointer; }
     }
-
+    .animated-section { animation: fadeIn 0.3s ease-out; margin-top: 8px; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    .small-input { --padding-top: 4px; --padding-bottom: 4px; margin-bottom: 0px !important; }
     .wizard-footer {
-      padding: 16px;
-      border-top: 1px solid var(--ion-color-step-100);
-      display: flex;
-      align-items: center;
-      
+      padding: 16px; border-top: 1px solid var(--ion-color-step-100);
+      display: flex; align-items: center;
       .spacer { flex: 1; }
     }
-  `]
+  `],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RegistroWizardComponent implements OnInit {
   readonly agendaService = inject(AgendaService);
@@ -446,31 +363,34 @@ export class RegistroWizardComponent implements OnInit {
 
   @Input() registroToEdit?: Registro;
 
-  // State
   currentStep = signal(1);
   selectedDateCheck = new Date().toISOString();
   isEditing = false;
 
-  // Temp Object
   tempRegistro: Partial<Registro> = {
     id: crypto.randomUUID(),
+    profileId: '',
     name: '',
     status: RegistroStatus.BORRADOR,
     priority: RegistroPrioridad.SOFT,
-    checklist: []
+    isAllDay: false,
+    tareas: [],
+    artefactos: []
   };
 
-  // Computed
+  courseMetadata = { name: '', code: '' };
+
   availableContextos = computed(() => {
     const areaId = this.tempRegistro.areaId;
     if (!areaId) return [];
-    return this.agendaService.contextos().filter(c => c.areaId === areaId);
+    return this.agendaService.contextos().filter(c => c.areaIds.includes(areaId));
   });
 
   constructor() {
     addIcons({
       arrowForwardOutline, arrowBackOutline, saveOutline, closeOutline,
-      timeOutline, calendarOutline, checkmarkCircleOutline, alertCircleOutline
+      timeOutline, calendarOutline, checkmarkCircleOutline, alertCircleOutline,
+      addCircleOutline
     });
   }
 
@@ -479,34 +399,27 @@ export class RegistroWizardComponent implements OnInit {
       this.isEditing = true;
       this.tempRegistro = JSON.parse(JSON.stringify(this.registroToEdit));
       if (this.tempRegistro.startTime) {
-        // Convert Date to string for IO String if it is object
         const start = this.tempRegistro.startTime;
         this.selectedDateCheck = typeof start === 'string' ? start : (start as Date).toISOString();
       }
+
+      // Load course artifact if exists
+      const courseArt = this.tempRegistro.artefactos?.find(a => a.name === 'course_metadata');
+      if (courseArt && courseArt.metadata) {
+        this.courseMetadata = { ...courseArt.metadata };
+      }
+    } else {
+      this.tempRegistro.profileId = this.registroEstadoService.activeProfileId() || '';
     }
   }
 
-  close() {
-    this.modalCtrl.dismiss();
-  }
+  close() { this.modalCtrl.dismiss(); }
 
-  // Navigation Logic
-  nextStep() {
-    if (this.currentStep() < 5) {
-      this.currentStep.update(s => s + 1);
-    }
-  }
-
-  prevStep() {
-    if (this.currentStep() > 1) {
-      this.currentStep.update(s => s - 1);
-    }
-  }
+  nextStep() { if (this.currentStep() < 5) this.currentStep.update(s => s + 1); }
+  prevStep() { if (this.currentStep() > 1) this.currentStep.update(s => s - 1); }
 
   canProceed(): boolean {
-    if (this.currentStep() === 1) {
-      return !!this.tempRegistro.name?.trim(); // Solo nombre es obligatorio
-    }
+    if (this.currentStep() === 1) return !!this.tempRegistro.name?.trim();
     return true;
   }
 
@@ -521,84 +434,82 @@ export class RegistroWizardComponent implements OnInit {
     }
   }
 
-  // Actions
-  onAreaChange() {
-    // Reset context if area changes
+  selectArea(areaId: string) {
+    this.tempRegistro.areaId = areaId;
     this.tempRegistro.contextoId = '';
   }
 
-  selectArea(areaId: string) {
-    this.tempRegistro.areaId = areaId;
-    this.onAreaChange();
-  }
-
   addTarea() {
-    if (!this.tempRegistro.checklist) this.tempRegistro.checklist = [];
-    this.tempRegistro.checklist.push({
-      id: crypto.randomUUID(),
-      name: '',
-      completed: false
-    });
+    if (!this.tempRegistro.tareas) this.tempRegistro.tareas = [];
+    this.tempRegistro.tareas.push({ id: crypto.randomUUID(), name: '', completed: false });
   }
 
-  removeTarea(index: number) {
-    this.tempRegistro.checklist?.splice(index, 1);
+  removeTarea(index: number) { this.tempRegistro.tareas?.splice(index, 1); }
+
+  private syncArtefactos() {
+    if (this.isClaseTypeSelected()) {
+      if (!this.tempRegistro.artefactos) this.tempRegistro.artefactos = [];
+      const index = this.tempRegistro.artefactos.findIndex(a => a.name === 'course_metadata');
+      const artifact: RegistroArtefacto = {
+        id: index >= 0 ? this.tempRegistro.artefactos[index].id : crypto.randomUUID(),
+        tipo: 'logico',
+        name: 'course_metadata',
+        value: `${this.courseMetadata.name} (${this.courseMetadata.code})`,
+        metadata: { ...this.courseMetadata }
+      };
+      if (index >= 0) this.tempRegistro.artefactos[index] = artifact;
+      else this.tempRegistro.artefactos.push(artifact);
+    }
   }
-  /**
-   * Guardado rápido para borradores - no requiere pasar por todo el wizard
-   */
+
   quickSaveBorrador() {
+    this.syncArtefactos();
     const finalRegistro = {
       ...this.tempRegistro,
+      profileId: this.tempRegistro.profileId || this.registroEstadoService.activeProfileId() || '',
+      priority: this.tempRegistro.priority || RegistroPrioridad.SOFT,
+      isAllDay: this.tempRegistro.isAllDay || false,
       status: RegistroStatus.BORRADOR,
-      createdAt: new Date(),
+      createdAt: this.tempRegistro.createdAt || new Date(),
       updatedAt: new Date()
     } as Registro;
 
     this.agendaService.addRegistro(finalRegistro);
-    console.log('Borrador Guardado:', finalRegistro);
     this.modalCtrl.dismiss({ saved: true, quickSave: true });
   }
 
   saveRegistro() {
-    // Map date picker to startTime
     this.tempRegistro.startTime = new Date(this.selectedDateCheck);
+    this.syncArtefactos();
 
-    // Finalize object
     const finalRegistro = {
       ...this.tempRegistro,
+      profileId: this.tempRegistro.profileId || this.registroEstadoService.activeProfileId() || '',
+      priority: this.tempRegistro.priority || RegistroPrioridad.SOFT,
+      isAllDay: this.tempRegistro.isAllDay || false,
+      createdAt: this.tempRegistro.createdAt || new Date(),
       updatedAt: new Date()
     } as Registro;
 
-    if (!finalRegistro.createdAt) {
-      finalRegistro.createdAt = new Date();
-    }
+    if (this.isEditing) this.agendaService.updateRegistro(finalRegistro.id, finalRegistro);
+    else this.agendaService.addRegistro(finalRegistro);
 
-    if (this.isEditing) {
-      this.agendaService.updateRegistro(finalRegistro.id, finalRegistro);
-    } else {
-      this.agendaService.addRegistro(finalRegistro);
-    }
-
-    console.log('Registro Guardado:', finalRegistro);
     this.modalCtrl.dismiss({ saved: true });
   }
 
-  // Helpers
-  getAreaName(id?: string) {
-    return this.agendaService.areas().find(a => a.id === id)?.name || 'Sin Área';
-  }
-
-  getTipoName(id?: string) {
-    return this.agendaService.tipos().find(t => t.id === id)?.name || 'Sin Tipo';
-  }
+  getAreaName(id?: string) { return this.agendaService.areas().find(a => a.id === id)?.name || 'Sin Área'; }
+  getTipoName(id?: string) { return this.agendaService.tipos().find(t => t.id === id)?.name || 'Sin Tipo'; }
 
   getStatusColor(status?: RegistroStatus): string {
     switch (status) {
       case RegistroStatus.CONFIRMADO: return 'primary';
       case RegistroStatus.ESTUDIO: return 'warning';
-      case RegistroStatus.BORRADOR: return 'medium';
       default: return 'medium';
     }
+  }
+
+  isClaseTypeSelected(): boolean {
+    const tipo = this.agendaService.tipos().find(t => t.id === this.tempRegistro.tipoId);
+    return !!tipo && tipo.name.toLowerCase().includes('clase');
   }
 }

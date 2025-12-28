@@ -83,9 +83,10 @@ export interface TimelineItem {
 }
 
 // Interface para Registros del calendario
-import { Registro, RegistroStatus } from '../models/registro.model';
+import { Registro, RegistroStatus, RegistroPrioridad } from '../models/registro.model';
 import { ErrorLoggerService } from '../core/services/error-logger.service';
 import { AgendaService } from '../core/services/agenda.service';
+import { RegistroEstadoService } from '../core/services/registro-estado.service';
 import { ManualEvent } from '../models/manual-event.model';
 import { HolidayService } from '../core/services/holiday.service';
 import { AnalogClockPickerComponent } from '../shared/components/analog-clock-picker/analog-clock-picker.component';
@@ -134,6 +135,7 @@ export class HomePage implements OnInit, ViewWillEnter {
   private readonly agendaService = inject(AgendaService);
   private readonly holidayService = inject(HolidayService);
   private readonly errorLogger = inject(ErrorLoggerService);
+  private readonly registroEstadoService = inject(RegistroEstadoService);
 
   showSplash = signal(false);
   quickAccessEnabled = signal(true);
@@ -527,10 +529,13 @@ export class HomePage implements OnInit, ViewWillEnter {
 
                 const newBorrador: Registro = {
                   id: crypto.randomUUID(),
+                  profileId: this.registroEstadoService.activeProfileId() || '',
                   name: data.name.trim(),
                   status: RegistroStatus.BORRADOR,
+                  priority: RegistroPrioridad.SOFT,
                   startTime: now,
                   endTime: tomorrow,
+                  isAllDay: false,
                   notes: '',
                   createdAt: now,
                   updatedAt: now

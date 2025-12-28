@@ -11,6 +11,7 @@ export type UserProfile = {
     role: string; // Configurable: Padre, Madre, Hijo, Jefe, Compañero, Tío, etc.
     avatar?: string | undefined;
     color?: string | undefined; // Hex color for visual identification (e.g., #3B82F6)
+    areaIds?: string[]; // IDs de áreas asociadas a este perfil
     config: AgendaConfig;
     isPrimary: boolean;
     isActive: boolean;

@@ -18,7 +18,7 @@ export interface AreaConfig {
  */
 export interface ContextoConfig {
     id: string;
-    areaId: string; // Vínculo principal con un área macro
+    areaIds: string[]; // Vínculo con una o varias áreas macro
     name: string;
     isActive: boolean;
 }

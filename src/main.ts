@@ -1,9 +1,11 @@
 import { bootstrapApplication } from '@angular/platform-browser';
+import { importProvidersFrom } from '@angular/core';
 import { RouteReuseStrategy, provideRouter, withPreloading, PreloadAllModules } from '@angular/router';
 import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular/standalone';
 import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
 import { provideAuth, getAuth } from '@angular/fire/auth';
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
+import { IonicStorageModule } from '@ionic/storage-angular';
 import { Capacitor } from '@capacitor/core';
 import { defineCustomElements as jeepSqlite } from 'jeep-sqlite/loader';
 
@@ -50,6 +52,7 @@ initJeepSqlite().then(() => {
         enabled: !isDevMode(),
         registrationStrategy: 'registerWhenStable:30000'
       }),
+      importProvidersFrom(IonicStorageModule.forRoot()),
       { provide: ErrorHandler, useClass: GlobalErrorHandler },
     ],
   });

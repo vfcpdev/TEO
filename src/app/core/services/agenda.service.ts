@@ -58,7 +58,12 @@ export class AgendaService {
         this._config.update(c => ({
             ...c,
             areas: c.areas.filter(a => a.id !== id),
-            contextos: c.contextos.filter(ctx => ctx.areaId !== id) // Limpieza de cascada
+            contextos: c.contextos
+                .map(ctx => ({
+                    ...ctx,
+                    areaIds: ctx.areaIds.filter(aid => aid !== id)
+                }))
+                .filter(ctx => ctx.areaIds.length > 0) // Limpieza de redundantes sin área
         }));
     }
 

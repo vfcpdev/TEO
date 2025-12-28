@@ -1,11 +1,7 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
-  IonContent,
-  IonList,
-  IonItem,
   IonLabel,
-  IonBadge,
   IonSegment,
   IonSegmentButton,
   IonIcon,
@@ -26,19 +22,17 @@ import {
   calendarOutline
 } from 'ionicons/icons';
 import { RegistroEstadoService } from '../../../../core/services/registro-estado.service';
+import { AgendaService } from '../../../../core/services/agenda.service';
 import { StatusBadgeComponent } from '../../../../shared/components/status-badge/status-badge.component';
 import { Registro, RegistroStatus } from '../../../../models/registro.model';
+import { AreaConfig } from '../../../../models/agenda.model';
 
 @Component({
   selector: 'app-registros-dashboard',
   standalone: true,
   imports: [
     CommonModule,
-    IonContent,
-    IonList,
-    IonItem,
     IonLabel,
-    IonBadge,
     IonSegment,
     IonSegmentButton,
     IonIcon,
@@ -207,6 +201,7 @@ import { Registro, RegistroStatus } from '../../../../models/registro.model';
 })
 export class RegistrosDashboardComponent {
   private readonly registroService = inject(RegistroEstadoService);
+  private readonly agendaService = inject(AgendaService);
 
   profiles = this.registroService.profiles;
   activeProfileId = this.registroService.activeProfileId;
@@ -245,7 +240,6 @@ export class RegistrosDashboardComponent {
   }
 
   getAreaName(id: string) {
-    // Sería ideal tener acceso a AgendaService aquí
-    return 'Área';
+    return this.agendaService.areas().find(a => a.id === id)?.name || 'Sin Área';
   }
 }

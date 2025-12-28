@@ -97,7 +97,8 @@ export interface Registro {
     // Artefactos
     artefactos?: RegistroArtefacto[];
 
-    // Metadata
+    // Metadata e Historial
+    metadata?: Record<string, any>;
     createdAt: Date;
     updatedAt: Date;
 }
