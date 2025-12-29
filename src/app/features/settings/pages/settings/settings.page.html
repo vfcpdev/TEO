@@ -61,6 +61,22 @@
 
           <div class="interface-option">
             <div class="option-info">
+              <ion-icon name="moon" color="dark"></ion-icon>
+              <div class="option-text">
+                <h4>Modo Oscuro</h4>
+                <p>Cambiar apariencia de la app</p>
+              </div>
+            </div>
+            <div class="toggle-wrapper" style="display: flex; align-items: center; gap: 8px;">
+              <ion-button fill="clear" size="small" (click)="presentThemePopover($event); $event.stopPropagation();">
+                <ion-icon name="add-circle-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+              <ion-toggle [checked]="settingsService.darkMode()" (ionChange)="toggleTheme($event)"></ion-toggle>
+            </div>
+          </div>
+
+          <div class="interface-option">
+            <div class="option-info">
               <ion-icon name="rocket" color="primary"></ion-icon>
               <div class="option-text">
                 <h4>Pantalla de Bienvenida</h4>
@@ -123,6 +139,23 @@
       } @else if (selectedModule === 'design') {
       <div class="interface-module">
         <h3>Configuración de Diseño</h3>
+
+        <!-- Dark Mode -->
+        <div class="interface-option">
+          <div class="option-info">
+            <ion-icon name="moon" color="dark"></ion-icon>
+            <div class="option-text">
+              <h4>Modo Oscuro</h4>
+              <p>Cambiar apariencia de la app</p>
+            </div>
+          </div>
+          <div class="toggle-wrapper" style="display: flex; align-items: center; gap: 8px;">
+            <ion-button fill="clear" size="small" (click)="presentThemePopover($event); $event.stopPropagation();">
+              <ion-icon name="add-circle-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+            <ion-toggle [checked]="settingsService.darkMode()" (ionChange)="toggleTheme($event)"></ion-toggle>
+          </div>
+        </div>
 
         <!-- Splash Screen -->
         <div class="interface-option">
