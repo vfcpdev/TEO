@@ -66,6 +66,8 @@ import { WeekViewComponent } from '../features/agenda/components/week-view/week-
 import { MonthViewComponent } from '../features/agenda/components/month-view/month-view.component';
 import { FabOptionsComponent } from '../shared/components/fab-options/fab-options.component';
 import { BorradorWizardComponent } from '../shared/components/borrador-wizard/borrador-wizard.component';
+import { AgendarWizardComponent } from '../shared/components/agendar-wizard/agendar-wizard.component';
+import { RegistroStatus, RegistroPrioridad } from '../models/registro.model';
 
 // Interface para items del timeline (cursos + eventos manuales + tiempo libre)
 export interface TimelineItem {
@@ -99,10 +101,8 @@ export interface TimelineItem {
     IonButtons,
     IonIcon,
     IonMenuButton,
-    IonButton,
     IonSegmentButton,
     IonSegment,
-    IonBadge,
     RouterModule,
     IonLabel,
     BufferVisualizerComponent,
@@ -262,27 +262,74 @@ export class HomePage implements OnInit, ViewWillEnter, OnDestroy {
   }
 
   private async openBorradorQuick() {
-    // Abrir wizard en modo "borrador" - sin fecha ni hora
-    const modal = await this.modalController.create({
-      component: BorradorWizardComponent,
-      cssClass: 'borrador-wizard-modal'
-    });
+    try {
+      console.log('[DEBUG] Starting openBorradorQuick');
+      console.log('[DEBUG] BorradorWizardComponent:', BorradorWizardComponent);
 
-    await modal.present();
+      const modal = await this.modalController.create({
+        component: BorradorWizardComponent,
+        cssClass: 'borrador-wizard-modal'
+      });
 
-    const { data } = await modal.onWillDismiss();
+      console.log('[DEBUG] Modal created successfully:', modal);
 
-    if (data) {
-      // Crear registro borrador sin fecha/hora
-      console.log('Crear borrador:', data);
-      // TODO: Llamar a servicio para guardar borrador
+      await modal.present();
+      console.log('[DEBUG] Modal presented successfully');
+
+      const { data } = await modal.onWillDismiss();
+      console.log('[DEBUG] Modal dismissed with data:', data);
+
+      if (data) {
+        console.log('Crear borrador:', data);
+        // TODO: Llamar a servicio para guardar borrador
+      }
+    } catch (error) {
+      console.error('[ERROR] Failed to open Borrador wizard:', error);
     }
   }
 
-  private openAgendarWithCalendar() {
-    // Abrir wizard en modo "agendar" - con calendario para fecha/hora
-    console.log('Abrir Agendar (con calendario)');
-    // TODO: Implementar wizard con calendario
-    this.openRegistroWizard();
+
+  private async openAgendarWithCalendar() {
+    try {
+      const modal = await this.modalController.create({
+        component: AgendarWizardComponent,
+        cssClass: 'agendar-wizard-modal'
+      });
+
+      await modal.present();
+
+      const { data } = await modal.onWillDismiss();
+
+      if (data) {
+        // Obtener profileId actual
+        const profileId = 'default-profile';
+
+        this.agendaService.addRegistro({
+          id: crypto.randomUUID(),
+          profileId,
+          name: data.nombre,
+          startTime: new Date(data.fechaInicio),
+          endTime: new Date(data.fechaFin),
+          status: RegistroStatus.CONFIRMADO,
+          priority: RegistroPrioridad.SOFT,
+          isAllDay: false,
+          areaId: data.areaIds[0],
+          contextoId: data.contextoIds[0],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        });
+
+        // Mostrar toast
+        const toast = await this.toastController.create({
+          message: `Registro "${data.nombre}" agendado`,
+          duration: 2000,
+          color: 'success',
+          position: 'bottom'
+        });
+        await toast.present();
+      }
+    } catch (error) {
+      console.error('[ERROR] Failed to schedule registro:', error);
+    }
   }
 }

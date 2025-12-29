@@ -6,7 +6,7 @@ import {
     ContextoConfig,
     TipoConfig
 } from '../../models/agenda.model';
-import { Registro, RegistroTipoBase, RegistroStatus } from '../../models/registro.model';
+import { Registro, RegistroTipoBase, RegistroStatus, RegistroPrioridad } from '../../models/registro.model';
 import { ConflictEngineService } from './conflict-engine.service';
 import { ConflictDetectionResult } from '../../models/conflict.model';
 
@@ -154,6 +154,36 @@ export class AgendaService {
 
     deleteRegistro(id: string) {
         this._registros.update(r => r.filter(item => item.id !== id));
+    }
+
+    /**
+     * Guarda un borrador sin fecha/hora definida
+     */
+    saveBorrador(data: {
+        nombre: string;
+        areaIds: string[];
+        contextoIds: string[];
+        profileId: string;
+    }): Registro {
+        const borrador: Registro = {
+            id: crypto.randomUUID(),
+            profileId: data.profileId,
+            name: data.nombre,
+            status: RegistroStatus.BORRADOR,
+            priority: RegistroPrioridad.SOFT,
+            isAllDay: false,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            // Opcional: asignar primera área si existe
+            areaId: data.areaIds[0],
+            // Opcional: asignar primer contexto si existe
+            contextoId: data.contextoIds[0]
+        };
+
+        // Agregar a registros sin validar conflictos (no tiene fecha/hora)
+        this._registros.update(r => [...r, borrador]);
+
+        return borrador;
     }
 
     // --- Persistencia ---

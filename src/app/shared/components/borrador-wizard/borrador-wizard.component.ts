@@ -9,20 +9,20 @@ import { addIcons } from 'ionicons';
 import { folderOutline, folderOpenOutline, documentOutline } from 'ionicons/icons';
 
 interface TreeNode {
-    id: string;
-    name: string;
-    type: 'area' | 'contexto';
-    icon: string;
-    color?: string;
-    children?: TreeNode[];
-    expanded?: boolean;
-    selected?: boolean;
-    parentId?: string;
+  id: string;
+  name: string;
+  type: 'area' | 'contexto';
+  icon: string;
+  color?: string;
+  children?: TreeNode[];
+  expanded?: boolean;
+  selected?: boolean;
+  parentId?: string;
 }
 
 @Component({
-    selector: 'app-borrador-wizard',
-    template: `
+  selector: 'app-borrador-wizard',
+  template: `
     <ion-header>
       <ion-toolbar color="primary">
         <ion-title>Nuevo Borrador</ion-title>
@@ -94,7 +94,7 @@ interface TreeNode {
       </ion-toolbar>
     </ion-footer>
   `,
-    styles: [`
+  styles: [`
     .form-section {
       margin-bottom: 24px;
     }
@@ -161,105 +161,105 @@ interface TreeNode {
       padding: 12px;
     }
   `],
-    standalone: true,
-    imports: [
-        CommonModule,
-        FormsModule,
-        IonHeader,
-        IonToolbar,
-        IonTitle,
-        IonContent,
-        IonFooter,
-        IonButton,
-        IonInput,
-        IonItem,
-        IonLabel,
-        IonCheckbox,
-        IonIcon
-    ]
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonFooter,
+    IonButton,
+    IonInput,
+    IonItem,
+    IonLabel,
+    IonCheckbox,
+    IonIcon
+  ]
 })
 export class BorradorWizardComponent {
-    private modalCtrl = inject(ModalController);
-    private agendaService = inject(AgendaService);
+  private modalCtrl = inject(ModalController);
+  private agendaService = inject(AgendaService);
 
-    nombreRegistro = '';
-    treeNodes = signal<TreeNode[]>([]);
+  nombreRegistro = '';
+  treeNodes = signal<TreeNode[]>([]);
 
-    constructor() {
-        addIcons({ folderOutline, folderOpenOutline, documentOutline });
-        this.loadTreeData();
+  constructor() {
+    addIcons({ folderOutline, folderOpenOutline, documentOutline });
+    this.loadTreeData();
+  }
+
+  private loadTreeData() {
+    // Obtener áreas y contextos del servicio
+    const areas = this.agendaService.areas() || [];
+    const contextos = this.agendaService.contextos() || [];
+
+    // Construir árbol
+    const tree: TreeNode[] = areas
+      .filter(area => area.isActive)
+      .sort((a, b) => a.order - b.order)
+      .map(area => ({
+        id: area.id,
+        name: area.name,
+        type: 'area' as const,
+        icon: area.icon,
+        color: area.color,
+        expanded: false,
+        selected: false,
+        children: contextos
+          .filter(ctx => ctx.isActive && ctx.areaIds.includes(area.id))
+          .map(ctx => ({
+            id: ctx.id,
+            name: ctx.name,
+            type: 'contexto' as const,
+            icon: 'document-outline',
+            selected: false,
+            parentId: area.id
+          }))
+      }));
+
+    this.treeNodes.set(tree);
+  }
+
+  toggleNode(node: TreeNode) {
+    node.expanded = !node.expanded;
+    this.treeNodes.set([...this.treeNodes()]);
+  }
+
+  onNodeSelect(node: TreeNode, event: any) {
+    node.selected = event.detail.checked;
+
+    // Si es un área, seleccionar/deseleccionar todos sus contextos
+    if (node.type === 'area' && node.children) {
+      node.children.forEach(child => {
+        child.selected = node.selected;
+      });
     }
 
-    private loadTreeData() {
-        // Obtener áreas y contextos del servicio
-        const areas = this.agendaService.areas() || [];
-        const contextos = this.agendaService.contextos() || [];
+    this.treeNodes.set([...this.treeNodes()]);
+  }
 
-        // Construir árbol
-        const tree: TreeNode[] = areas
-            .filter(area => area.isActive)
-            .sort((a, b) => a.order - b.order)
-            .map(area => ({
-                id: area.id,
-                name: area.name,
-                type: 'area' as const,
-                icon: area.icon,
-                color: area.color,
-                expanded: false,
-                selected: false,
-                children: contextos
-                    .filter(ctx => ctx.isActive && ctx.areaIds.includes(area.id))
-                    .map(ctx => ({
-                        id: ctx.id,
-                        name: ctx.name,
-                        type: 'contexto' as const,
-                        icon: 'document-outline',
-                        selected: false,
-                        parentId: area.id
-                    }))
-            }));
+  async save() {
+    const selectedAreas = this.treeNodes()
+      .filter(node => node.selected)
+      .map(node => node.id);
 
-        this.treeNodes.set(tree);
-    }
+    const selectedContextos = this.treeNodes()
+      .reduce((acc, node) => acc.concat(node.children || []), [] as TreeNode[])
+      .filter(child => child.selected)
+      .map(child => child.id);
 
-    toggleNode(node: TreeNode) {
-        node.expanded = !node.expanded;
-        this.treeNodes.set([...this.treeNodes()]);
-    }
+    const result = {
+      nombre: this.nombreRegistro,
+      areaIds: selectedAreas,
+      contextoIds: selectedContextos
+    };
 
-    onNodeSelect(node: TreeNode, event: any) {
-        node.selected = event.detail.checked;
+    await this.modalCtrl.dismiss(result);
+  }
 
-        // Si es un área, seleccionar/deseleccionar todos sus contextos
-        if (node.type === 'area' && node.children) {
-            node.children.forEach(child => {
-                child.selected = node.selected;
-            });
-        }
-
-        this.treeNodes.set([...this.treeNodes()]);
-    }
-
-    async save() {
-        const selectedAreas = this.treeNodes()
-            .filter(node => node.selected)
-            .map(node => node.id);
-
-        const selectedContextos = this.treeNodes()
-            .flatMap(node => node.children || [])
-            .filter(child => child.selected)
-            .map(child => child.id);
-
-        const result = {
-            nombre: this.nombreRegistro,
-            areaIds: selectedAreas,
-            contextoIds: selectedContextos
-        };
-
-        await this.modalCtrl.dismiss(result);
-    }
-
-    dismiss() {
-        this.modalCtrl.dismiss();
-    }
+  dismiss() {
+    this.modalCtrl.dismiss();
+  }
 }
