@@ -1,4 +1,4 @@
-import { Injectable, signal, computed, effect } from '@angular/core';
+import { Injectable, signal, computed, effect, inject } from '@angular/core';
 import { Preferences } from '@capacitor/preferences';
 import {
     AgendaConfig,
@@ -6,13 +6,16 @@ import {
     ContextoConfig,
     TipoConfig
 } from '../../models/agenda.model';
-import { Registro, RegistroTipoBase } from '../../models/registro.model';
+import { Registro, RegistroTipoBase, RegistroStatus } from '../../models/registro.model';
+import { ConflictEngineService } from './conflict-engine.service';
+import { ConflictDetectionResult } from '../../models/conflict.model';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AgendaService {
     private readonly STORAGE_KEY = 'agenda_config';
+    private readonly conflictEngine = inject(ConflictEngineService);
 
     // Signals para el estado global de la configuración
     private _config = signal<AgendaConfig>(this.getDefaultConfig());
@@ -119,9 +122,30 @@ export class AgendaService {
         }));
     }
 
-    // --- Registros (Fase C) ---
-    addRegistro(registro: Registro) {
-        this._registros.update(r => [...r, registro]);
+    // --- Registros (Fase 1.1: Con detección de conflictos) ---
+    /**
+     * Agrega un registro después de validar conflictos.
+     * FASE 1.1: Detecta conflictos y marca registro como "En Estudio" si aplica.
+     * 
+     * @returns ConflictDetectionResult con información de conflictos
+     */
+    addRegistro(registro: Registro): ConflictDetectionResult {
+        const existing = this._registros();
+        const conflictResult = this.conflictEngine.detectConflicts(registro, existing);
+
+        if (conflictResult.hasConflicts && !conflictResult.canProceed) {
+            // Si hay conflictos ERROR, marcar automáticamente como "En Estudio"
+            const updatedRegistro = {
+                ...registro,
+                status: RegistroStatus.ESTUDIO
+            };
+            this._registros.update(r => [...r, updatedRegistro]);
+        } else {
+            // Sin conflictos o solo warnings, agregar normalmente
+            this._registros.update(r => [...r, registro]);
+        }
+
+        return conflictResult;
     }
 
     updateRegistro(id: string, updates: Partial<Registro>) {

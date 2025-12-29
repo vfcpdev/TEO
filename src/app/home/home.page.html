@@ -217,6 +217,16 @@
 
       <!-- Filas de datos -->
       @for (registro of registrosFiltrados(); track registro.id) {
+      <!-- Buffer BEFORE (si existe) -->
+      @if (registro.bufferBefore && registro.bufferBefore.duration > 0) {
+      <ion-row class="buffer-row">
+        <ion-col size="12">
+          <app-buffer-visualizer [type]="'before'" [buffer]="registro.bufferBefore" [pixelsPerMinute]="1">
+          </app-buffer-visualizer>
+        </ion-col>
+      </ion-row>
+      }
+
       <ion-row class="grid-row" [class.selected]="selectedRegistros().has(registro.id)"
         (click)="selectionMode() ? toggleSelection(registro.id) : null">
 
@@ -292,6 +302,16 @@
           }
         </ion-col>
       </ion-row>
+
+      <!-- Buffer AFTER (si existe) -->
+      @if (registro.bufferAfter && registro.bufferAfter.duration > 0) {
+      <ion-row class="buffer-row">
+        <ion-col size="12">
+          <app-buffer-visualizer [type]="'after'" [buffer]="registro.bufferAfter" [pixelsPerMinute]="1">
+          </app-buffer-visualizer>
+        </ion-col>
+      </ion-row>
+      }
       }
     </ion-grid>
     }

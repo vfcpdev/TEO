@@ -1,0 +1,67 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.buffer-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  margin: 2px 0;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  min-height: 24px;
+  
+  &.buffer-before {
+    background: var(--teo-buffer-before, rgba(59, 130, 246, 0.15));
+    border-left: 3px solid var(--ion-color-primary);
+  }
+  
+  &.buffer-after {
+    background: var(--teo-buffer-after, rgba(16, 185, 129, 0.15));
+    border-left: 3px solid var(--ion-color-success);
+  }
+}
+
+.buffer-content {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: var(--ion-text-color);
+  opacity: 0.8;
+}
+
+.buffer-icon {
+  font-size: 1rem;
+  
+  .buffer-before & {
+    color: var(--ion-color-primary);
+  }
+  
+  .buffer-after & {
+    color: var(--ion-color-success);
+  }
+}
+
+.buffer-label {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// Hover effect para edición futura
+.buffer-container:hover {
+  opacity: 0.9;
+  cursor: pointer;
+  
+  &.buffer-before {
+    background: rgba(59, 130, 246, 0.25);
+  }
+  
+  &.buffer-after {
+    background: rgba(16, 185, 129, 0.25);
+  }
+}

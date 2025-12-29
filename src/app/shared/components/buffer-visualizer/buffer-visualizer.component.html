@@ -1,0 +1,14 @@
+<div 
+  class="buffer-container" 
+  [class.buffer-before]="type === 'before'"
+  [class.buffer-after]="type === 'after'"
+  [style.height.px]="heightPx"
+  *ngIf="buffer && buffer.duration > 0">
+  
+  <div class="buffer-content">
+    <ion-icon [name]="icon" class="buffer-icon"></ion-icon>
+    <span class="buffer-label">
+      {{ description }} ({{ buffer.duration }} min)
+    </span>
+  </div>
+</div>

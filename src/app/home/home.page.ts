@@ -95,6 +95,7 @@ import { AnalogClockPickerComponent } from '../shared/components/analog-clock-pi
 import { RegistroWizardComponent } from '../features/agenda/components/registro-wizard/registro-wizard.component';
 import { TestModalComponent } from '../features/agenda/components/test-modal/test-modal.component';
 import { FreeTimeGeneratorService } from '../core/services/free-time-generator.service';
+import { BufferVisualizerComponent } from '../shared/components/buffer-visualizer/buffer-visualizer.component';
 
 @Component({
   selector: 'app-home',
@@ -124,6 +125,7 @@ import { FreeTimeGeneratorService } from '../core/services/free-time-generator.s
     RouterModule,
     IonLabel,
     AnalogClockPickerComponent,
+    BufferVisualizerComponent,
     IonFab,
     IonFabButton
   ],
