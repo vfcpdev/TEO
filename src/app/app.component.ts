@@ -15,9 +15,9 @@ import {
   IonLabel,
   IonMenuToggle,
   IonFooter,
-  IonToggle,
   AlertController,
-  ModalController
+  ModalController,
+  PopoverController
 } from '@ionic/angular/standalone';
 
 import { addIcons } from 'ionicons';
@@ -35,7 +35,8 @@ import {
   logOutOutline,
   constructOutline,
   moon,
-  sunny
+  sunny,
+  colorPalette
 } from 'ionicons/icons';
 import { MENU_ITEMS, MenuItem } from './shared/constants/menu-items';
 import { Preferences } from '@capacitor/preferences';
@@ -43,6 +44,9 @@ import { StatusBar, Style } from '@capacitor/status-bar';
 import { Platform } from '@ionic/angular/standalone';
 import { AgendaService } from './core/services/agenda.service';
 import { AboutModalComponent } from './shared/components/about-modal/about-modal.component';
+import { SettingsService } from './core/services/settings.service';
+import { ThemePopoverComponent } from './features/settings/components/theme-popover/theme-popover.component';
+import { THEMES } from './core/constants/themes';
 
 @Component({
   selector: 'app-root',
@@ -63,7 +67,6 @@ import { AboutModalComponent } from './shared/components/about-modal/about-modal
     IonLabel,
     IonMenuToggle,
     IonFooter,
-    IonToggle,
     RouterLink,
     FormsModule
   ],
@@ -74,10 +77,11 @@ export class AppComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly alertController = inject(AlertController);
   private readonly modalController = inject(ModalController);
+  private readonly popoverController = inject(PopoverController);
   private readonly agendaService = inject(AgendaService);
+  public readonly settingsService = inject(SettingsService);
 
   menuItems: MenuItem[] = MENU_ITEMS;
-  darkMode: boolean = false;
 
   constructor() {
     addIcons({
@@ -94,14 +98,15 @@ export class AppComponent implements OnInit {
       logOutOutline,
       constructOutline,
       moon,
-      sunny
+      sunny,
+      colorPalette
     });
   }
 
   async ngOnInit() {
     try {
       await this.platform.ready();
-      await this.loadThemeOnly();
+      // SettingsService will handle theme loading
       if (this.platform.is('capacitor')) {
         await this.setupStatusBar();
       }
@@ -110,26 +115,14 @@ export class AppComponent implements OnInit {
     }
   }
 
-  private async loadThemeOnly(): Promise<boolean> {
-    try {
-      const { value } = await Preferences.get({ key: 'darkMode' });
-      const isDark = value === 'true';
-      this.darkMode = isDark;
-      document.body.classList.toggle('dark', isDark);
-      return true;
-    } catch (error) {
-      console.error('Error cargando tema:', error);
-      return false;
-    }
-  }
-
   async setupStatusBar() {
     try {
+      const isDark = this.settingsService.darkMode();
       await StatusBar.setStyle({
-        style: this.darkMode ? Style.Dark : Style.Light
+        style: isDark ? Style.Dark : Style.Light
       });
       await StatusBar.setBackgroundColor({
-        color: this.darkMode ? '#222428' : '#3880ff'
+        color: isDark ? '#222428' : '#3880ff'
       });
       await StatusBar.show();
     } catch (error) {
@@ -147,23 +140,6 @@ export class AppComponent implements OnInit {
     this.router.navigate(['/profile']);
   }
 
-  async toggleTheme(event: any) {
-    const isDark = event.detail.checked;
-    this.darkMode = isDark;
-    document.body.classList.toggle('dark', isDark);
-
-    // Guardar preferencia
-    await Preferences.set({
-      key: 'darkMode',
-      value: isDark.toString()
-    });
-
-    // Actualizar StatusBar
-    if (this.platform.is('capacitor')) {
-      await this.setupStatusBar();
-    }
-  }
-
   async logout() {
     await Preferences.remove({ key: 'userName' });
     this.router.navigate(['/login']);
@@ -175,5 +151,28 @@ export class AppComponent implements OnInit {
       cssClass: 'about-modal-custom'
     });
     await modal.present();
+  }
+
+  async presentThemePopover(event: Event) {
+    const popover = await this.popoverController.create({
+      component: ThemePopoverComponent,
+      event: event,
+      componentProps: {
+        currentTheme: this.settingsService.currentTheme()
+      }
+    });
+
+    await popover.present();
+
+    const { data } = await popover.onWillDismiss();
+    if (data) {
+      await this.settingsService.setTheme(data);
+    }
+  }
+
+  getThemeIconColor(): string {
+    const currentTheme = this.settingsService.currentTheme();
+    const theme = THEMES.find(t => t.id === currentTheme);
+    return theme ? theme.colors.primary : '#3880ff';
   }
 }

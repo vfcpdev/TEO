@@ -17,7 +17,7 @@ export interface Theme {
 export const THEMES: Theme[] = [
     {
         id: 'forest',
-        name: 'Bosque Profundo (Original)',
+        name: 'Bosque Profundo',
         colors: {
             primary: '#1e40af',    // Blue 800
             secondary: '#6366f1',  // Indigo 500
@@ -62,7 +62,7 @@ export const THEMES: Theme[] = [
     },
     {
         id: 'minimalist',
-        name: 'Minimalista (Grises)',
+        name: 'Minimalista',
         colors: {
             primary: '#212121',    // Grey 900
             secondary: '#616161',  // Grey 700
@@ -74,5 +74,21 @@ export const THEMES: Theme[] = [
             light: '#fafafa',
             dark: '#000000'
         }
+    },
+    {
+        id: 'solar',
+        name: 'Energía Solar',
+        colors: {
+            primary: '#ff6f00',    // Orange 900
+            secondary: '#ffc107',  // Amber 500
+            tertiary: '#ffb74d',   // Orange 300
+            success: '#689f38',
+            warning: '#f57c00',
+            danger: '#d84315',
+            medium: '#8d6e63',
+            light: '#fff8e1',
+            dark: '#3e2723'
+        }
     }
 ];
+

@@ -122,6 +122,55 @@ export class SettingsService {
                 console.log('Error updating status bar:', error);
             }
         }
+
+        // Re-aplicar tema con ajustes para modo oscuro
+        this.applyThemePalette(this.currentTheme());
+    }
+
+    // Helper: convertir hex a array RGB
+    private hexToRgbArray(hex: string): number[] {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? [
+            parseInt(result[1], 16),
+            parseInt(result[2], 16),
+            parseInt(result[3], 16)
+        ] : [0, 0, 0];
+    }
+
+    // Helper: convertir RGB a hex
+    private rgbToHex(r: number, g: number, b: number): string {
+        return '#' + [r, g, b].map(x => {
+            const hex = x.toString(16);
+            return hex.length === 1 ? '0' + hex : hex;
+        }).join('');
+    }
+
+    // Calcular shade (10% más oscuro)
+    private calculateShade(hex: string): string {
+        const rgb = this.hexToRgbArray(hex);
+        return this.rgbToHex(
+            Math.round(rgb[0] * 0.9),
+            Math.round(rgb[1] * 0.9),
+            Math.round(rgb[2] * 0.9)
+        );
+    }
+
+    // Calcular tint (10% más claro)
+    private calculateTint(hex: string): string {
+        const rgb = this.hexToRgbArray(hex);
+        return this.rgbToHex(
+            Math.min(255, Math.round(rgb[0] + (255 - rgb[0]) * 0.1)),
+            Math.min(255, Math.round(rgb[1] + (255 - rgb[1]) * 0.1)),
+            Math.min(255, Math.round(rgb[2] + (255 - rgb[2]) * 0.1))
+        );
+    }
+
+    // Calcular color de contraste (blanco o negro según luminosidad)
+    private calculateContrast(hex: string): string {
+        const rgb = this.hexToRgbArray(hex);
+        // Fórmula de luminosidad relativa (WCAG)
+        const luminance = (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]) / 255;
+        return luminance > 0.5 ? '#000000' : '#ffffff';
     }
 
     private applyThemePalette(themeId: string) {
@@ -138,17 +187,80 @@ export class SettingsService {
         };
 
         const colors: any = theme.colors;
+
+        // Aplicar cada color con todas sus variantes
         for (const colorName in colors) {
             const hex = colors[colorName];
-            // Solo aplicamos variables CSS si el color está definido
-            if (hex) {
-                setVar(`--ion-color-${colorName}`, hex);
-                const rgb = hexToRgb(hex);
-                if (rgb) {
-                    setVar(`--ion-color-${colorName}-rgb`, rgb);
-                }
-                // Nota: Shades y Tints se omiten por brevedad, Ionic generará fallback o se pueden calcular
+            if (!hex) continue;
+
+            // Color base
+            setVar(`--ion-color-${colorName}`, hex);
+
+            // RGB
+            const rgb = hexToRgb(hex);
+            if (rgb) {
+                setVar(`--ion-color-${colorName}-rgb`, rgb);
+            }
+
+            // Shade (más oscuro)
+            const shade = this.calculateShade(hex);
+            setVar(`--ion-color-${colorName}-shade`, shade);
+
+            // Tint (más claro)
+            const tint = this.calculateTint(hex);
+            setVar(`--ion-color-${colorName}-tint`, tint);
+
+            // Contrast (texto sobre este color)
+            const contrast = this.calculateContrast(hex);
+            setVar(`--ion-color-${colorName}-contrast`, contrast);
+            const contrastRgb = hexToRgb(contrast);
+            if (contrastRgb) {
+                setVar(`--ion-color-${colorName}-contrast-rgb`, contrastRgb);
             }
         }
+
+        // Variables adicionales según modo oscuro
+        const isDark = this.darkMode();
+
+        if (isDark) {
+            // Modo oscuro: fondos oscuros, textos claros
+            setVar('--ion-background-color', '#121212');
+            setVar('--ion-background-color-rgb', '18, 18, 18');
+            setVar('--ion-card-background', '#1e1e1e');
+            setVar('--ion-text-color', '#f1f5f9');
+            setVar('--ion-text-color-rgb', '241, 245, 249');
+            setVar('--ion-border-color', '#404040');
+            setVar('--ion-toolbar-background', '#1e1e1e');
+            setVar('--ion-item-background', '#121212');
+
+            // Segments en oscuro
+            setVar('--segment-text-color', '#d1d5db');
+            setVar('--segment-text-color-hover', '#f3f4f6');
+            setVar('--segment-text-color-checked', '#ffffff');
+        } else {
+            // Modo claro: usar colores del tema
+            setVar('--ion-background-color', theme.colors.light);
+            const lightRgb = hexToRgb(theme.colors.light);
+            if (lightRgb) {
+                setVar('--ion-background-color-rgb', lightRgb);
+            }
+            setVar('--ion-card-background', '#ffffff');
+            setVar('--ion-text-color', theme.colors.dark);
+            const darkRgb = hexToRgb(theme.colors.dark);
+            if (darkRgb) {
+                setVar('--ion-text-color-rgb', darkRgb);
+            }
+            setVar('--ion-border-color', this.calculateTint(theme.colors.medium));
+            setVar('--ion-toolbar-background', theme.colors.primary);
+            setVar('--ion-item-background', '#ffffff');
+
+            // Segments en claro
+            setVar('--segment-text-color', theme.colors.dark);
+            setVar('--segment-text-color-hover', theme.colors.dark);
+            setVar('--segment-text-color-checked', '#ffffff');
+        }
+
+        // Variables comunes para ambos modos
+        setVar('--indicator-color', theme.colors.primary);
     }
 }

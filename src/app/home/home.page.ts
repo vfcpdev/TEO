@@ -64,6 +64,8 @@ import { SettingsService } from '../core/services/settings.service';
 import { DayViewComponent } from '../features/agenda/components/day-view/day-view.component';
 import { WeekViewComponent } from '../features/agenda/components/week-view/week-view.component';
 import { MonthViewComponent } from '../features/agenda/components/month-view/month-view.component';
+import { FabOptionsComponent } from '../shared/components/fab-options/fab-options.component';
+import { BorradorWizardComponent } from '../shared/components/borrador-wizard/borrador-wizard.component';
 
 // Interface para items del timeline (cursos + eventos manuales + tiempo libre)
 export interface TimelineItem {
@@ -236,5 +238,51 @@ export class HomePage implements OnInit, ViewWillEnter, OnDestroy {
 
   formatDateWithTime(date: any): string {
     return date ? new Date(date).toLocaleString() : '';
+  }
+
+  // FAB Options Modal
+  async openFabOptions() {
+    const modal = await this.modalController.create({
+      component: FabOptionsComponent,
+      cssClass: 'fab-options-modal',
+      backdropDismiss: true,
+      showBackdrop: true,
+      mode: 'ios'
+    });
+
+    await modal.present();
+
+    const { data } = await modal.onWillDismiss();
+
+    if (data === 'borrador') {
+      this.openBorradorQuick();
+    } else if (data === 'agendar') {
+      this.openAgendarWithCalendar();
+    }
+  }
+
+  private async openBorradorQuick() {
+    // Abrir wizard en modo "borrador" - sin fecha ni hora
+    const modal = await this.modalController.create({
+      component: BorradorWizardComponent,
+      cssClass: 'borrador-wizard-modal'
+    });
+
+    await modal.present();
+
+    const { data } = await modal.onWillDismiss();
+
+    if (data) {
+      // Crear registro borrador sin fecha/hora
+      console.log('Crear borrador:', data);
+      // TODO: Llamar a servicio para guardar borrador
+    }
+  }
+
+  private openAgendarWithCalendar() {
+    // Abrir wizard en modo "agendar" - con calendario para fecha/hora
+    console.log('Abrir Agendar (con calendario)');
+    // TODO: Implementar wizard con calendario
+    this.openRegistroWizard();
   }
 }

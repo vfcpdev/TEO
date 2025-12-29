@@ -33,12 +33,11 @@
       </ion-content>
 
       <ion-footer class="menu-footer-container">
-        <!-- Toggle de tema claro/oscuro -->
-        <ion-item class="theme-toggle-item" lines="none">
-          <ion-icon slot="start" [name]="darkMode ? 'moon' : 'sunny'"
-            [color]="darkMode ? 'warning' : 'primary'"></ion-icon>
-          <ion-label>{{ darkMode ? 'Tema Oscuro' : 'Tema Claro' }}</ion-label>
-          <ion-toggle [checked]="darkMode" (ionChange)="toggleTheme($event)" slot="end"></ion-toggle>
+        <!-- Selector de Tema -->
+        <ion-item class="theme-toggle-item" lines="none" button (click)="presentThemePopover($event)">
+          <ion-icon slot="start" name="color-palette" [style.color]="getThemeIconColor()">
+          </ion-icon>
+          <ion-label>Tema</ion-label>
         </ion-item>
 
         <!-- Acerca de TEO -->
