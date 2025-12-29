@@ -7,68 +7,24 @@
     width: 100%;
 }
 
-.clock-svg {
-    width: 100%;
-    max-width: 180px;
-    height: auto;
-    aspect-ratio: 1;
-    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
+.analog-picker-element {
+    width: 200px;
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
 
-    &.interactive {
-        cursor: pointer;
+    // La librería inyecta su propio SVG u HTML aquí
+    // Podemos forzar algunos estilos si es necesario
+    :host ::ng-deep {
+        .atp-clock {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-radius: 50%;
+        }
     }
 }
 
-.clock-face {
-    fill: var(--ion-card-background, #fff);
-    stroke: var(--ion-color-primary);
-    stroke-width: 6;
-}
-
-.hour-mark {
-    stroke: var(--ion-color-medium);
-    stroke-width: 2;
-    stroke-linecap: round;
-}
-
-.hour-number {
-    font-size: 14px;
-    font-weight: 600;
-    fill: var(--ion-text-color);
-    font-family: var(--ion-font-family);
-}
-
-.hand {
-    stroke-linecap: round;
-    transition: transform 0.1s ease-out;
-    cursor: grab;
-
-    &:active,
-    &.dragging {
-        cursor: grabbing;
-    }
-}
-
-.hour-hand {
-    stroke: var(--ion-color-primary);
-    stroke-width: 8;
-}
-
-.minute-hand {
-    stroke: var(--ion-color-dark);
-    stroke-width: 5;
-}
-
-.second-hand {
-    stroke: var(--ion-color-danger);
-    stroke-width: 2;
-}
-
-.clock-center {
-    fill: var(--ion-color-secondary);
-    stroke: var(--ion-color-dark);
-    stroke-width: 2;
-}
 
 // Controles digitales
 .digital-controls {

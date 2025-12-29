@@ -12,27 +12,26 @@
               <ion-label>{{ item.title }}</ion-label>
             </ion-item>
           </ion-menu-toggle>
+
           }
 
-          <!-- Usuario -->
-          <ion-menu-toggle [autoHide]="false">
-            <ion-item button class="menu-item" (click)="navigateToProfile()">
-              <ion-icon slot="start" name="person-outline" color="tertiary"></ion-icon>
-              <ion-label>Usuario</ion-label>
-            </ion-item>
-          </ion-menu-toggle>
+          <!-- Categoría Perfil -->
+          <ion-item-group>
+            <ion-item-divider>
+              <ion-icon slot="start" name="person-circle-outline"></ion-icon>
+              <ion-label>Perfil</ion-label>
+            </ion-item-divider>
 
-          <!-- Cerrar sesión -->
-          <ion-menu-toggle [autoHide]="false">
-            <ion-item button class="menu-item logout-item" (click)="logout()">
-              <ion-icon slot="start" name="log-out" color="danger"></ion-icon>
-              <ion-label color="danger">Cerrar Sesión</ion-label>
-            </ion-item>
-          </ion-menu-toggle>
+            <ion-menu-toggle [autoHide]="false">
+              <ion-item button class="submenu-item" (click)="navigateToProfile()">
+                <ion-icon slot="start" name="person-outline" color="tertiary"></ion-icon>
+                <ion-label>Usuario</ion-label>
+              </ion-item>
+            </ion-menu-toggle>
+          </ion-item-group>
         </ion-list>
       </ion-content>
 
-      <!-- Footer del menú -->
       <ion-footer class="menu-footer-container">
         <!-- Toggle de tema claro/oscuro -->
         <ion-item class="theme-toggle-item" lines="none">
@@ -47,10 +46,6 @@
           <ion-icon slot="start" name="information-circle-outline" color="primary"></ion-icon>
           <ion-label>Acerca de</ion-label>
         </ion-item>
-        <!-- Versión de la app -->
-        <div class="app-version">
-          <small>TEO v1.0.0</small>
-        </div>
       </ion-footer>
     </ion-menu>
 

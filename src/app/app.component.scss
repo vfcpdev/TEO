@@ -67,6 +67,66 @@ ion-menu {
   }
 }
 
+// Sub-items (items dentro de categorías o sub-menús)
+.submenu-container {
+  padding-left: 12px;
+  border-left: 2px solid var(--ion-color-step-100);
+  margin: 4px 0 8px 24px;
+  animation: slideInSubmenu 0.3s ease-out;
+}
+
+@keyframes slideInSubmenu {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+ion-menu .submenu-item {
+  --padding-start: 12px;
+  --min-height: 40px;
+  --background: transparent;
+  margin: 2px 0;
+  --border-radius: 6px;
+
+  ion-icon {
+    font-size: 1.1rem;
+    margin-inline-end: 12px;
+    opacity: 0.8;
+  }
+
+  ion-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  &:hover {
+    --background: rgba(var(--ion-color-primary-rgb), 0.05);
+  }
+}
+
+// Dividers de categorías
+ion-menu ion-item-divider {
+  --background: transparent;
+  --padding-start: 16px;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.6;
+  margin-top: 16px;
+
+  ion-icon {
+    margin-right: 8px;
+    font-size: 1.1rem;
+  }
+}
+
 // Menu content
 ion-menu ion-content {
   --background: var(--ion-background-color);

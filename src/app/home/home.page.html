@@ -14,313 +14,112 @@
     </ion-buttons>
     <ion-title>
       <div class="header-title-wrapper">
-        <span>TEO</span>
+        <span class="app-name">TEO</span>
         <div class="header-date">
           <span>{{ selectedDateText() }}</span>
         </div>
       </div>
     </ion-title>
-    <ion-buttons slot="end">
-      <!-- Quick Save Borrador Button (icon only) - only visible in Estados view -->
-      @if (vistaActual === 'estados') {
-      <ion-button (click)="quickSaveBorrador()" shape="round" color="tertiary" title="Guardar Borrador Rápido">
-        <ion-icon slot="icon-only" name="save-outline"></ion-icon>
-      </ion-button>
-      }
-      <!-- FAB Button moved to content edge -->
-    </ion-buttons>
+  </ion-toolbar>
+
+  <!-- Tabs de Vista Principal (Agenda, Hoy, Semana, Mes) -->
+  <ion-toolbar class="view-tabs-toolbar">
+    <ion-segment [value]="vistaActual()" (ionChange)="onVistaChange($event)" mode="md" class="main-view-segment"
+      scrollable="true">
+      <ion-segment-button value="agenda">
+        <ion-label>Agenda</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="dia">
+        <ion-label>Hoy</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="semana">
+        <ion-label>Semana</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="mes">
+        <ion-label>Mes</ion-label>
+      </ion-segment-button>
+    </ion-segment>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <!-- FAB Add Button -->
-  <ion-fab vertical="top" horizontal="end" slot="fixed" edge class="main-fab">
-    <ion-fab-button (click)="openRegistroWizard()" color="tertiary">
+  <!-- FAB Add Button (Relocated to Top Right) -->
+  <ion-fab vertical="top" horizontal="end" slot="fixed" class="fab-top-right">
+    <ion-fab-button (click)="openRegistroWizard()" color="success">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
   </ion-fab>
-  <!-- Header colapsable para iOS (Large Title) -->
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">TEO</ion-title>
-    </ion-toolbar>
-  </ion-header>
 
-  <!-- Placeholder Section (Future Implementation) -->
-  <div class="future-section">
-    <p>Por implementar</p>
-  </div>
+  <div class="agenda-container">
 
-  <!-- Tabs de vistas -->
-  <ion-segment [(ngModel)]="vistaActual" (ionChange)="onVistaChange($event)" class="main-segment">
-    <ion-segment-button value="registros">
-      <ion-label>Registros</ion-label>
-    </ion-segment-button>
-    <ion-segment-button value="estados">
-      <ion-label>Estados</ion-label>
-    </ion-segment-button>
-  </ion-segment>
+    <!-- VISTA AGENDA -->
+    @if (vistaActual() === 'agenda') {
+    <div class="vista-agenda">
+      <!-- Si no hay registros próximos -->
+      @if (registrosFiltrados().length === 0) {
+      <div class="empty-state">
+        <ion-icon name="time-outline" size="large" color="success"></ion-icon>
+        <h2>¡Todo en orden!</h2>
+        <p>No tienes tareas pendientes para las próximas horas.</p>
+      </div>
+      } @else {
+      <div class="registros-list">
+        @for (registro of registrosFiltrados(); track registro.id) {
+        <!-- Buffer Visualizer BEFORE -->
+        @if (registro.bufferBefore?.duration) {
+        <app-buffer-visualizer type="before" [buffer]="registro.bufferBefore"
+          [pixelsPerMinute]="1"></app-buffer-visualizer>
+        }
 
-  <!-- Vista Registros (Timeline) -->
-  @if (vistaActual === 'registros') {
-  <div class="timeline-container">
-    <!-- Toggle para mostrar/ocultar tiempo libre -->
-    <div class="free-time-toggle-container">
-      <ion-item lines="none" class="free-time-toggle">
-        <ion-icon name="time-outline" slot="start" color="success"></ion-icon>
-        <ion-label>Mostrar Tiempo Libre</ion-label>
-        <ion-toggle slot="end" [checked]="mostrarTiempoLibre()" (ionChange)="toggleMostrarTiempoLibre($event)"
-          color="success">
-        </ion-toggle>
-      </ion-item>
-    </div>
-
-    @if (getTimelineItems().length === 0) {
-    <div class="empty-state">
-      <ion-icon name="time-outline" size="large" color="medium"></ion-icon>
-      <h2>Sin eventos hoy</h2>
-      <p>Añade clases o registros para ver tu día.</p>
-    </div>
-    } @else {
-    <div class="timeline-list">
-      @for (item of getTimelineItems(); track item.id) {
-      <div [class]="'timeline-card type-' + item.type">
-        <div class="time-column">
-          <!-- Reloj analógico para eventos no-free -->
-          @if (item.type !== 'free') {
-          <div class="analog-clock-mini">
-            <app-analog-clock-picker [time]="item.startTime" [interactive]="false" [showSeconds]="false">
-            </app-analog-clock-picker>
+        <div class="registro-card" (click)="editarRegistro(registro)">
+          <div class="registro-info">
+            <h3>{{ registro.name }}</h3>
+            <p>{{ formatDateWithTime(registro.startTime) }} - {{ formatDateWithTime(registro.endTime) }}</p>
           </div>
-          }
-          <span class="start-time">{{ item.startTime }}</span>
-          <span class="duration">{{ item.duration }}m</span>
+          <ion-icon slot="end" name="chevron-forward-outline" color="medium"></ion-icon>
         </div>
-        <div class="event-content">
-          <div class="event-header">
-            <h3>{{ item.name }}</h3>
-            @if (item.type === 'course') {
-            <ion-badge color="primary">{{ item.code }}</ion-badge>
-            }
-            @if (item.type === 'free') {
-            <ion-badge color="success">Disponible</ion-badge>
-            }
-          </div>
-          @if (item.type === 'free') {
-          <p class="free-text">Tiempo Disponible</p>
-          }
-          @if (item.type !== 'free') {
-          <p class="event-details">{{ item.startTime }} - {{ item.endTime }}</p>
-          }
-        </div>
+
+        <!-- Buffer Visualizer AFTER -->
+        @if (registro.bufferAfter?.duration) {
+        <app-buffer-visualizer type="after" [buffer]="registro.bufferAfter"
+          [pixelsPerMinute]="1"></app-buffer-visualizer>
+        }
+        }
       </div>
       }
     </div>
     }
-  </div>
-  }
 
-  <!-- Vista Estados -->
-  @if (vistaActual === 'estados') {
-  <div class="agenda-container">
-    <!-- Sub-tabs de estado -->
-    <div class="status-tabs">
-      <ion-segment [(ngModel)]="estadoTabActivo" mode="ios" class="status-segment">
-        <ion-segment-button value="todos">
-          <ion-label>Todos</ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="borrador">
-          <ion-label>
-            Borradores
-            @if (contadorBorradores() > 0) {
-            <ion-badge color="medium">{{ contadorBorradores() }}</ion-badge>
-            }
-          </ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="confirmado">
-          <ion-label>
-            Confirmados
-            @if (contadorConfirmados() > 0) {
-            <ion-badge color="primary">{{ contadorConfirmados() }}</ion-badge>
-            }
-          </ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="estudio">
-          <ion-label>
-            En Estudio
-            @if (contadorEnEstudio() > 0) {
-            <ion-badge color="warning">{{ contadorEnEstudio() }}</ion-badge>
-            }
-          </ion-label>
-        </ion-segment-button>
-      </ion-segment>
-    </div>
-
-    <!-- Fixed CRUD Toolbar (moved to top) -->
-    @if (selectionMode()) {
-    <div class="crud-toolbar crud-toolbar-top">
-      <ion-button fill="clear" size="small" (click)="selectAll()" title="Seleccionar Todo">
-        <ion-icon slot="icon-only" name="checkbox-outline"></ion-icon>
-      </ion-button>
-      <ion-button fill="clear" size="small" (click)="deselectAll()" title="Deseleccionar">
-        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
-      </ion-button>
-      <span class="selected-count">{{ selectedCount() }}</span>
-      <ion-button fill="clear" size="small" (click)="editSelected()" [disabled]="selectedCount() !== 1" title="Editar">
-        <ion-icon slot="icon-only" name="create-outline"></ion-icon>
-      </ion-button>
-      <ion-button fill="clear" size="small" (click)="openStatusChangeModal()" [disabled]="selectedCount() === 0"
-        title="Cambiar Estado">
-        <ion-icon slot="icon-only" name="swap-horizontal-outline"></ion-icon>
-      </ion-button>
-      <ion-button fill="clear" size="small" color="danger" (click)="deleteSelected()" [disabled]="selectedCount() === 0"
-        title="Eliminar">
-        <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
-      </ion-button>
-      <ion-button fill="clear" size="small" (click)="toggleSelectionMode()" title="Salir">
-        <ion-icon slot="icon-only" name="close-circle-outline"></ion-icon>
-      </ion-button>
+    <!-- VISTA HOY -->
+    @if (vistaActual() === 'dia') {
+    <div class="vista-dia">
+      <app-day-view [registros]="registrosFiltrados()" [currentDate]="currentDate()"></app-day-view>
     </div>
     }
 
-    @if (registrosFiltrados().length === 0) {
-    <!-- Estado vacío -->
+    <!-- VISTA SEMANA -->
+    @if (vistaActual() === 'semana') {
+    <div class="vista-semana">
+      <app-week-view [registros]="registrosFiltrados()"></app-week-view>
+    </div>
+    }
+
+    <!-- VISTA MES -->
+    @if (vistaActual() === 'mes') {
+    <div class="vista-mes">
+      <app-month-view [registros]="registrosFiltrados()" [currentDate]="selectedDate()"></app-month-view>
+    </div>
+    }
+
+    <!-- VISTA ESTADOS (Placeholder por ahora si existiera) -->
+    @if (vistaActual() === 'estados') {
     <div class="empty-state">
-      <ion-icon name="calendar-outline" size="large" color="medium"></ion-icon>
-      @if (estadoTabActivo() === 'todos') {
-      <h2>No hay registros</h2>
-      <p>Presiona el botón + para crear tu primer registro</p>
-      } @else {
-      <h2>Sin registros {{ estadoTabActivo() === 'borrador' ? 'en borrador' : estadoTabActivo() === 'confirmado' ?
-        'confirmados' : 'en estudio' }}</h2>
-      <p>No tienes registros con este estado</p>
-      }
+      <ion-icon name="construct-outline" size="large" color="medium"></ion-icon>
+      <h2>Estados</h2>
+      <p>Vista de estados en construcción.</p>
     </div>
-    } @else {
-    <!-- Grid de registros con encabezados -->
-    <ion-grid class="registros-grid">
-      <!-- Encabezados de columna (solo visible en tablet/desktop) -->
-      <ion-row class="grid-header">
-        <ion-col size="auto" class="col-checkbox">
-          @if (selectionMode()) {
-          <ion-checkbox [checked]="allSelected()" (ionChange)="allSelected() ? deselectAll() : selectAll()">
-          </ion-checkbox>
-          }
-        </ion-col>
-        <ion-col size="2" class="col-status">Estado</ion-col>
-        <ion-col size="3" class="col-name">Nombre</ion-col>
-        <ion-col size="2" class="col-date">Inicio</ion-col>
-        <ion-col size="2" class="col-date">Fin</ion-col>
-        <ion-col size="2" class="col-duration">Duración</ion-col>
-        <ion-col size="auto" class="col-actions">Acciones</ion-col>
-      </ion-row>
-
-      <!-- Filas de datos -->
-      @for (registro of registrosFiltrados(); track registro.id) {
-      <!-- Buffer BEFORE (si existe) -->
-      @if (registro.bufferBefore && registro.bufferBefore.duration > 0) {
-      <ion-row class="buffer-row">
-        <ion-col size="12">
-          <app-buffer-visualizer [type]="'before'" [buffer]="registro.bufferBefore" [pixelsPerMinute]="1">
-          </app-buffer-visualizer>
-        </ion-col>
-      </ion-row>
-      }
-
-      <ion-row class="grid-row" [class.selected]="selectedRegistros().has(registro.id)"
-        (click)="selectionMode() ? toggleSelection(registro.id) : null">
-
-        <!-- Checkbox -->
-        <ion-col size="auto" class="col-checkbox">
-          @if (selectionMode()) {
-          <ion-checkbox [checked]="selectedRegistros().has(registro.id)" (ionChange)="toggleSelection(registro.id)">
-          </ion-checkbox>
-          }
-        </ion-col>
-
-        <!-- Estado -->
-        <ion-col size="12" size-md="2" class="col-status">
-          <span class="mobile-label">Estado:</span>
-          <ion-badge
-            [color]="registro.status === 'borrador' ? 'medium' : registro.status === 'confirmado' ? 'primary' : 'warning'"
-            class="status-badge">
-            {{ registro.status === 'borrador' ? 'Borrador' : registro.status === 'confirmado' ? 'Confirmado' : 'En
-            Estudio' }}
-          </ion-badge>
-        </ion-col>
-
-        <!-- Nombre -->
-        <ion-col size="12" size-md="3" class="col-name">
-          <span class="mobile-label">Nombre:</span>
-          <strong>{{ registro.name }}</strong>
-        </ion-col>
-
-        <!-- Fecha Inicio -->
-        <ion-col size="6" size-md="2" class="col-date">
-          <span class="mobile-label">Inicio:</span>
-          <div class="date-info">
-            <ion-icon name="calendar-outline" color="primary"></ion-icon>
-            <span>{{ formatDateWithTime(registro.startTime) }}</span>
-          </div>
-        </ion-col>
-
-        <!-- Fecha Fin -->
-        <ion-col size="6" size-md="2" class="col-date">
-          <span class="mobile-label">Fin:</span>
-          <div class="date-info">
-            <ion-icon name="calendar-outline" color="danger"></ion-icon>
-            <span>{{ formatDateWithTime(registro.endTime) }}</span>
-          </div>
-        </ion-col>
-
-        <!-- Duración -->
-        <ion-col size="6" size-md="2" class="col-duration">
-          <span class="mobile-label">Duración:</span>
-          <div class="duration-info">
-            <ion-icon name="time-outline" color="primary"></ion-icon>
-            <span>{{ calcularDias(registro.startTime, registro.endTime) }} días</span>
-          </div>
-        </ion-col>
-
-        <!-- Acciones -->
-        <ion-col size="6" size-md="auto" class="col-actions">
-          @if (!selectionMode()) {
-          <div class="action-buttons">
-            <ion-button fill="clear" size="small" (click)="editarRegistro(registro); $event.stopPropagation()">
-              <ion-icon slot="icon-only" name="create-outline"></ion-icon>
-            </ion-button>
-            <ion-button fill="clear" size="small" color="danger"
-              (click)="eliminarRegistro(registro.id); $event.stopPropagation()">
-              <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
-            </ion-button>
-          </div>
-          } @else {
-          <ion-button fill="clear" size="small"
-            (click)="toggleSelectionMode(); toggleSelection(registro.id); $event.stopPropagation()">
-            <ion-icon slot="icon-only" name="ellipsis-vertical"></ion-icon>
-          </ion-button>
-          }
-        </ion-col>
-      </ion-row>
-
-      <!-- Buffer AFTER (si existe) -->
-      @if (registro.bufferAfter && registro.bufferAfter.duration > 0) {
-      <ion-row class="buffer-row">
-        <ion-col size="12">
-          <app-buffer-visualizer [type]="'after'" [buffer]="registro.bufferAfter" [pixelsPerMinute]="1">
-          </app-buffer-visualizer>
-        </ion-col>
-      </ion-row>
-      }
-      }
-    </ion-grid>
     }
+
   </div>
-  }
-
-
 </ion-content>
-
-
-
 }

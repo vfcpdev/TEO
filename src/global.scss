@@ -686,11 +686,32 @@ ion-accordion-group.colored-icons ion-accordion {
 
 ion-button {
   // Tamaño mínimo para accesibilidad táctil
-  min-width: var(--button-min-width);
-  min-height: var(--button-min-height);
+  min-width: var(--button-min-width, 44px);
+  min-height: var(--button-min-height, 44px);
+  text-transform: none; // Evitar uppercase automático
+  font-weight: 600;
 
   ion-icon {
-    font-size: var(--button-icon-size);
+    font-size: var(--button-icon-size, 1.25rem);
+  }
+
+  // REGLAS RESPONSIVAS PARA BOTONES DE BLOQUE
+  &[expand="block"] {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+
+    // Mobile (0 - 575px): 100% (ya definido arriba)
+
+    // Tablet (576px - 991px)
+    @media (min-width: 576px) {
+      max-width: 400px;
+    }
+
+    // Desktop (992px+)
+    @media (min-width: 992px) {
+      max-width: 500px;
+    }
   }
 
   // Botones solo con ícono
@@ -708,7 +729,7 @@ ion-button {
     min-height: 48px;
 
     ion-icon {
-      font-size: var(--button-icon-size-large);
+      font-size: var(--button-icon-size-large, 1.5rem);
     }
   }
 }
@@ -780,5 +801,17 @@ ion-modal {
   ion-content {
     --overflow: visible;
     overflow: visible !important;
+  }
+}
+
+// Custom About Modal (Glassmorphism)
+.about-modal-custom {
+  --background: transparent;
+  --box-shadow: none;
+  --backdrop-opacity: 0.6;
+
+  // Ensure the internal ion-page is also transparent
+  .ion-page {
+    background: transparent;
   }
 }

@@ -5,11 +5,6 @@
     </ion-buttons>
     <ion-title>Ajustes</ion-title>
     <ion-buttons slot="end">
-      <div class="theme-toggle-container">
-        <ion-icon name="moon-outline" color="primary"></ion-icon>
-        <ion-toggle [checked]="darkMode" (ionChange)="toggleTheme($event)"></ion-toggle>
-        <ion-icon name="sunny-outline" color="warning"></ion-icon>
-      </div>
       <ion-button routerLink="/home">
         <ion-icon slot="icon-only" name="close-sharp"></ion-icon>
       </ion-button>
@@ -60,9 +55,10 @@
           <h2>Módulo de Estudiantes limpiado</h2>
           <p>Enfoque actual: Sistema de Agenda y Registros.</p>
         </div>
-        } @else if (selectedModule === 'interface') {
+        } @else if (selectedModule === 'design') {
         <div class="interface-module">
-          <h3>Configuración de Interfaz</h3>
+          <h3>Configuración de Diseño</h3>
+
           <div class="interface-option">
             <div class="option-info">
               <ion-icon name="rocket" color="primary"></ion-icon>
@@ -71,18 +67,32 @@
                 <p>Mostrar animación al iniciar la app</p>
               </div>
             </div>
-            <ion-toggle [checked]="splashEnabled" (ionChange)="toggleSplash($event)"></ion-toggle>
+            <ion-toggle [checked]="settingsService.splashEnabled()" (ionChange)="toggleSplash($event)"></ion-toggle>
           </div>
+
           <div class="interface-option">
             <div class="option-info">
               <ion-icon name="flash" color="warning"></ion-icon>
               <div class="option-text">
                 <h4>Acceso Rápido</h4>
-                <p>Mostrar barra de accesos directos en el inicio</p>
+                <p>Mostrar barra de accesos directos</p>
               </div>
             </div>
-            <ion-toggle [checked]="quickAccessEnabled" (ionChange)="toggleQuickAccess($event)"></ion-toggle>
+            <ion-toggle [checked]="settingsService.quickAccessEnabled()"
+              (ionChange)="toggleQuickAccess($event)"></ion-toggle>
           </div>
+
+          <div class="interface-option">
+            <div class="option-info">
+              <ion-icon name="time-outline" color="tertiary"></ion-icon>
+              <div class="option-text">
+                <h4>Formato 24 Horas</h4>
+                <p>Usar formato 13:00 en lugar de 1:00 PM</p>
+              </div>
+            </div>
+            <ion-toggle [checked]="settingsService.timeFormat24h()" (ionChange)="toggleTimeFormat($event)"></ion-toggle>
+          </div>
+
         </div>
         }
       </div>
@@ -110,31 +120,47 @@
       <div class="module-content-mobile">
         <app-profile-settings></app-profile-settings>
       </div>
-      } @else if (selectedModule === 'interface') {
-      <div class="module-content-mobile">
-        <div class="interface-module">
-          <h3>Configuración de Interfaz</h3>
-          <div class="interface-option">
-            <div class="option-info">
-              <ion-icon name="rocket" color="primary"></ion-icon>
-              <div class="option-text">
-                <h4>Pantalla de Bienvenida</h4>
-                <p>Mostrar animación al iniciar la app</p>
-              </div>
+      } @else if (selectedModule === 'design') {
+      <div class="interface-module">
+        <h3>Configuración de Diseño</h3>
+
+        <!-- Splash Screen -->
+        <div class="interface-option">
+          <div class="option-info">
+            <ion-icon name="rocket" color="primary"></ion-icon>
+            <div class="option-text">
+              <h4>Pantalla de Bienvenida</h4>
+              <p>Mostrar animación al iniciar la app</p>
             </div>
-            <ion-toggle [checked]="splashEnabled" (ionChange)="toggleSplash($event)"></ion-toggle>
           </div>
-          <div class="interface-option">
-            <div class="option-info">
-              <ion-icon name="flash" color="warning"></ion-icon>
-              <div class="option-text">
-                <h4>Acceso Rápido</h4>
-                <p>Mostrar barra de accesos directos en el inicio</p>
-              </div>
-            </div>
-            <ion-toggle [checked]="quickAccessEnabled" (ionChange)="toggleQuickAccess($event)"></ion-toggle>
-          </div>
+          <ion-toggle [checked]="settingsService.splashEnabled()" (ionChange)="toggleSplash($event)"></ion-toggle>
         </div>
+
+        <!-- Quick Access -->
+        <div class="interface-option">
+          <div class="option-info">
+            <ion-icon name="flash" color="warning"></ion-icon>
+            <div class="option-text">
+              <h4>Acceso Rápido</h4>
+              <p>Mostrar barra de accesos directos</p>
+            </div>
+          </div>
+          <ion-toggle [checked]="settingsService.quickAccessEnabled()"
+            (ionChange)="toggleQuickAccess($event)"></ion-toggle>
+        </div>
+
+        <!-- Time Format -->
+        <div class="interface-option">
+          <div class="option-info">
+            <ion-icon name="time-outline" color="tertiary"></ion-icon>
+            <div class="option-text">
+              <h4>Formato 24 Horas</h4>
+              <p>Usar formato 13:00 en lugar de 1:00 PM</p>
+            </div>
+          </div>
+          <ion-toggle [checked]="settingsService.timeFormat24h()" (ionChange)="toggleTimeFormat($event)"></ion-toggle>
+        </div>
+
       </div>
       } @else {
       <div class="module-content-mobile">

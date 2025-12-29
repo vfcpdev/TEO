@@ -76,6 +76,7 @@ import { ToastService } from '../../../../core/services/toast.service';
 import { ProfileSettingsComponent } from '../../components/profile-settings/profile-settings.component';
 import { Preferences } from '@capacitor/preferences';
 import { StatusBar, Style } from '@capacitor/status-bar';
+import { SettingsService } from '../../../../core/services/settings.service';
 
 export interface QuickAccessItem {
   id: string;
@@ -124,13 +125,11 @@ export class SettingsPage implements OnInit, OnDestroy {
   private readonly authService = inject(AuthService);
   private readonly toastService = inject(ToastService);
   private readonly platform = inject(Platform);
+  public readonly settingsService = inject(SettingsService); // Public for HTML access
 
   private resizeHandler = () => this.checkOrientation();
 
-  userName = 'Usuario';
-  splashEnabled = true;
-  darkMode = false;
-  quickAccessEnabled = true;
+  // Local state only for view logic
   selectedModule: string = 'agenda';
   isLandscape = false;
   isDesktop = computed(() => this.platform.width() >= 992);
@@ -139,7 +138,7 @@ export class SettingsPage implements OnInit, OnDestroy {
   modules = [
     { id: 'agenda', title: 'Agenda', icon: 'calendar-outline', color: 'primary' },
     { id: 'profiles', title: 'Perfiles', icon: 'people-outline', color: 'secondary' },
-    { id: 'interface', title: 'Interfaz', icon: 'color-palette-outline', color: 'medium' }
+    { id: 'design', title: 'Diseño', icon: 'color-palette-outline', color: 'medium' }
   ];
 
   // Items de acceso rápido configurables
@@ -155,12 +154,10 @@ export class SettingsPage implements OnInit, OnDestroy {
     }
   ];
 
-  // UI state for time picker (kept for agenda use if needed)
+  // UI state for time picker
   timePickerOpen = signal(false);
   timePickerValue = signal<string>('08:00');
   timePickerField = signal<'startTime' | 'endTime'>('startTime');
-
-  // Sub-views placeholders
   studentSubView = signal<'list' | 'attendance'>('list');
 
   constructor() {
@@ -177,7 +174,8 @@ export class SettingsPage implements OnInit, OnDestroy {
       }
     });
 
-    await this.loadSettings();
+    // Cargar items de acceso rápido locales (aún no en service, o mover a service luego)
+    await this.loadQuickAccessItems();
   }
 
   ngOnDestroy() {
@@ -188,20 +186,7 @@ export class SettingsPage implements OnInit, OnDestroy {
     this.isLandscape = window.innerWidth > window.innerHeight && window.innerHeight <= 500;
   }
 
-  async loadSettings() {
-    const { value: userNameValue } = await Preferences.get({ key: 'userName' });
-    this.userName = userNameValue || 'Usuario';
-
-    const { value: splashValue } = await Preferences.get({ key: 'splashEnabled' });
-    this.splashEnabled = splashValue !== null ? splashValue === 'true' : true;
-
-    const { value: darkValue } = await Preferences.get({ key: 'darkMode' });
-    this.darkMode = darkValue === 'true';
-    this.applyTheme(this.darkMode);
-
-    const { value: quickAccessValue } = await Preferences.get({ key: 'quickAccessEnabled' });
-    this.quickAccessEnabled = quickAccessValue !== null ? quickAccessValue === 'true' : true;
-
+  async loadQuickAccessItems() {
     const { value: quickItemsValue } = await Preferences.get({ key: 'quickAccessItems' });
     if (quickItemsValue) {
       try {
@@ -216,45 +201,20 @@ export class SettingsPage implements OnInit, OnDestroy {
     }
   }
 
-  applyTheme(isDark: boolean) {
-    document.body.classList.toggle('dark', isDark);
-  }
-
-  async saveUserName() {
-    const name = this.userName.trim() || 'Usuario';
-    this.userName = name;
-    await Preferences.set({ key: 'userName', value: name });
-    this.toastService.success('Nombre actualizado');
-  }
-
   async toggleTheme(event: any) {
-    const isDark = event.detail.checked;
-    this.darkMode = isDark;
-    await Preferences.set({ key: 'darkMode', value: isDark.toString() });
-    this.applyTheme(isDark);
-
-    if (this.platform.is('capacitor')) {
-      try {
-        await StatusBar.setStyle({ style: isDark ? Style.Dark : Style.Light });
-        await StatusBar.setBackgroundColor({ color: isDark ? '#222428' : '#3880ff' });
-      } catch (error) {
-        console.log('Error actualizando StatusBar:', error);
-      }
-    }
-    this.toastService.success(isDark ? 'Tema oscuro activado' : 'Tema claro activado');
+    this.settingsService.setDarkMode(event.detail.checked);
   }
 
   async toggleSplash(event: any) {
-    const enabled = event.detail.checked;
-    await Preferences.set({ key: 'splashEnabled', value: enabled.toString() });
-    this.toastService.success(enabled ? 'Pantalla de bienvenida activada' : 'Pantalla de bienvenida desactivada');
+    this.settingsService.setSplashEnabled(event.detail.checked);
   }
 
   async toggleQuickAccess(event: any) {
-    const enabled = event.detail.checked;
-    this.quickAccessEnabled = enabled;
-    await Preferences.set({ key: 'quickAccessEnabled', value: enabled.toString() });
-    this.toastService.success(enabled ? 'Acceso rápido habilitado' : 'Acceso rápido deshabilitado');
+    this.settingsService.setQuickAccessEnabled(event.detail.checked);
+  }
+
+  async toggleTimeFormat(event: any) {
+    this.settingsService.setTimeFormat24h(event.detail.checked);
   }
 
   async toggleQuickAccessItem(item: QuickAccessItem, event: any) {
@@ -299,13 +259,47 @@ export class SettingsPage implements OnInit, OnDestroy {
     const val = datetime.value;
     if (val) {
       const timeStr = val.split('T')[1].substring(0, 5);
-      // Logic would go here to update the relevant signal
       this.cancelTimePicker();
     }
   }
 
-  logout() {
-    this.authService.logout();
-    this.router.navigate(['/login']);
+  private popoverCtrl = inject(PopoverController);
+  import { THEMES } from '../../../../core/constants/themes'; // Add import at top manually if needed or auto-import
+
+  async presentThemePopover(event: Event) {
+  const popover = await this.popoverCtrl.create({
+    component: ThemePopoverComponent, // We need to create this or use template
+    event: event,
+    componentProps: {
+      currentTheme: this.settingsService.currentTheme()
+    }
+  });
+
+  // Simplification: Using inline template via key-value might be hard without component.
+  // Let's use a simpler ActionSheet or standard Popover with List.
+  // Re-thinking: User asked for "+ button menu". Popover with list of themes is best.
+  // I will dynamically create content using html template if possible or separate component. 
+  // For simplicity in this step, let's assume we use a simple list inside a popover defined in HTML or creating a small component.
+
+  // Better approach: Create a small standalone component for the popover content in the same file or separate.
+  // or just use ActionSheet which isnative and cleaner? User said "floating menu" (menu flotante), popover fits better.
+
+  // Let's create `ThemeSelectionComponent` inline or in separate file. 
+  // Steps: 
+  // 1. Create `ThemeSelectionComponent` in `settings.page.ts` (if allows multi-component) or separate.
+  // 2. Use it here.
+
+  // For now, let's put the logic.
+  popover.present();
+
+  const { data } = await popover.onWillDismiss();
+  if (data) {
+    this.settingsService.setTheme(data);
   }
+}
+
+logout() {
+  this.authService.logout();
+  this.router.navigate(['/login']);
+}
 }
