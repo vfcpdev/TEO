@@ -1,7 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, PopoverController } from '@ionic/angular/standalone';
+import { IonList, IonListHeader, IonLabel, IonItem, IonIcon, PopoverController } from '@ionic/angular/standalone';
 import { THEMES } from '../../../../core/constants/themes';
+import { addIcons } from 'ionicons';
+import { colorPalette, checkmark } from 'ionicons/icons';
 
 @Component({
     selector: 'app-theme-popover',
@@ -20,12 +22,16 @@ import { THEMES } from '../../../../core/constants/themes';
     </ion-list>
   `,
     standalone: true,
-    imports: [CommonModule, IonicModule]
+    imports: [CommonModule, IonList, IonListHeader, IonLabel, IonItem, IonIcon]
 })
 export class ThemePopoverComponent {
     private popoverCtrl = inject(PopoverController);
     themes = THEMES;
     currentTheme: string = '';
+
+    constructor() {
+        addIcons({ colorPalette, checkmark });
+    }
 
     selectTheme(themeId: string) {
         this.popoverCtrl.dismiss(themeId);
