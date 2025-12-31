@@ -1,0 +1,27 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"java.configuration.updateBuildConfiguration": "disabled",
+		"java.project.sourcePaths": [],
+		"java.import.exclusions": [
+			"**/android/**",
+			"**/node_modules/**",
+			"**/.metadata/**",
+			"**/archetype-resources/**",
+			"**/META-INF/maven/**"
+		],
+		"java.autobuild.enabled": false,
+		"java.project.resourceFilters": [
+			"android"
+		],
+		"java.server.launchMode": "LightWeight",
+		"gradle.nestedProjects": false,
+		"java.import.gradle.enabled": false,
+		"java.import.gradle.wrapper.enabled": false,
+		"java.gradle.buildServer.enabled": "off"
+	}
+}
