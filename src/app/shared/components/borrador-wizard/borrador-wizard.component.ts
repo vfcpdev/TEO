@@ -84,14 +84,14 @@ interface TreeNode {
     </ion-content>
 
     <ion-footer>
-      <ion-toolbar>
+      <ion-toolbar color="light">
         <ion-buttons slot="start">
-          <ion-button (click)="dismiss()" color="medium">
+          <ion-button (click)="dismiss()">
             Cancelar
           </ion-button>
         </ion-buttons>
         <ion-buttons slot="end">
-          <ion-button (click)="save()" [disabled]="!nombreRegistro" strong="true">
+          <ion-button (click)="save()" [disabled]="!nombreRegistro">
             Guardar
           </ion-button>
         </ion-buttons>

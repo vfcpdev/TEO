@@ -40,13 +40,14 @@
 .borrador-wizard-modal {
   --width: 90%;
   --max-width: 500px;
-  --height: auto;
+  --height: 600px;
   --max-height: 90%;
   --border-radius: 16px;
 
   // Mobile specific adjustments
   @media (max-width: 768px) {
     --width: 95%;
+    --height: 80%;
   }
 }
 

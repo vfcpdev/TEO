@@ -39,7 +39,6 @@
     "@capawesome/capacitor-file-picker": "^7.2.0",
     "@ionic/angular": "^8.0.0",
     "@ionic/storage-angular": "^4.0.0",
-    "analogue-time-picker": "^1.0.2",
     "ionicons": "^7.0.0",
     "jeep-sqlite": "^2.8.0",
     "ngx-color": "^10.1.0",
