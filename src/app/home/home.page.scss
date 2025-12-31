@@ -218,11 +218,13 @@ ion-content {
   justify-content: center;
   padding: 24px 16px; // Mobile standard
 
+  text-align: center;
+
   @media (min-width: 768px) {
     padding: 48px 32px; // Tablet/Desktop
   }
 
-  text-align: center;
+
 
   ion-icon {
     font-size: 80px;

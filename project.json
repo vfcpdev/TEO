@@ -41,6 +41,10 @@
           "src/theme/variables.scss"
         ],
         "scripts": [],
+        "allowedCommonJsDependencies": [
+          "analogue-time-picker",
+          "localforage"
+        ],
         "browser": "src/main.ts"
       },
       "configurations": {

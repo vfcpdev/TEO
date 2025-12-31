@@ -420,7 +420,7 @@ interface TreeNode {
     IonSegmentButton
   ]
 })
-export class AgendarWizardComponent implements AfterViewInit, OnDestroy {
+export class AgendarWizardComponent implements OnDestroy {
   private modalCtrl = inject(ModalController);
   private agendaService = inject(AgendaService);
 
@@ -452,9 +452,7 @@ export class AgendarWizardComponent implements AfterViewInit, OnDestroy {
     this.loadTreeData();
   }
 
-  ngAfterViewInit() {
-    // Inicialización después de que la vista esté lista
-  }
+
 
   ngOnDestroy() {
     // Limpiar relojes analógicos

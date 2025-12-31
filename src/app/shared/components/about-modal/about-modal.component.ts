@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {
   IonContent,
   IonButton,
@@ -298,7 +298,9 @@ import {
   `]
 })
 export class AboutModalComponent {
-  constructor(private modalCtrl: ModalController) {
+  private modalCtrl = inject(ModalController);
+
+  constructor() {
     addIcons({
       personOutline,
       logoAngular,

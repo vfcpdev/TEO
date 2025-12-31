@@ -11,7 +11,7 @@ import { timePicker } from 'analogue-time-picker';
     standalone: true,
     imports: [CommonModule, FormsModule]
 })
-export class AnalogClockPickerComponent implements OnInit, OnDestroy, AfterViewInit {
+export class AnalogClockPickerComponent implements OnInit, AfterViewInit {
     @ViewChild('pickerContainer') pickerContainer!: ElementRef<HTMLElement>;
 
     @Input() time: string = '08:00'; // Formato HH:mm
@@ -32,10 +32,7 @@ export class AnalogClockPickerComponent implements OnInit, OnDestroy, AfterViewI
         this.initPicker();
     }
 
-    ngOnDestroy() {
-        // La librería no parece tener un método destroy explícito en el d.ts principal
-        // Pero el elemento será removido del DOM por Angular.
-    }
+
 
     private parseTime() {
         if (this.time) {
