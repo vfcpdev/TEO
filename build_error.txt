@@ -1,0 +1,64 @@
+
+> teo@1.0.1 build
+> npm run copy:sqlwasm && nx build
+
+
+> teo@1.0.1 copy:sqlwasm
+> copyfiles -u 3 node_modules/sql.js/dist/sql-wasm.wasm src/assets
+
+
+> nx run app:build:production
+
+[33m❯[39m Building...
+[32m✔[39m Building...
+[37mApplication bundle generation failed. [5.316 seconds] - 2025-12-31T20:06:07.164Z[39m
+[37m[39m
+▲ [WARNING] The glob pattern import("./**/*.entry.js*") did not match any files [empty-glob]
+
+    node_modules/@stencil/core/internal/client/index.js:169:2:
+      169 │   `./${bundleId}.entry.js${BUILD5.hotModuleReplacement && hmrVers...
+          ╵   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2769: No overload matches this call.
+  Overload 1 of 4, '(value: string | number | Date): Date', gave the following error.
+    Argument of type 'Date | undefined' is not assignable to parameter of type 'string | number | Date'.
+      Type 'undefined' is not assignable to type 'string | number | Date'.
+  Overload 2 of 4, '(value: string | number): Date', gave the following error.
+    Argument of type 'Date | undefined' is not assignable to parameter of type 'string | number'.
+      Type 'undefined' is not assignable to type 'string | number'. [plugin angular-compiler]
+
+    src/app/features/agenda/components/week-view/week-view.component.ts:167:29:
+      167 │       const rDate = new Date(r.startTime);
+          ╵                              ~~~~~~~~~~~
+
+
+X [ERROR] TS2769: No overload matches this call.
+  Overload 1 of 4, '(value: string | number | Date): Date', gave the following error.
+    Argument of type 'Date | undefined' is not assignable to parameter of type 'string | number | Date'.
+      Type 'undefined' is not assignable to type 'string | number | Date'.
+  Overload 2 of 4, '(value: string | number): Date', gave the following error.
+    Argument of type 'Date | undefined' is not assignable to parameter of type 'string | number'.
+      Type 'undefined' is not assignable to type 'string | number'. [plugin angular-compiler]
+
+    src/app/features/agenda/components/week-view/week-view.component.ts:179:27:
+      179 │     const start = new Date(reg.startTime);
+          ╵                            ~~~~~~~~~~~~~
+
+
+
+
+
+ NX   Running target build for project app failed
+
+Failed tasks:
+
+- app:build:production
+
+Hint: run the command with --verbose for more details.
+
+
+ NX   Nx Cloud encountered some problems
+
+This workspace is more than three days old and is not connected. Workspaces must be connected within 3 days of creation. Claim your workspace at https://cloud.nx.app. (code: 401)
+

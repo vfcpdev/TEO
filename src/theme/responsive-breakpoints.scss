@@ -1,0 +1,92 @@
+// ============================================
+// RESPONSIVE BREAKPOINTS SYSTEM
+// ============================================
+// Sistema estandarizado de breakpoints para toda la aplicación
+// Uso: @use '../theme/responsive-breakpoints' as bp;
+
+// Breakpoints estándar siguiendo convenciones de Bootstrap/Material
+$breakpoint-xs: 0px;
+$breakpoint-sm: 576px; // Móviles grandes
+$breakpoint-md: 768px; // Tablets
+$breakpoint-lg: 992px; // Desktop
+$breakpoint-xl: 1200px; // Desktop grande
+
+// Mixin principal para responsive design
+// Uso: @include bp.respond-to('md') { ... }
+@mixin respond-to($breakpoint) {
+    @if $breakpoint =='sm' {
+        @media (min-width: $breakpoint-sm) {
+            @content;
+        }
+    }
+
+    @else if $breakpoint =='md' {
+        @media (min-width: $breakpoint-md) {
+            @content;
+        }
+    }
+
+    @else if $breakpoint =='lg' {
+        @media (min-width: $breakpoint-lg) {
+            @content;
+        }
+    }
+
+    @else if $breakpoint =='xl' {
+        @media (min-width: $breakpoint-xl) {
+            @content;
+        }
+    }
+}
+
+// Mixin para tablet específico (entre md y lg)
+// Uso: @include bp.tablet-only { ... }
+@mixin tablet-only {
+    @media (min-width: $breakpoint-md) and (max-width: 991px) {
+        @content;
+    }
+}
+
+// Mixin para mobile específico (menor a md)
+// Uso: @include bp.mobile-only { ... }
+@mixin mobile-only {
+    @media (max-width: 767px) {
+        @content;
+    }
+}
+
+// Mixin para desktop específico (mayor o igual a lg)
+// Uso: @include bp.desktop-only { ... }
+@mixin desktop-only {
+    @media (min-width: $breakpoint-lg) {
+        @content;
+    }
+}
+
+// Variables de espaciado responsive
+:root {
+    // Espaciado base (mobile)
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+
+    // Tamaños mínimos para accesibilidad
+    --min-font-size: 12px;
+    --min-touch-target: 44px; // WCAG 2.1 AA
+
+    // Tablet
+    @media (min-width: $breakpoint-md) {
+        --spacing-md: 20px;
+        --spacing-lg: 32px;
+        --spacing-xl: 48px;
+    }
+
+    // Desktop
+    @media (min-width: $breakpoint-lg) {
+        --spacing-md: 24px;
+        --spacing-lg: 40px;
+        --spacing-xl: 64px;
+    }
+}

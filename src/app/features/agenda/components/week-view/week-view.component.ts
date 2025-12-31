@@ -164,6 +164,7 @@ export class WeekViewComponent implements OnChanges {
     end.setHours(23, 59, 59, 999);
 
     const filtered = this.registros.filter(r => {
+      if (!r.startTime) return false; // Skip if no startTime
       const rDate = new Date(r.startTime);
       return rDate >= start && rDate <= end;
     });
@@ -176,6 +177,8 @@ export class WeekViewComponent implements OnChanges {
   }
 
   getEventStyle(reg: Registro): any {
+    if (!reg.startTime) return { display: 'none' };
+
     const start = new Date(reg.startTime);
 
     // Find which day column (index 0-6)
@@ -192,7 +195,13 @@ export class WeekViewComponent implements OnChanges {
     const top = (minutes / 60) * 40;
 
     // Calculate Height
-    const end = new Date(reg.endTime);
+    let end: Date;
+    if (reg.endTime) {
+      end = new Date(reg.endTime);
+    } else {
+      // Default to 1 hour if no endTime
+      end = new Date(start.getTime() + 60 * 60000);
+    }
     const durMin = (end.getTime() - start.getTime()) / 60000;
     const height = (durMin / 60) * 40;
 

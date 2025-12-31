@@ -16,6 +16,7 @@
  */
 @use "./theme/design-tokens.scss";
 @use "./theme/responsive-utilities.scss";
+@use "./theme/responsive-breakpoints.scss" as bp;
 @use "./theme/mixins" as *;
 @use "./theme/calendar";
 @use "./theme/forms";

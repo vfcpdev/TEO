@@ -1,0 +1,8 @@
+
+> teo@1.0.1 build
+> npm run copy:sqlwasm && nx build
+
+
+> teo@1.0.1 copy:sqlwasm
+> copyfiles -u 3 node_modules/sql.js/dist/sql-wasm.wasm src/assets
+

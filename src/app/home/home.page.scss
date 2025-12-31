@@ -1,4 +1,5 @@
 // Home Page Styles
+@use '../../theme/responsive-breakpoints.scss' as bp;
 
 :host {
   --card-bg: var(--ion-card-background);
@@ -150,23 +151,49 @@ ion-content {
   }
 }
 
-// Agenda Container
 // FAB en la parte superior derecha (entre header y contenido)
 .fab-top-right {
   margin-top: -28px;
   margin-right: 16px;
   z-index: 1000;
 
+  // Tablet y Desktop - mover a esquina inferior derecha
+  @include bp.respond-to('md') {
+    margin-top: 0;
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+  }
+
   ion-fab-button {
     --box-shadow: 0 4px 12px rgba(var(--ion-color-success-rgb), 0.3);
     width: 56px;
     height: 56px;
+
+    // Desktop - más grande
+    @include bp.respond-to('lg') {
+      width: 64px;
+      height: 64px;
+    }
   }
 }
 
 .agenda-container {
   padding: 16px;
   margin-top: 10px; // Espacio extra para compensar el header translucido/doble toolbar
+
+  // Tablet
+  @include bp.respond-to('md') {
+    padding: 24px;
+    max-width: 900px;
+    margin: 10px auto 0;
+  }
+
+  // Desktop
+  @include bp.respond-to('lg') {
+    padding: 32px;
+    max-width: 1200px;
+  }
 }
 
 .registros-list {
@@ -186,6 +213,23 @@ ion-content {
   border: 1px solid var(--ion-border-color);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 
+  // Tablet
+  @include bp.respond-to('md') {
+    padding: 20px;
+    border-radius: 20px;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      cursor: pointer;
+    }
+  }
+
+  // Desktop
+  @include bp.respond-to('lg') {
+    padding: 24px;
+  }
+
   &:active {
     transform: scale(0.98);
     box-shadow: none;
@@ -196,17 +240,29 @@ ion-content {
       margin: 0 0 4px;
       font-size: 16px;
       font-weight: 600;
+
+      @include bp.respond-to('md') {
+        font-size: 18px;
+      }
     }
 
     p {
       margin: 0;
       font-size: 13px;
       color: var(--ion-color-medium);
+
+      @include bp.respond-to('md') {
+        font-size: 14px;
+      }
     }
   }
 
   ion-icon {
     font-size: 20px;
+
+    @include bp.respond-to('md') {
+      font-size: 22px;
+    }
   }
 }
 
@@ -217,14 +273,11 @@ ion-content {
   align-items: center;
   justify-content: center;
   padding: 24px 16px; // Mobile standard
-
   text-align: center;
 
-  @media (min-width: 768px) {
+  @include bp.respond-to('md') {
     padding: 48px 32px; // Tablet/Desktop
   }
-
-
 
   ion-icon {
     font-size: 80px;
