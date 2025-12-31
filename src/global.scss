@@ -25,6 +25,7 @@
 @import "@ionic/angular/css/core.css";
 
 // FAB Options Modal Styles
+// FAB Options Modal Styles
 .fab-options-modal {
   --background: transparent;
   --backdrop-opacity: 0.4;
@@ -32,6 +33,20 @@
   ion-backdrop {
     background: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(4px);
+  }
+}
+
+// Borrador Wizard Modal
+.borrador-wizard-modal {
+  --width: 90%;
+  --max-width: 500px;
+  --height: auto;
+  --max-height: 90%;
+  --border-radius: 16px;
+
+  // Mobile specific adjustments
+  @media (max-width: 768px) {
+    --width: 95%;
   }
 }
 

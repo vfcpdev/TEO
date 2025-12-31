@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { ModalController } from '@ionic/angular/standalone';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonFooter, IonButton, IonInput, IonItem, IonLabel, IonCheckbox, IonIcon } from '@ionic/angular/standalone';
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonFooter, IonButton, IonInput, IonItem, IonLabel, IonCheckbox, IonIcon, IonButtons } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AgendaService } from '../../../core/services/agenda.service';
@@ -85,12 +85,16 @@ interface TreeNode {
 
     <ion-footer>
       <ion-toolbar>
-        <ion-button slot="start" fill="outline" (click)="dismiss()">
-          Cancelar
-        </ion-button>
-        <ion-button slot="end" (click)="save()" [disabled]="!nombreRegistro">
-          Guardar Borrador
-        </ion-button>
+        <ion-buttons slot="start">
+          <ion-button (click)="dismiss()" color="medium">
+            Cancelar
+          </ion-button>
+        </ion-buttons>
+        <ion-buttons slot="end">
+          <ion-button (click)="save()" [disabled]="!nombreRegistro" strong="true">
+            Guardar
+          </ion-button>
+        </ion-buttons>
       </ion-toolbar>
     </ion-footer>
   `,
@@ -175,7 +179,8 @@ interface TreeNode {
     IonItem,
     IonLabel,
     IonCheckbox,
-    IonIcon
+    IonIcon,
+    IonButtons
   ]
 })
 export class BorradorWizardComponent {
