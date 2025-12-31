@@ -3,13 +3,14 @@ import { ModalController } from '@ionic/angular/standalone';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonFooter,
   IonButton, IonInput, IonItem, IonLabel, IonCheckbox,
-  IonIcon, IonDatetime, IonButtons, IonSegment, IonSegmentButton
+  IonIcon
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AgendaService } from '../../../core/services/agenda.service';
 import { addIcons } from 'ionicons';
 import { folderOutline, folderOpenOutline, documentOutline, calendarOutline, timeOutline, checkmarkCircle } from 'ionicons/icons';
+import { DateTimePickerModalComponent } from '../date-time-picker-modal/date-time-picker-modal.component';
 
 interface TreeNode {
   id: string;
@@ -29,163 +30,38 @@ interface TreeNode {
     <ion-header>
       <ion-toolbar color="primary">
         <ion-title>Agendar Registro</ion-title>
-        
-        <!-- Fecha y Hora en el Header -->
-        <ion-buttons slot="end" class="datetime-buttons">
-          <ion-button fill="clear" (click)="showDateTimePicker('inicio')">
-            <ion-icon slot="start" name="calendar-outline"></ion-icon>
-            <span class="datetime-label">
-              {{ fechaInicio ? formatDateTime(fechaInicio) : 'Inicio' }}
-            </span>
-          </ion-button>
-          
-          <ion-button fill="clear" (click)="showDateTimePicker('fin')">
-            <ion-icon slot="start" name="time-outline"></ion-icon>
-            <span class="datetime-label">
-              {{ fechaFin ? formatDateTime(fechaFin) : 'Fin' }}
-            </span>
-          </ion-button>
-        </ion-buttons>
       </ion-toolbar>
     </ion-header>
 
     <ion-content class="ion-padding">
-      <!-- Selector de Fecha/Hora con 5 Tabs Stepper -->
-      @if (showingDateTimePicker) {
-        <div class="datetime-modal-overlay" (click)="closeDateTimePicker()">
-          <div class="datetime-modal-content stepper-modal" (click)="$event.stopPropagation()">
-            <!-- Cabecera del Stepper (Título + Tabs) -->
-            <div class="stepper-header">
-              <h3>{{ currentPickerType === 'inicio' ? 'Seleccionar Inicio' : 'Seleccionar Fin' }}</h3>
-              
-              <ion-segment [(ngModel)]="selectedTab" scrollable="true" mode="md">
-                <ion-segment-button value="fecha-inicio">
-                  <ion-label>Fecha Inicio</ion-label>
-                </ion-segment-button>
-                <ion-segment-button value="hora-inicio">
-                  <ion-label>Hora Inicio</ion-label>
-                </ion-segment-button>
-                <ion-segment-button value="fecha-fin">
-                  <ion-label>Fecha Fin</ion-label>
-                </ion-segment-button>
-                <ion-segment-button value="hora-fin">
-                  <ion-label>Hora Fin</ion-label>
-                </ion-segment-button>
-                <ion-segment-button value="resumen">
-                  <ion-label>Resumen</ion-label>
-                </ion-segment-button>
-              </ion-segment>
-            </div>
+      <!-- Sección de Fecha y Hora (Simulando Moots Picker Flow) -->
+      <div class="form-section">
+        <h3>Fecha y Hora</h3>
+        
+        <ion-item (click)="openDateTimePicker('inicio')" button detail="false" class="datetime-item">
+          <ion-icon slot="start" name="calendar-outline" color="primary"></ion-icon>
+          <ion-label>
+            <h3>Inicio</h3>
+            <p>{{ fechaInicio ? formatDateTime(fechaInicio) : 'Seleccionar fecha y hora' }}</p>
+          </ion-label>
+          <ion-icon slot="end" name="time-outline" color="medium"></ion-icon>
+        </ion-item>
 
-            <!-- Tab 1: Fecha Inicio -->
-            @if (selectedTab === 'fecha-inicio') {
-              <div class="tab-content">
-                <h4>Selecciona la fecha de inicio</h4>
-                <ion-datetime 
-                  [(ngModel)]="fechaInicioTemp"
-                  presentation="date"
-                  [min]="minDate"
-                  locale="es-ES"
-                  [showDefaultButtons]="false">
-                </ion-datetime>
-                <div class="nav-buttons">
-                  <ion-button fill="outline" (click)="closeDateTimePicker()">Cancelar</ion-button>
-                  <ion-button (click)="nextTab()">Siguiente</ion-button>
-                </div>
-              </div>
-            }
+        <div class="connector-line"></div>
 
-            <!-- Tab 2: Hora Inicio -->
-            @if (selectedTab === 'hora-inicio') {
-              <div class="tab-content">
-                <h4>Selecciona la hora de inicio</h4>
-                <div class="time-picker-container">
-                  <ion-datetime
-                    presentation="time"
-                    [(ngModel)]="horaInicioTemp"
-                    locale="es-ES"
-                    [showDefaultButtons]="false"
-                  ></ion-datetime>
-                </div>
-                <div class="nav-buttons">
-                  <ion-button fill="outline" (click)="prevTab()">Atrás</ion-button>
-                  <ion-button (click)="nextTab()">Siguiente</ion-button>
-                </div>
-              </div>
-            }
+        <ion-item (click)="openDateTimePicker('fin')" button detail="false" class="datetime-item">
+          <ion-icon slot="start" name="calendar-outline" color="secondary"></ion-icon>
+          <ion-label>
+            <h3>Fin</h3>
+            <p>{{ fechaFin ? formatDateTime(fechaFin) : 'Seleccionar fecha y hora' }}</p>
+          </ion-label>
+          <ion-icon slot="end" name="time-outline" color="medium"></ion-icon>
+        </ion-item>
 
-            <!-- Tab 3: Fecha Fin -->
-            @if (selectedTab === 'fecha-fin') {
-              <div class="tab-content">
-                <h4>Selecciona la fecha de fin</h4>
-                <ion-datetime 
-                  [(ngModel)]="fechaFinTemp"
-                  presentation="date"
-                  [min]="fechaInicioTemp || minDate"
-                  locale="es-ES"
-                  [showDefaultButtons]="false">
-                </ion-datetime>
-                <div class="nav-buttons">
-                  <ion-button fill="outline" (click)="prevTab()">Atrás</ion-button>
-                  <ion-button (click)="nextTab()">Siguiente</ion-button>
-                </div>
-              </div>
-            }
-
-            <!-- Tab 4: Hora Fin -->
-            @if (selectedTab === 'hora-fin') {
-              <div class="tab-content">
-                <h4>Selecciona la hora de fin</h4>
-                <div class="time-picker-container">
-                  <ion-datetime
-                    presentation="time"
-                    [(ngModel)]="horaFinTemp"
-                    locale="es-ES"
-                    [showDefaultButtons]="false"
-                  ></ion-datetime>
-                </div>
-                <div class="nav-buttons">
-                  <ion-button fill="outline" (click)="prevTab()">Atrás</ion-button>
-                  <ion-button (click)="nextTab()">Siguiente</ion-button>
-                </div>
-              </div>
-            }
-
-            <!-- Tab 5: Resumen -->
-            @if (selectedTab === 'resumen') {
-              <div class="tab-content resumen-content">
-                <h4>Resumen de la selección</h4>
-                <div class="resumen-card">
-                  <div class="resumen-item">
-                    <ion-icon name="calendar-outline" color="primary"></ion-icon>
-                    <span>{{ formatSummaryDateTime(fechaInicioTemp, horaInicioTemp) }}</span>
-                    <ion-label color="medium" class="text-caption">Inicio</ion-label>
-                  </div>
-                  <div class="resumen-divider">
-                    <ion-icon name="arrow-down-outline" size="small"></ion-icon>
-                  </div>
-                  <div class="resumen-item">
-                    <ion-icon name="time-outline" color="secondary"></ion-icon>
-                    <span>{{ formatSummaryDateTime(fechaFinTemp, horaFinTemp) }}</span>
-                    <ion-label color="medium" class="text-caption">Fin</ion-label>
-                  </div>
-                  <div class="resumen-total">
-                    <strong>Duración:</strong>
-                    <span>{{ calculateDuration() }}</span>
-                  </div>
-                </div>
-                <div class="nav-buttons">
-                  <ion-button fill="outline" (click)="prevTab()">Atrás</ion-button>
-                  <ion-button color="success" (click)="confirmDateTime()">
-                    <ion-icon slot="start" name="checkmark-circle"></ion-icon>
-                    Confirmar
-                  </ion-button>
-                </div>
-              </div>
-            }
-          </div>
+        <div class="duration-display" *ngIf="fechaInicio && fechaFin">
+          <p>Duración: <strong>{{ calculateDuration() }}</strong></p>
         </div>
-      }
+      </div>
 
       <!-- Nombre del Registro -->
       <div class="form-section">
@@ -256,149 +132,6 @@ interface TreeNode {
     </ion-footer>
   `,
   styles: [`
-    /* Header DateTime Buttons */
-    .datetime-buttons {
-      display: flex;
-      gap: 8px;
-    }
-
-    .datetime-buttons ion-button {
-      --color: white;
-      font-size: 13px;
-      text-transform: none;
-    }
-
-    .datetime-label {
-      margin-left: 4px;
-      white-space: nowrap;
-    }
-
-    /* DateTime Modal Overlay */
-    .datetime-modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 10000;
-      backdrop-filter: blur(4px);
-    }
-
-    .datetime-modal-content {
-      background: var(--ion-background-color);
-      border-radius: 16px;
-      padding: 0;
-      width: 90%;
-      max-width: 400px;
-      max-height: 85vh;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-      overflow: hidden;
-    }
-
-    .stepper-header {
-      padding: 24px 24px 8px;
-      background: var(--ion-background-color);
-    }
-
-    .datetime-modal-content h3 {
-      margin-top: 0;
-      margin-bottom: 16px;
-      color: var(--ion-text-color);
-      font-size: 18px;
-    }
-
-    /* Tabs */
-    ion-segment {
-      margin-bottom: 8px;
-    }
-
-    .tab-content {
-      flex: 1;
-      padding: 16px 24px 24px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: space-between;
-      overflow-y: auto;
-    }
-
-    .tab-content h4 {
-      margin-bottom: 24px;
-      font-size: 16px;
-      color: var(--ion-color-medium);
-      text-align: center;
-    }
-
-    .time-picker-container {
-      margin-bottom: 24px;
-    }
-
-    .nav-buttons {
-      display: flex;
-      gap: 16px;
-      width: 100%;
-      justify-content: space-between;
-      margin-top: auto;
-    }
-    
-    .nav-buttons ion-button {
-      flex: 1;
-    }
-
-    /* Resumen Style */
-    .resumen-card {
-      background: var(--ion-card-background);
-      border-radius: 12px;
-      padding: 20px;
-      width: 100%;
-      margin-bottom: 20px;
-      border: 1px solid var(--ion-border-color);
-    }
-
-    .resumen-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      text-align: center;
-    }
-
-    .resumen-item span {
-      font-size: 16px;
-      font-weight: 600;
-    }
-    
-    .text-caption {
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .resumen-divider {
-      display: flex;
-      justify-content: center;
-      margin: 12px 0;
-      color: var(--ion-color-medium);
-      opacity: 0.5;
-    }
-
-    .resumen-total {
-      margin-top: 16px;
-      padding-top: 16px;
-      border-top: 1px solid var(--ion-border-color);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 14px;
-    }
-
-    /* Form Sections */
     .form-section {
       margin-bottom: 24px;
     }
@@ -408,6 +141,27 @@ interface TreeNode {
       font-weight: 600;
       margin-bottom: 12px;
       color: var(--ion-text-color);
+    }
+
+    .datetime-item {
+      --background: var(--ion-card-background);
+      --border-radius: 8px;
+      margin-bottom: 8px;
+    }
+
+    .connector-line {
+      height: 16px;
+      width: 2px;
+      background: var(--ion-color-medium);
+      opacity: 0.3;
+      margin-left: 36px; /* Align with icon center approximately */
+    }
+
+    .duration-display {
+      margin-top: 12px;
+      text-align: right;
+      font-size: 14px;
+      color: var(--ion-color-medium);
     }
 
     /* Tree Container */
@@ -431,7 +185,7 @@ interface TreeNode {
       padding: 12px;
       border-radius: 8px;
       cursor: pointer;
-      transition: background 0.2s;
+       transition: background 0.2s;
     }
 
     .node-item:hover {
@@ -467,7 +221,6 @@ interface TreeNode {
       padding: 12px;
     }
 
-    /* Save Button Enhancement */
     .save-button {
       --padding-start: 24px;
       --padding-end: 24px;
@@ -478,17 +231,6 @@ interface TreeNode {
 
     .save-button ion-icon {
       font-size: 20px;
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-      .datetime-buttons ion-button {
-        font-size: 11px;
-      }
-      
-      .datetime-label {
-        display: none;
-      }
     }
   `],
   standalone: true,
@@ -505,11 +247,7 @@ interface TreeNode {
     IonItem,
     IonLabel,
     IonCheckbox,
-    IonIcon,
-    IonDatetime,
-    IonButtons,
-    IonSegment,
-    IonSegmentButton
+    IonIcon
   ]
 })
 export class AgendarWizardComponent implements OnDestroy {
@@ -520,29 +258,23 @@ export class AgendarWizardComponent implements OnDestroy {
   fechaInicio: string = '';
   fechaFin: string = '';
 
-  // Propiedades temporales para el picker
-  fechaInicioTemp: string = '';
-  fechaFinTemp: string = '';
-
-  // Hora temporal (ISO String de IonDatetime)
-  horaInicioTemp: string = new Date().toISOString();
-  horaFinTemp: string = new Date().toISOString();
-
-  minDate = new Date().toISOString();
   treeNodes = signal<TreeNode[]>([]);
-
-  showingDateTimePicker = false;
-  currentPickerType: 'inicio' | 'fin' = 'inicio';
-  selectedTab: 'fecha-inicio' | 'hora-inicio' | 'fecha-fin' | 'hora-fin' | 'resumen' = 'fecha-inicio';
 
   constructor() {
     addIcons({ folderOutline, folderOpenOutline, documentOutline, calendarOutline, timeOutline, checkmarkCircle });
     this.loadTreeData();
+
+    // Initialize defaults if needed
+    const now = new Date();
+    now.setMinutes(0, 0, 0); // Round to hour
+    this.fechaInicio = now.toISOString();
+
+    const end = new Date(now);
+    end.setHours(end.getHours() + 1);
+    this.fechaFin = end.toISOString();
   }
 
-  ngOnDestroy() {
-    // Cleanup if needed
-  }
+  ngOnDestroy() { }
 
   private loadTreeData() {
     const areas = this.agendaService.areas() || [];
@@ -574,66 +306,36 @@ export class AgendarWizardComponent implements OnDestroy {
     this.treeNodes.set(tree);
   }
 
-  showDateTimePicker(type: 'inicio' | 'fin') {
-    this.currentPickerType = type;
-    this.selectedTab = 'fecha-inicio'; // Siempre empezar en el primer tab
+  async openDateTimePicker(type: 'inicio' | 'fin') {
+    const initialValue = type === 'inicio' ? this.fechaInicio : this.fechaFin;
+    const minDate = type === 'fin' ? this.fechaInicio : undefined;
 
-    // Inicializar valores temporales
-    if (type === 'inicio') {
-      this.fechaInicioTemp = this.fechaInicio || new Date().toISOString();
-      // Si ya hay fecha inicio, usar su parte de hora para horaInicioTemp
-      if (this.fechaInicio) {
-        this.horaInicioTemp = this.fechaInicio;
-      } else {
-        // Por defecto usar 'ahora' o '9:00'
-        const now = new Date();
-        now.setHours(9, 0, 0, 0);
-        this.horaInicioTemp = now.toISOString();
+    const modal = await this.modalCtrl.create({
+      component: DateTimePickerModalComponent,
+      componentProps: {
+        title: type === 'inicio' ? 'Seleccionar Inicio' : 'Seleccionar Fin',
+        initialValue: initialValue || new Date().toISOString(),
+        minDate: minDate
       }
-    } else {
-      this.fechaFinTemp = this.fechaFin || this.fechaInicio || new Date().toISOString();
-      if (this.fechaFin) {
-        this.horaFinTemp = this.fechaFin;
+    });
+
+    await modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === 'confirm' && data) {
+      if (type === 'inicio') {
+        this.fechaInicio = data;
+        // Auto adjust end date if it's before start date
+        if (this.fechaFin && new Date(this.fechaFin) <= new Date(this.fechaInicio)) {
+          const newEnd = new Date(this.fechaInicio);
+          newEnd.setHours(newEnd.getHours() + 1);
+          this.fechaFin = newEnd.toISOString();
+        }
       } else {
-        const now = new Date();
-        now.setHours(10, 0, 0, 0);
-        this.horaFinTemp = now.toISOString();
+        this.fechaFin = data;
       }
     }
-
-    this.showingDateTimePicker = true;
-  }
-
-  onTabChange() {
-    // Acciones al cambiar tab si es necesario
-  }
-
-  confirmDateTime() {
-    if (this.currentPickerType === 'inicio') {
-      // Combinar fecha (fechaInicioTemp) y hora (horaInicioTemp)
-      this.fechaInicio = this.combineDateAndTime(this.fechaInicioTemp, this.horaInicioTemp);
-    } else {
-      this.fechaFin = this.combineDateAndTime(this.fechaFinTemp, this.horaFinTemp);
-    }
-
-    this.closeDateTimePicker();
-  }
-
-  private combineDateAndTime(dateIso: string, timeIso: string): string {
-    const d = new Date(dateIso);
-    const t = new Date(timeIso);
-
-    d.setHours(t.getHours());
-    d.setMinutes(t.getMinutes());
-    d.setSeconds(0);
-    d.setMilliseconds(0);
-
-    return d.toISOString();
-  }
-
-  closeDateTimePicker() {
-    this.showingDateTimePicker = false;
-    this.selectedTab = 'fecha-inicio'; // Reset al primer tab
   }
 
   formatDateTime(isoString: string): string {
@@ -641,9 +343,10 @@ export class AgendarWizardComponent implements OnDestroy {
     const date = new Date(isoString);
     const day = date.getDate().toString().padStart(2, '0');
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
     const hours = date.getHours().toString().padStart(2, '0');
     const minutes = date.getMinutes().toString().padStart(2, '0');
-    return `${day}/${month} ${hours}:${minutes}`;
+    return `${day}/${month}/${year} ${hours}:${minutes}`;
   }
 
   toggleNode(node: TreeNode) {
@@ -692,35 +395,11 @@ export class AgendarWizardComponent implements OnDestroy {
     this.modalCtrl.dismiss();
   }
 
-  nextTab() {
-    const tabs: Array<typeof this.selectedTab> = ['fecha-inicio', 'hora-inicio', 'fecha-fin', 'hora-fin', 'resumen'];
-    const currentIndex = tabs.indexOf(this.selectedTab);
-    if (currentIndex < tabs.length - 1) {
-      this.selectedTab = tabs[currentIndex + 1];
-    }
-  }
-
-  prevTab() {
-    const tabs: Array<typeof this.selectedTab> = ['fecha-inicio', 'hora-inicio', 'fecha-fin', 'hora-fin', 'resumen'];
-    const currentIndex = tabs.indexOf(this.selectedTab);
-    if (currentIndex > 0) {
-      this.selectedTab = tabs[currentIndex - 1];
-    }
-  }
-
-  formatSummaryDateTime(dateISO: string, timeISO: string): string {
-    if (!dateISO || !timeISO) return 'No seleccionado';
-
-    // Combinamos solo para mostrar
-    const combined = this.combineDateAndTime(dateISO, timeISO);
-    return this.formatDateTime(combined);
-  }
-
   calculateDuration(): string {
-    if (!this.fechaInicioTemp || !this.fechaFinTemp) return 'No calculado';
+    if (!this.fechaInicio || !this.fechaFin) return 'No calculado';
 
-    const inicio = new Date(this.combineDateAndTime(this.fechaInicioTemp, this.horaInicioTemp));
-    const fin = new Date(this.combineDateAndTime(this.fechaFinTemp, this.horaFinTemp));
+    const inicio = new Date(this.fechaInicio);
+    const fin = new Date(this.fechaFin);
 
     const diffMs = fin.getTime() - inicio.getTime();
     const diffMins = Math.floor(diffMs / 60000);
