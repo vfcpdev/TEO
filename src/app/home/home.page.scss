@@ -202,6 +202,72 @@ ion-content {
   gap: 12px;
 }
 
+.agenda-table {
+  --ion-grid-padding: 0;
+  background: var(--ion-card-background);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--ion-border-color);
+
+  .header-row {
+    border-bottom: 2px solid var(--ion-border-color);
+    font-weight: 700;
+    color: var(--ion-color-medium);
+    font-size: 0.9rem;
+    padding-bottom: 8px;
+    margin-bottom: 4px;
+
+    ion-col {
+      padding-inline: 4px; // tighter padding
+    }
+  }
+
+  .data-row {
+    border-bottom: 1px solid var(--ion-color-light-shade);
+    padding: 12px 0;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: var(--ion-color-light);
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    ion-col {
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      padding-inline: 4px;
+    }
+
+    .col-name {
+      font-weight: 600;
+      color: var(--ion-text-color);
+    }
+
+    .time-stack {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.2;
+      font-size: 0.85rem;
+
+      .end-time {
+        color: var(--ion-color-medium);
+        font-size: 0.8rem;
+      }
+    }
+
+    .col-remaining {
+      justify-content: center;
+    }
+  }
+}
+
 .registro-card {
   background: var(--ion-card-background);
   border-radius: 16px;

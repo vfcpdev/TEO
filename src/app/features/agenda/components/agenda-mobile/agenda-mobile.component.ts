@@ -14,7 +14,9 @@ import {
   IonSelectOption,
   IonSegment,
   IonSegmentButton,
-  AlertController
+  AlertController,
+  IonFab,
+  IonFabButton
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -51,7 +53,9 @@ import { RegistroTipoBase } from '../../../../models/registro.model';
     IonButton,
     IonInput,
     IonSegment,
-    IonSegmentButton
+    IonSegmentButton,
+    IonFab,
+    IonFabButton
   ],
   template: `
     <div class="agenda-mobile-container">
@@ -87,13 +91,12 @@ import { RegistroTipoBase } from '../../../../models/registro.model';
             @if (activeAreaId() && getActiveArea()) {
                 <div class="active-area-panel">
                   <div class="panel-header">
-                    <div class="area-info">
+                     <div class="area-info">
                        <div class="icon-badge" [style.background-color]="getActiveArea()?.color || 'grey'">
                          <ion-icon [name]="getActiveArea()?.icon || ''"></ion-icon>
                        </div>
                        <div class="text">
                          <h3>{{ getActiveArea()?.name }}</h3>
-                         <p>Configuración y Contextos</p>
                        </div>
                     </div>
                     <div class="area-actions">
@@ -109,7 +112,7 @@ import { RegistroTipoBase } from '../../../../models/registro.model';
                   <div class="contexts-section">
                     <div class="section-title">
                       <ion-icon name="leaf-outline" color="success"></ion-icon>
-                      <span>Contextos Relacionados</span>
+                      <span>Contextos</span>
                       <ion-badge color="success" mode="ios">{{ getContextsForArea(activeAreaId()).length }}</ion-badge>
                     </div>
 
@@ -122,26 +125,18 @@ import { RegistroTipoBase } from '../../../../models/registro.model';
                           </ion-button>
                         </div>
                       } @empty {
-                        <p class="empty-msg">No hay contextos en esta área.</p>
+                        <p class="empty-msg">Sin contextos.</p>
                       }
                     </div>
 
-                    @if (showAddContextoForm()) {
-                      <div class="add-ctx-inline">
-                        <ion-input [(ngModel)]="newContextoName" placeholder="Nuevo contexto..." fill="outline"></ion-input>
-                        <ion-button fill="solid" color="success" (click)="addContexto()">
-                          <ion-icon slot="icon-only" name="checkmark"></ion-icon>
-                        </ion-button>
-                        <ion-button fill="clear" color="medium" (click)="showAddContextoForm.set(false)">
-                          <ion-icon slot="icon-only" name="close"></ion-icon>
-                        </ion-button>
-                      </div>
-                    } @else {
-                      <ion-button fill="clear" size="small" (click)="showAddContextoForm.set(true)" class="add-ctx-btn">
-                        <ion-icon name="add-outline" slot="start"></ion-icon>
-                        Agregar Contexto
-                      </ion-button>
-                    }
+                    <!-- FAB for Adding Contexts -->
+                    <div class="fab-container">
+                       <ion-fab button vertical="bottom" horizontal="end" slot="fixed">
+                         <ion-fab-button (click)="presentAddContextAlert()">
+                           <ion-icon name="add"></ion-icon>
+                         </ion-fab-button>
+                       </ion-fab>
+                    </div>
                   </div>
                 </div>
             } @else if (agendaService.areas().length === 0) {
@@ -228,17 +223,20 @@ import { RegistroTipoBase } from '../../../../models/registro.model';
       border-bottom: 1px solid var(--ion-color-step-200);
       padding-bottom: 2px;
     }
+    
     .area-tabs { 
       flex: 1; 
       --background: transparent;
-      ion-segment-button {
+    }
+    
+    .area-tabs ion-segment-button {
         --indicator-color: var(--ion-color-primary);
         --color-checked: var(--ion-color-primary);
         min-width: 90px;
-        ion-label { font-size: 0.8rem; font-weight: 600; }
-        ion-icon { font-size: 1.2rem; margin-bottom: 2px; }
-      }
     }
+    
+    .area-tabs ion-segment-button ion-label { font-size: 0.8rem; font-weight: 600; }
+    .area-tabs ion-segment-button ion-icon { font-size: 1.2rem; margin-bottom: 2px; }
     
     .active-area-panel {
       background: var(--ion-card-background);
@@ -251,46 +249,49 @@ import { RegistroTipoBase } from '../../../../models/registro.model';
     .panel-header {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 24px;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--ion-color-step-100);
+    }
       
-      .area-info {
+    .panel-header .area-info {
         display: flex;
-        gap: 12px;
+        gap: 10px;
         align-items: center;
-        .icon-badge {
-          width: 44px;
-          height: 44px;
-          border-radius: 12px;
+    }
+    
+    .panel-header .area-info .icon-badge {
+          width: 32px;
+          height: 32px;
+          border-radius: 8px;
           display: flex;
           align-items: center;
           justify-content: center;
           color: white;
-          ion-icon { font-size: 1.4rem; }
-        }
-        h3 { margin: 0; font-size: 1.2rem; font-weight: 700; color: var(--ion-text-color); }
-        p { margin: 0; font-size: 0.8rem; color: var(--ion-color-medium); }
-      }
     }
     
-    .contexts-section {
-      .section-title {
+    .panel-header .area-info .icon-badge ion-icon { font-size: 1.1rem; }
+    .panel-header .area-info h3 { margin: 0; font-size: 1.05rem; font-weight: 700; color: var(--ion-text-color); }
+    
+    .contexts-section .section-title {
         display: flex;
         align-items: center;
         gap: 8px;
         margin-bottom: 12px;
-        span { font-size: 0.9rem; font-weight: 600; color: var(--ion-color-medium); }
-        ion-badge { font-size: 0.7rem; border-radius: 6px; }
-      }
+    }
+    
+    .contexts-section .section-title span { font-size: 0.9rem; font-weight: 600; color: var(--ion-color-medium); }
+    .contexts-section .section-title ion-badge { font-size: 0.7rem; border-radius: 6px; }
       
-      .contexts-list {
+    .contexts-section .contexts-list {
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
         margin-bottom: 16px;
-      }
+    }
       
-      .context-pill {
+    .contexts-section .context-pill {
         display: flex;
         align-items: center;
         gap: 4px;
@@ -298,23 +299,26 @@ import { RegistroTipoBase } from '../../../../models/registro.model';
         padding: 4px 4px 4px 12px;
         border-radius: 20px;
         cursor: pointer;
-        span { font-size: 0.85rem; font-weight: 500; }
-        ion-button { --padding-start: 0; --padding-end: 0; margin: 0; height: 24px; ion-icon { font-size: 1.1rem; } }
-      }
-      
-      .empty-msg { font-size: 0.8rem; color: var(--ion-color-medium); font-style: italic; }
-      .add-ctx-btn { --padding-start: 0; font-size: 0.85rem; font-weight: 600; }
     }
+    
+    .contexts-section .context-pill span { font-size: 0.85rem; font-weight: 500; }
+    .contexts-section .context-pill ion-button { --padding-start: 0; --padding-end: 0; margin: 0; height: 24px; }
+    .contexts-section .context-pill ion-button ion-icon { font-size: 1.1rem; }
+      
+    .contexts-section .empty-msg { font-size: 0.8rem; color: var(--ion-color-medium); font-style: italic; }
+    .contexts-section .add-ctx-btn { --padding-start: 0; font-size: 0.85rem; font-weight: 600; }
     
     .add-ctx-inline {
       display: flex;
       gap: 8px;
       margin-top: 8px;
-      ion-input { --background: var(--ion-color-step-50); height: 36px; --padding-start: 12px; }
-      ion-button { margin: 0; height: 36px; }
     }
     
+    .add-ctx-inline ion-input { --background: var(--ion-color-step-50); height: 36px; --padding-start: 12px; }
+    .add-ctx-inline ion-button { margin: 0; height: 36px; }
+    
     .tipos-list { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+    
     .tipo-card {
       display: flex;
       align-items: center;
@@ -322,7 +326,9 @@ import { RegistroTipoBase } from '../../../../models/registro.model';
       padding: 10px 16px;
       border-radius: 12px;
       border: 1px solid var(--ion-color-step-100);
-      .tipo-icon {
+    }
+    
+    .tipo-card .tipo-icon {
         width: 36px;
         height: 36px;
         border-radius: 10px;
@@ -331,15 +337,16 @@ import { RegistroTipoBase } from '../../../../models/registro.model';
         justify-content: center;
         color: white;
         margin-right: 12px;
-      }
-      .tipo-info {
+    }
+    
+    .tipo-card .tipo-info {
         flex: 1;
         display: flex;
         flex-direction: column;
-        .name { font-weight: 600; font-size: 0.95rem; }
-        .base { font-size: 0.75rem; color: var(--ion-color-medium); text-transform: uppercase; }
-      }
     }
+    
+    .tipo-card .tipo-info .name { font-weight: 600; font-size: 0.95rem; }
+    .tipo-card .tipo-info .base { font-size: 0.75rem; color: var(--ion-color-medium); text-transform: uppercase; }
     
     .modal-backdrop {
       position: fixed;
@@ -358,9 +365,10 @@ import { RegistroTipoBase } from '../../../../models/registro.model';
       border-radius: 20px;
       padding: 24px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-      h3 { margin-top: 0; margin-bottom: 20px; font-weight: 700; }
-      .modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 24px; }
     }
+    
+    .custom-modal h3 { margin-top: 0; margin-bottom: 20px; font-weight: 700; }
+    .custom-modal .modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 24px; }
     
     .empty-state {
       display: flex;
@@ -369,9 +377,10 @@ import { RegistroTipoBase } from '../../../../models/registro.model';
       justify-content: center;
       padding: 40px 20px;
       text-align: center;
-      ion-icon { font-size: 4rem; margin-bottom: 16px; }
-      p { color: var(--ion-color-medium); margin-bottom: 20px; }
     }
+    
+    .empty-state ion-icon { font-size: 4rem; margin-bottom: 16px; }
+    .empty-state p { color: var(--ion-color-medium); margin-bottom: 20px; }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -579,6 +588,35 @@ export class AgendaMobileComponent {
       buttons: [
         { text: 'Cancelar', role: 'cancel' },
         { text: 'Aceptar', handler: onConfirm }
+      ]
+    });
+    await alert.present();
+  }
+
+  async presentAddContextAlert() {
+    const alert = await this.alertController.create({
+      header: 'Nuevo Contexto',
+      inputs: [
+        {
+          name: 'name',
+          type: 'text',
+          placeholder: 'Nombre del contexto (ej. Oficina)'
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Crear',
+          handler: (data) => {
+            if (data.name?.trim()) {
+              this.newContextoName = data.name;
+              this.addContexto();
+            }
+          }
+        }
       ]
     });
     await alert.present();

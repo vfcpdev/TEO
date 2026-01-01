@@ -1,4 +1,4 @@
-import { Component, Input, computed, signal, ChangeDetectionStrategy, OnChanges, SimpleChanges, effect } from '@angular/core';
+import { Component, Input, computed, signal, ChangeDetectionStrategy, OnChanges, SimpleChanges, effect, ElementRef, AfterViewInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { Registro } from '../../../../models/registro.model';
@@ -9,7 +9,7 @@ import { Registro } from '../../../../models/registro.model';
   imports: [CommonModule, IonicModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="day-view-container">
+    <div class="day-view-container" #scrollContainer>
       
       <!-- Timeline simple -->
       <div class="timeline-visualization">
@@ -196,6 +196,10 @@ export class DayViewComponent implements OnChanges {
     return filtered;
   });
 
+  private timeInterval: any;
+
+  @ViewChild('scrollContainer') scrollContainer!: ElementRef;
+
   constructor() {
     this.generateHours();
     this.updateTimePosition();
@@ -204,6 +208,40 @@ export class DayViewComponent implements OnChanges {
     effect(() => {
       console.log('[DayView] dayRegistros updated:', this.dayRegistros().length);
     });
+  }
+
+  ngOnInit() {
+    // Update every minute
+    this.timeInterval = setInterval(() => {
+      this.updateTimePosition();
+    }, 60000);
+  }
+
+  ngAfterViewInit() {
+    // Auto-scroll to show 2 hours before current time
+    setTimeout(() => {
+      this.scrollToCurrentTime();
+    }, 100);
+  }
+
+  private scrollToCurrentTime() {
+    if (!this.scrollContainer) return;
+
+    const now = this.currentDate || new Date();
+    const hours = now.getHours();
+
+    // Calculate position for 2 hours before current time
+    const targetHour = Math.max(0, hours - 2);
+    const scrollPosition = this.START_OFFSET + (targetHour * this.HOUR_HEIGHT);
+
+    // Scroll to position
+    this.scrollContainer.nativeElement.scrollTop = scrollPosition;
+  }
+
+  ngOnDestroy() {
+    if (this.timeInterval) {
+      clearInterval(this.timeInterval);
+    }
   }
 
   ngOnChanges(changes: SimpleChanges) {

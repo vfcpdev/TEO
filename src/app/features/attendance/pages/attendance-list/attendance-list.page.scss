@@ -218,6 +218,20 @@
         margin-top: 2px;
         font-family: monospace;
       }
+
+      .student-notes {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 11px;
+        color: var(--ion-color-medium);
+        margin: 4px 0 0;
+        font-style: italic;
+
+        ion-icon {
+          font-size: 12px;
+        }
+      }
     }
 
     .status-chip {
@@ -232,7 +246,8 @@
 }
 
 // Estados vacíos
-.empty-state, .loading-container {
+.empty-state,
+.loading-container {
   display: flex;
   flex-direction: column;
   align-items: center;

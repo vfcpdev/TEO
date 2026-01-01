@@ -20,7 +20,10 @@ import {
   AlertController,
   ActionSheetController,
   ToastController,
-  ViewWillEnter
+  ViewWillEnter,
+  IonGrid,
+  IonRow,
+  IonCol
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -65,6 +68,7 @@ import { DayViewComponent } from '../features/agenda/components/day-view/day-vie
 import { WeekViewComponent } from '../features/agenda/components/week-view/week-view.component';
 import { MonthViewComponent } from '../features/agenda/components/month-view/month-view.component';
 import { FabOptionsComponent } from '../shared/components/fab-options/fab-options.component';
+import { DayDetailDrawerComponent } from '../features/agenda/components/day-detail-drawer/day-detail-drawer.component';
 import { BorradorWizardComponent } from '../shared/components/borrador-wizard/borrador-wizard.component';
 import { AgendarWizardComponent } from '../shared/components/agendar-wizard/agendar-wizard.component';
 import { RegistroStatus, RegistroPrioridad } from '../models/registro.model';
@@ -108,9 +112,14 @@ export interface TimelineItem {
     BufferVisualizerComponent,
     IonFab,
     IonFabButton,
+    IonGrid,
+    IonRow,
+    IonCol,
+    IonBadge,
     DayViewComponent,
     WeekViewComponent,
-    MonthViewComponent
+    MonthViewComponent,
+    DayDetailDrawerComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -237,7 +246,41 @@ export class HomePage implements OnInit, ViewWillEnter, OnDestroy {
   }
 
   formatDateWithTime(date: any): string {
-    return date ? new Date(date).toLocaleString() : '';
+    return date ? new Date(date).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) : '';
+  }
+
+  getAreaName(reg: Registro): string {
+    // TODO: Connect with real Area service if available.
+    // For now returning contextId or placeholder
+    return reg.contextoId || reg.areaId || 'General';
+  }
+
+  getDuration(reg: Registro): number {
+    if (reg.duration) return reg.duration;
+    if (reg.startTime && reg.endTime) {
+      const start = new Date(reg.startTime).getTime();
+      const end = new Date(reg.endTime).getTime();
+      return Math.round((end - start) / 60000);
+    }
+    return 0;
+  }
+
+  getTimeRemaining(reg: Registro): string {
+    if (!reg.startTime) return '-';
+    const now = new Date();
+    const start = new Date(reg.startTime);
+    const diffMs = start.getTime() - now.getTime();
+
+    if (diffMs < 0) return 'En curso / Pasado';
+
+    const diffMins = Math.floor(diffMs / 60000);
+    const hours = Math.floor(diffMins / 60);
+    const mins = diffMins % 60;
+
+    if (hours > 0) {
+      return `${hours}h ${mins}m`;
+    }
+    return `${mins}m`;
   }
 
   // FAB Options Modal
@@ -259,6 +302,31 @@ export class HomePage implements OnInit, ViewWillEnter, OnDestroy {
     } else if (data === 'agendar') {
       this.openAgendarWithCalendar();
     }
+  }
+
+  async openDayDrawer(date: Date) {
+    const list = this.registros();
+    // Filter for that day
+    const target = new Date(date);
+    const dayRegistros = list.filter(r => {
+      if (!r.startTime) return false;
+      const d = new Date(r.startTime);
+      return d.getDate() === target.getDate() &&
+        d.getMonth() === target.getMonth() &&
+        d.getFullYear() === target.getFullYear();
+    });
+
+    const modal = await this.modalController.create({
+      component: DayDetailDrawerComponent,
+      componentProps: {
+        date: date,
+        registros: dayRegistros
+      },
+      initialBreakpoint: 0.5,
+      breakpoints: [0, 0.5, 1],
+      cssClass: 'day-drawer-modal'
+    });
+    await modal.present();
   }
 
   private async openBorradorQuick() {

@@ -7,14 +7,15 @@ import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonButtons,
   IonButton, IonIcon, IonList, IonItem, IonLabel, IonSelect, IonSelectOption,
   IonChip, IonFab, IonFabButton, IonSpinner, IonSearchbar,
-  LoadingController, AlertController
+  LoadingController, AlertController, ActionSheetController, ModalController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
   checkmarkCircle, closeCircle, timeOutline, helpCircleOutline,
   calendarOutline, peopleOutline, checkmarkDoneOutline, saveOutline,
   businessOutline, bookOutline, chevronBackOutline, todayOutline,
-  listOutline, gridOutline, refreshOutline, trashOutline
+  listOutline, gridOutline, refreshOutline, trashOutline,
+  checkboxOutline, squareOutline, createOutline, documentTextOutline
 } from 'ionicons/icons';
 
 import { AttendanceService } from '../../services/attendance.service';
@@ -41,6 +42,7 @@ export class AttendanceListPage implements OnInit {
   private toastService = inject(ToastService);
   private loadingController = inject(LoadingController);
   private alertController = inject(AlertController);
+  private actionSheetController = inject(ActionSheetController);
   private router = inject(Router);
 
   // Datos
@@ -56,6 +58,8 @@ export class AttendanceListPage implements OnInit {
 
   // UI
   searchText = signal('');
+  isSelectionMode = signal(false);
+  selectedStudentIds = signal<Set<string>>(new Set());
 
   // Enums para template
   AttendanceStatus = AttendanceStatus;
@@ -90,13 +94,10 @@ export class AttendanceListPage implements OnInit {
     };
   });
 
+  selectedCount = computed(() => this.selectedStudentIds().size);
+
   constructor() {
-    addIcons({
-      checkmarkCircle, closeCircle, timeOutline, helpCircleOutline,
-      calendarOutline, peopleOutline, checkmarkDoneOutline, saveOutline,
-      businessOutline, bookOutline, chevronBackOutline, todayOutline,
-      listOutline, gridOutline, refreshOutline, trashOutline
-    });
+    addIcons({ chevronBackOutline, saveOutline, bookOutline, calendarOutline, checkmarkCircle, closeCircle, timeOutline, helpCircleOutline, checkmarkDoneOutline, peopleOutline, documentTextOutline, createOutline, businessOutline, todayOutline, listOutline, gridOutline, refreshOutline, trashOutline, checkboxOutline, squareOutline });
   }
 
   ngOnInit() {
@@ -159,6 +160,11 @@ export class AttendanceListPage implements OnInit {
    * Cambiar estado de asistencia de un estudiante
    */
   toggleStatus(student: AttendanceWithStudentInfo) {
+    if (this.isSelectionMode()) {
+      this.toggleStudentSelection(student.studentId);
+      return;
+    }
+
     const statusOrder = [
       AttendanceStatus.PRESENTE,
       AttendanceStatus.AUSENTE,
@@ -316,6 +322,126 @@ export class AttendanceListPage implements OnInit {
       day: 'numeric',
       month: 'short'
     });
+  }
+
+  // --- Selección y Novedades Grupales ---
+
+  toggleSelectionMode() {
+    this.isSelectionMode.update(v => !v);
+    if (!this.isSelectionMode()) {
+      this.selectedStudentIds.set(new Set());
+    }
+  }
+
+  toggleStudentSelection(studentId: string) {
+    this.selectedStudentIds.update(ids => {
+      const newIds = new Set(ids);
+      if (newIds.has(studentId)) {
+        newIds.delete(studentId);
+      } else {
+        newIds.add(studentId);
+      }
+      return newIds;
+    });
+  }
+
+  selectAll() {
+    const allIds = new Set(this.students().map(s => s.studentId));
+    this.selectedStudentIds.set(allIds);
+  }
+
+  deselectAll() {
+    this.selectedStudentIds.set(new Set());
+  }
+
+  async presentGroupNoveltyOptions() {
+    if (this.selectedCount() === 0) return;
+
+    const actionSheet = await this.actionSheetController.create({
+      header: 'Aplicar Novedad Grupal',
+      subHeader: `Seleccionados: ${this.selectedCount()}`,
+      buttons: [
+        {
+          text: 'Justificado',
+          icon: 'help-circle-outline',
+          handler: () => {
+            this.promptForReason(AttendanceStatus.JUSTIFICADO);
+          }
+        },
+        {
+          text: 'Tardanza',
+          icon: 'time-outline',
+          handler: () => {
+            this.promptForReason(AttendanceStatus.TARDANZA);
+          }
+        },
+        {
+          text: 'Ausente',
+          icon: 'close-circle',
+          role: 'destructive',
+          handler: () => {
+            this.promptForReason(AttendanceStatus.AUSENTE);
+          }
+        },
+        {
+          text: 'Cancelar',
+          icon: 'close',
+          role: 'cancel'
+        }
+      ]
+    });
+    await actionSheet.present();
+  }
+
+  async promptForReason(status: AttendanceStatus) {
+    const alert = await this.alertController.create({
+      header: 'Registrar Motivo',
+      message: `Ingrese el motivo para la novedad grupal (${this.getStatusLabel(status)})`,
+      inputs: [
+        {
+          name: 'reason',
+          type: 'textarea',
+          placeholder: 'Ej: Huelga de transporte, Evento escolar...'
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Aplicar',
+          handler: (data) => {
+            this.applyGroupNovelty(status, data.reason);
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  applyGroupNovelty(status: AttendanceStatus, reason: string) {
+    const notePrefix = '[Grupo] ';
+    const formattedNote = reason ? `${notePrefix}${reason}` : notePrefix + 'Sin motivo especificado';
+    const selectedIds = this.selectedStudentIds();
+
+    this.students.update(list =>
+      list.map(s => {
+        if (selectedIds.has(s.studentId)) {
+          return {
+            ...s,
+            status: status,
+            notes: formattedNote
+          };
+        }
+        return s;
+      })
+    );
+
+    this.hasChanges.set(true);
+    this.isSelectionMode.set(false);
+    this.selectedStudentIds.set(new Set());
+    this.toastService.success('Novedad grupal aplicada. No olvide guardar cambios.');
   }
 
   goBack() {

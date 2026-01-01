@@ -64,27 +64,33 @@
       </div>
       } @else {
       <div class="registros-list">
-        @for (registro of registrosFiltrados(); track registro.id) {
-        <!-- Buffer Visualizer BEFORE -->
-        @if (registro.bufferBefore?.duration) {
-        <app-buffer-visualizer type="before" [buffer]="registro.bufferBefore"
-          [pixelsPerMinute]="1"></app-buffer-visualizer>
-        }
+        <!-- Table Header -->
+        <ion-grid class="agenda-table">
+          <ion-row class="header-row">
+            <ion-col size="3">Evento</ion-col>
+            <ion-col size="2">Área</ion-col>
+            <ion-col size="2">Hora</ion-col>
+            <ion-col size="2">Duración</ion-col>
+            <ion-col size="3">Faltante</ion-col>
+          </ion-row>
 
-        <div class="registro-card" (click)="editarRegistro(registro)">
-          <div class="registro-info">
-            <h3>{{ registro.name }}</h3>
-            <p>{{ formatDateWithTime(registro.startTime) }} - {{ formatDateWithTime(registro.endTime) }}</p>
-          </div>
-          <ion-icon slot="end" name="chevron-forward-outline" color="medium"></ion-icon>
-        </div>
-
-        <!-- Buffer Visualizer AFTER -->
-        @if (registro.bufferAfter?.duration) {
-        <app-buffer-visualizer type="after" [buffer]="registro.bufferAfter"
-          [pixelsPerMinute]="1"></app-buffer-visualizer>
-        }
-        }
+          @for (registro of registrosFiltrados(); track registro.id) {
+          <ion-row class="data-row" (click)="editarRegistro(registro)">
+            <ion-col size="3" class="col-name">{{ registro.name }}</ion-col>
+            <ion-col size="2">{{ getAreaName(registro) }}</ion-col>
+            <ion-col size="2">
+              <div class="time-stack">
+                <span>{{ formatDateWithTime(registro.startTime) }}</span>
+                <span class="end-time">{{ formatDateWithTime(registro.endTime) }}</span>
+              </div>
+            </ion-col>
+            <ion-col size="2">{{ getDuration(registro) }} min</ion-col>
+            <ion-col size="3" class="col-remaining">
+              <ion-badge color="primary" mode="ios">{{ getTimeRemaining(registro) }}</ion-badge>
+            </ion-col>
+          </ion-row>
+          }
+        </ion-grid>
       </div>
       }
     </div>
@@ -100,14 +106,15 @@
     <!-- VISTA SEMANA -->
     @if (vistaActual() === 'semana') {
     <div class="vista-semana">
-      <app-week-view [registros]="registrosFiltrados()"></app-week-view>
+      <app-week-view [registros]="registrosFiltrados()" (daySelected)="openDayDrawer($event)"></app-week-view>
     </div>
     }
 
     <!-- VISTA MES -->
     @if (vistaActual() === 'mes') {
     <div class="vista-mes">
-      <app-month-view [registros]="registrosFiltrados()" [currentDate]="selectedDate()"></app-month-view>
+      <app-month-view [registros]="registrosFiltrados()" [currentDate]="selectedDate()"
+        (daySelected)="openDayDrawer($event)"></app-month-view>
     </div>
     }
 

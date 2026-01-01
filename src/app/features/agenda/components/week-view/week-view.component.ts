@@ -1,4 +1,4 @@
-import { Component, Input, ChangeDetectionStrategy, OnChanges, SimpleChanges, signal } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, OnChanges, SimpleChanges, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { Registro } from '../../../../models/registro.model';
@@ -120,8 +120,16 @@ import { Registro } from '../../../../models/registro.model';
 export class WeekViewComponent implements OnChanges {
   @Input() registros: Registro[] = [];
   @Input() currentDate: Date = new Date();
+  @Output() daySelected = new EventEmitter<Date>();
 
   dayNames = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+  // ...
+  onDayClick(day: Date) {
+    this.daySelected.emit(day);
+  }
+
+
+
   weekDays: Date[] = [];
   hours = Array.from({ length: 24 }, (_, i) => i);
 

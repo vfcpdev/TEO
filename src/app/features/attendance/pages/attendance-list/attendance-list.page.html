@@ -5,15 +5,39 @@
         <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>Lista de Asistencia</ion-title>
+
+    <ion-title>
+      @if (isSelectionMode()) {
+      Seleccionados: {{ selectedCount() }}
+      } @else {
+      Lista de Asistencia
+      }
+    </ion-title>
+
     <ion-buttons slot="end">
-      @if (hasChanges()) {
+      <!-- Toggle Selection Mode -->
+      <ion-button (click)="toggleSelectionMode()">
+        <ion-icon slot="icon-only" [name]="isSelectionMode() ? 'close-circle-outline' : 'checkbox-outline'"></ion-icon>
+      </ion-button>
+
+      @if (!isSelectionMode() && hasChanges()) {
       <ion-button (click)="saveAttendance()" [disabled]="isSaving()">
         <ion-icon slot="icon-only" name="save-outline"></ion-icon>
       </ion-button>
       }
     </ion-buttons>
   </ion-toolbar>
+
+  @if (isSelectionMode()) {
+  <ion-toolbar color="light">
+    <ion-buttons slot="start">
+      <ion-button (click)="selectAll()" size="small">Todos</ion-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button (click)="deselectAll()" size="small" color="medium">Ninguno</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  }
 </ion-header>
 
 <ion-content class="attendance-content">
@@ -112,14 +136,26 @@
 
       <!-- Indicador de estado -->
       <div class="status-indicator" slot="start">
+        @if (isSelectionMode()) {
+        <ion-icon [name]="selectedStudentIds().has(student.studentId) ? 'checkbox-outline' : 'square-outline'"
+          [color]="selectedStudentIds().has(student.studentId) ? 'primary' : 'medium'" class="selection-checkbox">
+        </ion-icon>
+        } @else {
         <ion-icon [name]="getStatusIcon(student.status)" [color]="getStatusColor(student.status)">
         </ion-icon>
+        }
       </div>
 
       <!-- Info del estudiante -->
       <ion-label>
         <h2 class="student-name">{{ student.studentLastName }}, {{ student.studentFirstName }}</h2>
         <p class="student-code">{{ student.studentCode }}</p>
+        @if (student.notes) {
+        <p class="student-notes">
+          <ion-icon name="document-text-outline"></ion-icon>
+          {{ student.notes }}
+        </p>
+        }
       </ion-label>
 
       <!-- Estado actual -->
@@ -141,6 +177,16 @@
     } @else {
     <ion-icon name="save-outline"></ion-icon>
     }
+  </ion-fab-button>
+</ion-fab>
+
+}
+
+<!-- FAB para Novedad Grupal -->
+@if (isSelectionMode() && selectedCount() > 0) {
+<ion-fab vertical="bottom" horizontal="end" slot="fixed">
+  <ion-fab-button color="tertiary" (click)="presentGroupNoveltyOptions()">
+    <ion-icon name="create-outline"></ion-icon>
   </ion-fab-button>
 </ion-fab>
 }
