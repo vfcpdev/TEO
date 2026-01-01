@@ -56,7 +56,7 @@ export interface RegistroArtefacto {
     tipo: 'logico' | 'digital' | 'fisico';
     name: string;
     value: string; // URL, Path, ID de curso, etc.
-    metadata?: any;
+    metadata?: Record<string, unknown>;
 }
 
 /**

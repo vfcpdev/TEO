@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, computed, ChangeDetectionStrategy, OnDestroy, DestroyRef, inject } from '@angular/core';
+import { Component, OnInit, signal, computed, ChangeDetectionStrategy, OnDestroy, DestroyRef, inject, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { PopoverController } from '@ionic/angular/standalone';
@@ -125,7 +125,8 @@ export interface QuickAccessItem {
     ThemeSelectorComponent,
     ExportImportComponent,
     IntegrationsComponent
-  ]
+  ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class SettingsPage implements OnInit, OnDestroy {
   private readonly destroyRef = inject(DestroyRef);
