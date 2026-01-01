@@ -107,7 +107,7 @@ export interface Registro {
     categoriaTiempoLibre?: 'disponible' | 'tiempoBuffer'; // Categorización de tiempo libre
 
     // Metadata e Historial
-    metadata?: Record<string, any>;
+    metadata?: Record<string, unknown>;
     createdAt: Date;
     updatedAt: Date;
 }
