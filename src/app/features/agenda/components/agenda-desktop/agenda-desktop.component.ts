@@ -11,8 +11,6 @@ import {
   IonSegment,
   IonSegmentButton,
   IonCard,
-  IonCardHeader,
-  IonCardTitle,
   IonCardContent,
   IonLabel,
   IonItem,
@@ -52,8 +50,6 @@ import { RegistroTipoBase } from '../../../../models/registro.model';
     IonSegment,
     IonSegmentButton,
     IonCard,
-    IonCardHeader,
-    IonCardTitle,
     IonCardContent
   ],
   template: `

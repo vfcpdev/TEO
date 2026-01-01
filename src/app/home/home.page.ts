@@ -123,7 +123,6 @@ export interface TimelineItem {
     MonthViewComponent,
     AgendaFiltersComponent,
     AgendaSearchComponent,
-    DayDetailDrawerComponent,
     ReportsComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
