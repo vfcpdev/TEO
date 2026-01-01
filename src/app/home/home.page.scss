@@ -387,3 +387,42 @@ ion-content {
     opacity: 0.7;
   }
 }
+// Search Toolbar
+.search-toolbar {
+  --background: var(--ion-background-color);
+  --border-style: none;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  border-bottom: 1px solid var(--ion-border-color);
+}
+
+.search-filters-container {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  
+  .search-wrapper {
+    flex: 1;
+  }
+}
+
+// Filters Panel
+.filters-panel {
+  background: var(--ion-color-step-50);
+  border-bottom: var(--border-width-thin) solid var(--ion-border-color);
+  animation: slideDownFilters var(--transition-base);
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+@keyframes slideDownFilters {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 400px;
+  }
+}

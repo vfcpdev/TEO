@@ -1,4 +1,4 @@
-import { Component, Input, signal } from '@angular/core';
+import { Component, Input, signal, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, ModalController } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
@@ -200,7 +200,7 @@ import { AnalogClockComponent } from './analog-clock/analog-clock.component';
     }
   `]
 })
-export class DateTimePickerModalComponent {
+export class DateTimePickerModalComponent implements OnInit {
   @Input() title: string = 'Seleccionar Fecha y Hora';
   @Input() initialValue?: string;
   @Input() minDate?: string;
@@ -214,7 +214,9 @@ export class DateTimePickerModalComponent {
   currentMinute: number = 0;
   clockMode: 'hour' | 'minute' = 'hour';
 
-  constructor(private modalCtrl: ModalController) {
+  private modalCtrl = inject(ModalController);
+
+  constructor() {
     addIcons({ calendarOutline, timeOutline, checkmarkOutline, closeOutline, arrowBackOutline });
   }
 

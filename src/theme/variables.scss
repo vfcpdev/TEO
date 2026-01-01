@@ -104,7 +104,11 @@
   --segment-text-color-dark-hover: #f3f4f6;
   // Modo oscuro: tab activo usa blanco sobre fondo primary
   --segment-text-color-dark-checked: #ffffff;
+
+  /** Typography - Inter Font **/
+  --ion-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
+
 
 /** Dark Theme - Tema Bosque Profundo Oscuro **/
 /** Siguiendo Material Design 3: Surface colors #121212, #1e1e1e **/

@@ -212,16 +212,22 @@ import { RegistroTipoBase } from '../../../../models/registro.model';
     </div>
   `,
   styles: [`
-    .agenda-mobile-container { padding: 12px; }
-    .main-segment { margin-bottom: 16px; --background: var(--ion-color-step-100); }
+    .agenda-mobile-container { 
+      padding: var(--spacing-md); 
+    }
+    
+    .main-segment { 
+      margin-bottom: var(--spacing-lg); 
+      --background: var(--ion-color-step-100); 
+    }
     
     .area-tabs-container {
       display: flex;
       align-items: center;
-      gap: 8px;
-      margin-bottom: 20px;
-      border-bottom: 1px solid var(--ion-color-step-200);
-      padding-bottom: 2px;
+      gap: var(--spacing-sm);
+      margin-bottom: var(--spacing-xl);
+      border-bottom: var(--border-width-thin) solid var(--ion-color-step-200);
+      padding-bottom: var(--spacing-xs);
     }
     
     .area-tabs { 
@@ -233,110 +239,202 @@ import { RegistroTipoBase } from '../../../../models/registro.model';
         --indicator-color: var(--ion-color-primary);
         --color-checked: var(--ion-color-primary);
         min-width: 90px;
+        transition: transform var(--transition-fast);
     }
     
-    .area-tabs ion-segment-button ion-label { font-size: 0.8rem; font-weight: 600; }
-    .area-tabs ion-segment-button ion-icon { font-size: 1.2rem; margin-bottom: 2px; }
+    .area-tabs ion-segment-button:active {
+      transform: scale(0.95);
+    }
+    
+    .area-tabs ion-segment-button ion-label { 
+      font-size: var(--font-size-small); 
+      font-weight: var(--font-weight-semibold); 
+    }
+    
+    .area-tabs ion-segment-button ion-icon { 
+      font-size: 1.2rem; 
+      margin-bottom: var(--spacing-xs); 
+    }
     
     .active-area-panel {
       background: var(--ion-card-background);
-      border-radius: 16px;
-      padding: 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      border: 1px solid var(--ion-color-step-100);
+      border-radius: var(--radius-xl);
+      padding: var(--spacing-lg);
+      box-shadow: var(--shadow-md);
+      border: var(--border-width-thin) solid var(--ion-color-step-100);
+      animation: fadeIn var(--transition-base);
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     
     .panel-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 16px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--ion-color-step-100);
+      margin-bottom: var(--spacing-lg);
+      padding-bottom: var(--spacing-md);
+      border-bottom: var(--border-width-thin) solid var(--ion-color-step-100);
     }
       
     .panel-header .area-info {
         display: flex;
-        gap: 10px;
+        gap: var(--spacing-md);
         align-items: center;
     }
     
     .panel-header .area-info .icon-badge {
           width: 32px;
           height: 32px;
-          border-radius: 8px;
+          border-radius: var(--radius-md);
           display: flex;
           align-items: center;
           justify-content: center;
           color: white;
+          box-shadow: var(--shadow-sm);
     }
     
-    .panel-header .area-info .icon-badge ion-icon { font-size: 1.1rem; }
-    .panel-header .area-info h3 { margin: 0; font-size: 1.05rem; font-weight: 700; color: var(--ion-text-color); }
+    .panel-header .area-info .icon-badge ion-icon { 
+      font-size: 1.1rem; 
+    }
+    
+    .panel-header .area-info h3 { 
+      margin: 0; 
+      font-size: var(--font-size-h4); 
+      font-weight: var(--font-weight-bold); 
+      color: var(--ion-text-color); 
+    }
     
     .contexts-section .section-title {
         display: flex;
         align-items: center;
-        gap: 8px;
-        margin-bottom: 12px;
+        gap: var(--spacing-sm);
+        margin-bottom: var(--spacing-md);
     }
     
-    .contexts-section .section-title span { font-size: 0.9rem; font-weight: 600; color: var(--ion-color-medium); }
-    .contexts-section .section-title ion-badge { font-size: 0.7rem; border-radius: 6px; }
+    .contexts-section .section-title span { 
+      font-size: var(--font-size-body); 
+      font-weight: var(--font-weight-semibold); 
+      color: var(--ion-color-medium); 
+    }
+    
+    .contexts-section .section-title ion-badge { 
+      font-size: var(--font-size-xs); 
+      border-radius: var(--radius-sm); 
+    }
       
     .contexts-section .contexts-list {
         display: flex;
         flex-wrap: wrap;
-        gap: 8px;
-        margin-bottom: 16px;
+        gap: var(--agenda-pill-gap);
+        margin-bottom: var(--spacing-lg);
     }
       
     .contexts-section .context-pill {
         display: flex;
         align-items: center;
-        gap: 4px;
+        gap: var(--spacing-xs);
         background: var(--ion-color-step-100);
-        padding: 4px 4px 4px 12px;
-        border-radius: 20px;
+        padding: var(--spacing-xs) var(--spacing-xs) var(--spacing-xs) var(--spacing-md);
+        border-radius: var(--radius-full);
         cursor: pointer;
+        transition: all var(--transition-fast);
+        border: var(--border-width-thin) solid transparent;
     }
     
-    .contexts-section .context-pill span { font-size: 0.85rem; font-weight: 500; }
-    .contexts-section .context-pill ion-button { --padding-start: 0; --padding-end: 0; margin: 0; height: 24px; }
-    .contexts-section .context-pill ion-button ion-icon { font-size: 1.1rem; }
+    .contexts-section .context-pill:hover {
+      background: var(--ion-color-step-150);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .contexts-section .context-pill:active {
+      transform: translateY(0);
+    }
+    
+    .contexts-section .context-pill span { 
+      font-size: var(--font-size-small); 
+      font-weight: var(--font-weight-medium); 
+    }
+    
+    .contexts-section .context-pill ion-button { 
+      --padding-start: 0; 
+      --padding-end: 0; 
+      margin: 0; 
+      height: 24px;
+      transition: transform var(--transition-fast);
+    }
+    
+    .contexts-section .context-pill ion-button:hover {
+      transform: scale(1.1);
+    }
+    
+    .contexts-section .context-pill ion-button ion-icon { 
+      font-size: 1.1rem; 
+    }
       
-    .contexts-section .empty-msg { font-size: 0.8rem; color: var(--ion-color-medium); font-style: italic; }
-    .contexts-section .add-ctx-btn { --padding-start: 0; font-size: 0.85rem; font-weight: 600; }
+    .contexts-section .empty-msg { 
+      font-size: var(--font-size-small); 
+      color: var(--ion-color-medium); 
+      font-style: italic; 
+    }
+    
+    .contexts-section .add-ctx-btn { 
+      --padding-start: 0; 
+      font-size: var(--font-size-small); 
+      font-weight: var(--font-weight-semibold); 
+    }
     
     .add-ctx-inline {
       display: flex;
-      gap: 8px;
-      margin-top: 8px;
+      gap: var(--spacing-sm);
+      margin-top: var(--spacing-sm);
     }
     
-    .add-ctx-inline ion-input { --background: var(--ion-color-step-50); height: 36px; --padding-start: 12px; }
-    .add-ctx-inline ion-button { margin: 0; height: 36px; }
+    .add-ctx-inline ion-input { 
+      --background: var(--ion-color-step-50); 
+      height: 36px; 
+      --padding-start: var(--spacing-md); 
+    }
     
-    .tipos-list { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+    .add-ctx-inline ion-button { 
+      margin: 0; 
+      height: 36px; 
+    }
+    
+    .tipos-list { 
+      display: flex; 
+      flex-direction: column; 
+      gap: var(--spacing-md); 
+      margin-top: var(--spacing-lg); 
+    }
     
     .tipo-card {
       display: flex;
       align-items: center;
       background: var(--ion-card-background);
-      padding: 10px 16px;
-      border-radius: 12px;
-      border: 1px solid var(--ion-color-step-100);
+      padding: var(--spacing-md) var(--spacing-lg);
+      border-radius: var(--radius-lg);
+      border: var(--border-width-thin) solid var(--ion-color-step-100);
+      transition: all var(--transition-fast);
+    }
+    
+    .tipo-card:active {
+      transform: scale(0.98);
     }
     
     .tipo-card .tipo-icon {
         width: 36px;
         height: 36px;
-        border-radius: 10px;
+        border-radius: var(--radius-md);
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
-        margin-right: 12px;
+        margin-right: var(--spacing-md);
+        box-shadow: var(--shadow-sm);
     }
     
     .tipo-card .tipo-info {
@@ -345,42 +443,78 @@ import { RegistroTipoBase } from '../../../../models/registro.model';
         flex-direction: column;
     }
     
-    .tipo-card .tipo-info .name { font-weight: 600; font-size: 0.95rem; }
-    .tipo-card .tipo-info .base { font-size: 0.75rem; color: var(--ion-color-medium); text-transform: uppercase; }
+    .tipo-card .tipo-info .name { 
+      font-weight: var(--font-weight-semibold); 
+      font-size: var(--font-size-body); 
+    }
+    
+    .tipo-card .tipo-info .base { 
+      font-size: var(--font-size-xs); 
+      color: var(--ion-color-medium); 
+      text-transform: uppercase; 
+      letter-spacing: var(--letter-spacing-wide);
+    }
     
     .modal-backdrop {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
       background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
       z-index: 1000;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      padding: var(--spacing-xl);
+      animation: fadeIn var(--transition-base);
     }
+    
     .custom-modal {
       background: var(--ion-background-color);
       width: 100%;
       max-width: 400px;
-      border-radius: 20px;
-      padding: 24px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      border-radius: var(--radius-2xl);
+      padding: var(--spacing-2xl);
+      box-shadow: var(--shadow-2xl);
+      animation: slideInUp var(--transition-base);
     }
     
-    .custom-modal h3 { margin-top: 0; margin-bottom: 20px; font-weight: 700; }
-    .custom-modal .modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 24px; }
+    @keyframes slideInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .custom-modal h3 { 
+      margin-top: 0; 
+      margin-bottom: var(--spacing-xl); 
+      font-weight: var(--font-weight-bold); 
+    }
+    
+    .custom-modal .modal-footer { 
+      display: flex; 
+      justify-content: flex-end; 
+      gap: var(--spacing-sm); 
+      margin-top: var(--spacing-2xl); 
+    }
     
     .empty-state {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 40px 20px;
+      padding: var(--spacing-3xl) var(--spacing-xl);
       text-align: center;
     }
     
-    .empty-state ion-icon { font-size: 4rem; margin-bottom: 16px; }
-    .empty-state p { color: var(--ion-color-medium); margin-bottom: 20px; }
+    .empty-state ion-icon { 
+      font-size: 4rem; 
+      margin-bottom: var(--spacing-lg); 
+      opacity: 0.5;
+    }
+    
+    .empty-state p { 
+      color: var(--ion-color-medium); 
+      margin-bottom: var(--spacing-xl); 
+    }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush
 })

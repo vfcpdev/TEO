@@ -43,10 +43,12 @@ import { Preferences } from '@capacitor/preferences';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { Platform } from '@ionic/angular/standalone';
 import { AgendaService } from './core/services/agenda.service';
+import { KeyboardShortcutsService } from './core/services/keyboard-shortcuts.service';
 import { AboutModalComponent } from './shared/components/about-modal/about-modal.component';
 import { SettingsService } from './core/services/settings.service';
 import { ThemePopoverComponent } from './features/settings/components/theme-popover/theme-popover.component';
 import { THEMES } from './core/constants/themes';
+import { SyncStatusComponent } from './shared/components/sync-status/sync-status.component';
 
 @Component({
   selector: 'app-root',
@@ -68,7 +70,9 @@ import { THEMES } from './core/constants/themes';
     IonMenuToggle,
     IonFooter,
     RouterLink,
-    FormsModule
+    FormsModule,
+    FormsModule,
+    SyncStatusComponent
   ],
 })
 
@@ -80,11 +84,13 @@ export class AppComponent implements OnInit {
   private readonly popoverController = inject(PopoverController);
   private readonly agendaService = inject(AgendaService);
   public readonly settingsService = inject(SettingsService);
+  private readonly keyboardShortcuts = inject(KeyboardShortcutsService);
 
   menuItems: MenuItem[] = MENU_ITEMS;
 
   constructor() {
     addIcons({
+      // ...
       homeOutline,
       personOutline,
       settingsOutline,
@@ -110,6 +116,7 @@ export class AppComponent implements OnInit {
       if (this.platform.is('capacitor')) {
         await this.setupStatusBar();
       }
+      this.keyboardShortcuts.init();
     } catch (error) {
       console.error('Error en inicialización:', error);
     }

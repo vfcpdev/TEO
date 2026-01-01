@@ -1,0 +1,45 @@
+
+> teo@3.6.3 lint
+> nx lint
+
+
+> nx run app:lint
+
+Linting "app"...
+[0m[0m
+[0m[4mD:\TEO\src\app\core\services\notification.service.ts[24m[0m
+[0m  [2m9:17[22m  [31merror[39m  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  [2m@angular-eslint/prefer-inject[22m[0m
+[0m[0m
+[0m[4mD:\TEO\src\app\features\agenda\components\day-view\day-view.component.ts[24m[0m
+[0m  [2m274:3[22m  [33mwarning[39m  Lifecycle interface 'OnInit' should be implemented for method 'ngOnInit'. (https://angular.dev/style-guide#use-lifecycle-hook-interfaces)                [2m@angular-eslint/use-lifecycle-interface[22m[0m
+[0m  [2m281:3[22m  [33mwarning[39m  Lifecycle interface 'AfterViewInit' should be implemented for method 'ngAfterViewInit'. (https://angular.dev/style-guide#use-lifecycle-hook-interfaces)  [2m@angular-eslint/use-lifecycle-interface[22m[0m
+[0m  [2m302:3[22m  [33mwarning[39m  Lifecycle interface 'OnDestroy' should be implemented for method 'ngOnDestroy'. (https://angular.dev/style-guide#use-lifecycle-hook-interfaces)          [2m@angular-eslint/use-lifecycle-interface[22m[0m
+[0m[0m
+[0m[4mD:\TEO\src\app\shared\components\agendar-wizard\agendar-wizard.component.ts[24m[0m
+[0m  [2m299:3[22m  [31merror[39m  Lifecycle methods should not be empty  [2m@angular-eslint/no-empty-lifecycle-method[22m[0m
+[0m[0m
+[0m[4mD:\TEO\src\app\shared\components\date-time-picker-modal\date-time-picker-modal.component.ts[24m[0m
+[0m  [2m217:15[22m  [31merror[39m    Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  [2m@angular-eslint/prefer-inject[22m[0m
+[0m  [2m221:3[22m   [33mwarning[39m  Lifecycle interface 'OnInit' should be implemented for method 'ngOnInit'. (https://angular.dev/style-guide#use-lifecycle-hook-interfaces)                               [2m@angular-eslint/use-lifecycle-interface[22m[0m
+[0m[0m
+[0m[31m[1m✖ 7 problems (3 errors, 4 warnings)[22m[39m[0m
+[0m[31m[1m[22m[39m[31m[1m  0 errors and 4 warnings potentially fixable with the `--fix` option.[22m[39m[0m
+[0m[31m[1m[22m[39m[0m
+Lint warnings found in the listed files.
+Lint errors found in the listed files.
+
+
+
+ NX   Running target lint for project app failed
+
+Failed tasks:
+
+- app:lint
+
+Hint: run the command with --verbose for more details.
+
+
+ NX   Nx Cloud encountered some problems
+
+This workspace is more than three days old and is not connected. Workspaces must be connected within 3 days of creation. Claim your workspace at https://cloud.nx.app. (code: 401)
+

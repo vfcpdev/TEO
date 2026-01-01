@@ -38,8 +38,32 @@
       <ion-segment-button value="mes">
         <ion-label>Mes</ion-label>
       </ion-segment-button>
+      <ion-segment-button value="stats">
+        <ion-label>Stats</ion-label>
+      </ion-segment-button>
     </ion-segment>
   </ion-toolbar>
+
+  <!-- Search and Filters Toolbar -->
+  <ion-toolbar class="search-toolbar">
+    <div class="search-filters-container">
+      <div class="search-wrapper">
+        <app-agenda-search (resultSelected)="onSearchResultSelected($event)"></app-agenda-search>
+      </div>
+      <ion-buttons slot="end">
+        <ion-button (click)="toggleFilters()" [color]="showFilters() ? 'primary' : 'medium'">
+          <ion-icon slot="icon-only" name="funnel"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </div>
+  </ion-toolbar>
+
+  <!-- Filters Panel (Collapsible) -->
+  @if (showFilters()) {
+  <div class="filters-panel">
+    <app-agenda-filters (filtersChanged)="applyFilters($event)"></app-agenda-filters>
+  </div>
+  }
 </ion-header>
 
 <ion-content>
@@ -125,6 +149,11 @@
       <h2>Estados</h2>
       <p>Vista de estados en construcción.</p>
     </div>
+    }
+
+    <!-- VISTA ESTADÍSTICAS -->
+    @if (vistaActual() === 'stats') {
+    <app-reports></app-reports>
     }
 
   </div>

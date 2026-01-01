@@ -1,12 +1,15 @@
-import { Component, Input, computed, signal, ChangeDetectionStrategy, OnChanges, SimpleChanges, effect, ElementRef, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, Input, computed, signal, ChangeDetectionStrategy, OnChanges, SimpleChanges, effect, ElementRef, AfterViewInit, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { Registro } from '../../../../models/registro.model';
+import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
+import { AgendaService } from '../../../../core/services/agenda.service';
+import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
   selector: 'app-day-view',
   standalone: true,
-  imports: [CommonModule, IonicModule],
+  imports: [CommonModule, IonicModule, DragDropModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="day-view-container" #scrollContainer>
@@ -46,18 +49,20 @@ import { Registro } from '../../../../models/registro.model';
     .day-view-container {
       position: relative;
       background: var(--ion-background-color);
-      padding: 16px;
-      padding-top: 40px; 
-      border: 1px solid var(--ion-border-color);
-      border-radius: 12px;
+      padding: var(--spacing-lg);
+      padding-top: var(--agenda-timeline-padding); 
+      border: var(--border-width-thin) solid var(--ion-border-color);
+      border-radius: var(--radius-xl);
+      overflow-y: auto;
+      scroll-behavior: smooth;
     }
 
     .events-layer {
       position: absolute;
-      top: 40px;
-      left: 70px;
-      right: 16px;
-      bottom: 16px;
+      top: var(--agenda-timeline-padding);
+      left: calc(var(--agenda-hour-label-width) + var(--spacing-lg) + var(--spacing-md));
+      right: var(--spacing-lg);
+      bottom: var(--spacing-lg);
       pointer-events: none;
     }
 
@@ -65,33 +70,64 @@ import { Registro } from '../../../../models/registro.model';
       position: absolute;
       left: 0;
       right: 0;
-      background: rgba(var(--ion-color-primary-rgb), 0.15);
-      border-left: 4px solid var(--ion-color-primary);
-      border-radius: 4px;
-      padding: 4px 8px;
+      background: rgba(var(--ion-color-primary-rgb), var(--agenda-event-opacity));
+      border-left: var(--agenda-event-border-width) solid var(--ion-color-primary);
+      border-radius: var(--agenda-event-radius);
+      padding: var(--agenda-event-padding);
       overflow: hidden;
       pointer-events: auto;
       z-index: 5;
+      cursor: pointer;
+      transition: transform var(--agenda-transition-event), 
+                  box-shadow var(--agenda-transition-event),
+                  background var(--agenda-transition-event);
+      animation: fadeInEvent var(--transition-base);
+      min-height: var(--agenda-event-min-height);
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+        background: rgba(var(--ion-color-primary-rgb), calc(var(--agenda-event-opacity) + 0.05));
+        z-index: 10;
+      }
+      
+      &:active {
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes fadeInEvent {
+      from {
+        opacity: 0;
+        transform: translateY(4px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .event-content {
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: var(--spacing-xs);
     }
 
     .event-title {
-      font-size: 12px;
-      font-weight: 600;
+      font-size: var(--font-size-small);
+      font-weight: var(--font-weight-semibold);
       color: var(--ion-color-primary-shade);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      line-height: var(--line-height-tight);
     }
 
     .event-time {
-      font-size: 10px;
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
       color: var(--ion-color-medium);
+      line-height: var(--line-height-tight);
     }
 
     .current-time-line {
@@ -104,20 +140,34 @@ import { Registro } from '../../../../models/registro.model';
       pointer-events: none;
       
       .time-label {
-        background: var(--ion-color-danger);
+        background: var(--agenda-current-time-color);
         color: white;
-        font-size: 11px;
-        padding: 2px 6px;
-        border-radius: 4px;
-        margin-right: 8px;
-        font-weight: 600;
-        margin-left: 8px;
+        font-size: var(--font-size-xs);
+        font-weight: var(--font-weight-bold);
+        padding: var(--spacing-xs) var(--spacing-sm);
+        border-radius: var(--radius-sm);
+        margin-right: var(--spacing-sm);
+        margin-left: var(--spacing-sm);
+        animation: pulseTime 2s ease-in-out infinite;
+        box-shadow: var(--shadow-sm);
       }
       
       .line {
         flex: 1;
         height: 2px;
-        background: var(--ion-color-danger);
+        background: var(--agenda-current-time-color);
+        box-shadow: 0 0 4px rgba(var(--ion-color-danger-rgb), 0.5);
+      }
+    }
+    
+    @keyframes pulseTime {
+      0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      50% {
+        opacity: 0.85;
+        transform: scale(0.98);
       }
     }
 
@@ -130,15 +180,17 @@ import { Registro } from '../../../../models/registro.model';
     .hour-marker {
       display: flex;
       align-items: flex-start;
-      height: 60px;
+      height: var(--agenda-hour-height);
       position: relative;
       
       .hour-label {
-        width: 50px;
-        font-size: 12px;
+        width: var(--agenda-hour-label-width);
+        font-size: var(--font-size-small);
+        font-weight: var(--font-weight-medium);
         color: var(--ion-color-medium);
         transform: translateY(-50%);
-        margin-top: 0; 
+        margin-top: 0;
+        font-variant-numeric: tabular-nums;
       }
       
       .hour-line {
@@ -147,6 +199,11 @@ import { Registro } from '../../../../models/registro.model';
         background: var(--ion-border-color);
         opacity: 0.3;
         margin-top: 0;
+        transition: opacity var(--transition-fast);
+      }
+      
+      &:hover .hour-line {
+        opacity: 0.5;
       }
     }
   `]
@@ -155,8 +212,12 @@ export class DayViewComponent implements OnChanges {
   @Input() registros: Registro[] = [];
   @Input() currentDate: Date = new Date();
 
+  readonly agendaService = inject(AgendaService);
+  readonly toastService = inject(ToastService);
+
   hoursRange: Date[] = [];
 
+  // Use design token values (base mobile value)
   private readonly HOUR_HEIGHT = 60;
   private readonly START_OFFSET = 40;
 
@@ -320,5 +381,39 @@ export class DayViewComponent implements OnChanges {
 
   onEventClick(reg: Registro) {
     console.log('Event clicked:', reg);
+  }
+
+  onEventDrop(event: CdkDragDrop<Registro[]>): void {
+    const registro = event.item.data as Registro;
+
+    // Get the vertical distance moved
+    const dropY = event.distance.y;
+
+    // Calculate new time based on Y position
+    // HOUR_HEIGHT pixels = 60 minutes
+    const pixelsPerMinute = this.HOUR_HEIGHT / 60;
+    const minutesDelta = Math.round(dropY / pixelsPerMinute);
+
+    if (registro.startTime && minutesDelta !== 0) {
+      const newStartTime = new Date(registro.startTime);
+      newStartTime.setMinutes(newStartTime.getMinutes() + minutesDelta);
+
+      let newEndTime: Date | undefined;
+      if (registro.endTime) {
+        newEndTime = new Date(registro.endTime);
+        newEndTime.setMinutes(newEndTime.getMinutes() + minutesDelta);
+      }
+
+      // Update registro through AgendaService
+      this.agendaService.updateRegistro(registro.id, {
+        startTime: newStartTime,
+        endTime: newEndTime,
+        updatedAt: new Date()
+      });
+
+      // Show success toast
+      const timeStr = this.formatTime(newStartTime);
+      this.toastService.success(`Evento movido a ${timeStr}`);
+    }
   }
 }

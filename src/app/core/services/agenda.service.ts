@@ -1,42 +1,44 @@
-import { Injectable, signal, computed, effect, inject } from '@angular/core';
-import { Preferences } from '@capacitor/preferences';
+import { Injectable, inject, computed } from '@angular/core';
+import { AgendaStore } from '../state/agenda.store';
 import {
     AgendaConfig,
     AreaConfig,
     ContextoConfig,
     TipoConfig
 } from '../../models/agenda.model';
-import { Registro, RegistroTipoBase, RegistroStatus, RegistroPrioridad } from '../../models/registro.model';
+import { Registro, RegistroStatus, RegistroPrioridad } from '../../models/registro.model';
 import { ConflictEngineService } from './conflict-engine.service';
 import { ConflictDetectionResult } from '../../models/conflict.model';
+import { ReminderService } from './reminder.service';
+import { SyncQueueService } from './sync-queue.service';
 
 @Injectable({
     providedIn: 'root'
 })
+@Injectable({
+    providedIn: 'root'
+})
 export class AgendaService {
-    private readonly STORAGE_KEY = 'agenda_config';
+    private readonly store = inject(AgendaStore);
     private readonly conflictEngine = inject(ConflictEngineService);
+    private readonly reminderService = inject(ReminderService);
+    private readonly syncQueue = inject(SyncQueueService);
 
-    // Signals para el estado global de la configuración
-    private _config = signal<AgendaConfig>(this.getDefaultConfig());
-    private _registros = signal<Registro[]>([]); // Almacén de registros
+    // Selectors Delegated to Store
+    readonly config = this.store.config;
+    readonly registros = this.store.registros;
+    readonly areas = this.store.areas;
+    readonly contextos = this.store.contextos;
+    readonly tipos = this.store.tipos;
+    readonly canUndo = this.store.canUndo;
+    readonly canRedo = this.store.canRedo;
 
-    // Selectores computados para fácil acceso
-    readonly config = computed(() => this._config());
-    readonly areas = computed(() => this._config().areas);
-    readonly contextos = computed(() => this._config().contextos);
-    readonly tipos = computed(() => this._config().tipos);
-    readonly activeAreas = computed(() => this._config().areas.filter(a => a.isActive));
-    readonly registros = computed(() => this._registros());
+    // History Actions
+    undo() { this.store.undo(); }
+    redo() { this.store.redo(); }
 
-    constructor() {
-        this.loadConfig();
-
-        // Efecto para persistir cambios automáticamente
-        effect(() => {
-            this.saveConfig(this._config());
-        });
-    }
+    // Computed Selectors based on Store state
+    readonly activeAreas = computed(() => this.store.areas().filter(a => a.isActive));
 
     // --- Áreas ---
     addArea(area: Omit<AreaConfig, 'id'>) {
@@ -44,21 +46,21 @@ export class AgendaService {
             ...area,
             id: crypto.randomUUID()
         };
-        this._config.update(c => ({
+        this.store.updateConfig(c => ({
             ...c,
             areas: [...c.areas, newArea]
         }));
     }
 
     updateArea(id: string, updates: Partial<AreaConfig>) {
-        this._config.update(c => ({
+        this.store.updateConfig(c => ({
             ...c,
             areas: c.areas.map(a => a.id === id ? { ...a, ...updates } : a)
         }));
     }
 
     deleteArea(id: string) {
-        this._config.update(c => ({
+        this.store.updateConfig(c => ({
             ...c,
             areas: c.areas.filter(a => a.id !== id),
             contextos: c.contextos
@@ -66,7 +68,7 @@ export class AgendaService {
                     ...ctx,
                     areaIds: ctx.areaIds.filter(aid => aid !== id)
                 }))
-                .filter(ctx => ctx.areaIds.length > 0) // Limpieza de redundantes sin área
+                .filter(ctx => ctx.areaIds.length > 0)
         }));
     }
 
@@ -76,21 +78,21 @@ export class AgendaService {
             ...contexto,
             id: crypto.randomUUID()
         };
-        this._config.update(c => ({
+        this.store.updateConfig(c => ({
             ...c,
             contextos: [...c.contextos, newContexto]
         }));
     }
 
     updateContexto(id: string, updates: Partial<ContextoConfig>) {
-        this._config.update(c => ({
+        this.store.updateConfig(c => ({
             ...c,
             contextos: c.contextos.map(ctx => ctx.id === id ? { ...ctx, ...updates } : ctx)
         }));
     }
 
     deleteContexto(id: string) {
-        this._config.update(c => ({
+        this.store.updateConfig(c => ({
             ...c,
             contextos: c.contextos.filter(ctx => ctx.id !== id)
         }));
@@ -102,63 +104,94 @@ export class AgendaService {
             ...tipo,
             id: crypto.randomUUID()
         };
-        this._config.update(c => ({
+        this.store.updateConfig(c => ({
             ...c,
             tipos: [...c.tipos, newTipo]
         }));
     }
 
     updateTipo(id: string, updates: Partial<TipoConfig>) {
-        this._config.update(c => ({
+        this.store.updateConfig(c => ({
             ...c,
             tipos: c.tipos.map(t => t.id === id ? { ...t, ...updates } : t)
         }));
     }
 
     deleteTipo(id: string) {
-        this._config.update(c => ({
+        this.store.updateConfig(c => ({
             ...c,
             tipos: c.tipos.filter(t => t.id !== id)
         }));
     }
 
-    // --- Registros (Fase 1.1: Con detección de conflictos) ---
+    // --- Registros ---
+
     /**
      * Agrega un registro después de validar conflictos.
-     * FASE 1.1: Detecta conflictos y marca registro como "En Estudio" si aplica.
-     * 
-     * @returns ConflictDetectionResult con información de conflictos
      */
     addRegistro(registro: Registro): ConflictDetectionResult {
-        const existing = this._registros();
+        const existing = this.store.registros();
         const conflictResult = this.conflictEngine.detectConflicts(registro, existing);
 
+        let finalRegistro = registro;
+
         if (conflictResult.hasConflicts && !conflictResult.canProceed) {
-            // Si hay conflictos ERROR, marcar automáticamente como "En Estudio"
-            const updatedRegistro = {
+            // Si hay conflictos bloqueantes, forzar estado ESTUDIO
+            finalRegistro = {
                 ...registro,
                 status: RegistroStatus.ESTUDIO
             };
-            this._registros.update(r => [...r, updatedRegistro]);
-        } else {
-            // Sin conflictos o solo warnings, agregar normalmente
-            this._registros.update(r => [...r, registro]);
+        }
+
+        // Agregar al Store
+        this.store.addRegistro(finalRegistro);
+
+        // Queue for Sync
+        this.syncQueue.addOperation('CREATE', 'REGISTRO', finalRegistro);
+
+        // Si no fue bloqueado, intentar agendar notificacion
+        // (Nota: Si cambiamos a "En Estudio", tal vez no deberíamos notificar? 
+        //  Por ahora mantenemos la lógica original de notificar si se agregó, 
+        //  pero "En Estudio" quizás no debería tener alarma. 
+        //  Asumamos que si reminderEnabled=true, el usuario quiere alarma igual.)
+        if (finalRegistro.reminderEnabled) {
+            this.handleNotificationSetup(finalRegistro);
         }
 
         return conflictResult;
     }
 
     updateRegistro(id: string, updates: Partial<Registro>) {
-        this._registros.update(r => r.map(item => item.id === id ? { ...item, ...updates } : item));
+        const current = this.store.registros().find(r => r.id === id);
+        if (current) {
+            const updated = { ...current, ...updates };
+
+            // Side effect: Notifications
+            this.handleNotificationUpdate(current, updated);
+
+            // State update
+            this.store.updateRegistro(id, updates);
+
+            // Queue for Sync
+            this.syncQueue.addOperation('UPDATE', 'REGISTRO', updated);
+        }
     }
 
     deleteRegistro(id: string) {
-        this._registros.update(r => r.filter(item => item.id !== id));
+        const registro = this.store.registros().find(r => r.id === id);
+
+        // Side effect: Cancel notification
+        if (registro?.notificationId) {
+            this.reminderService.cancelFor(registro.notificationId);
+        }
+
+        // State update
+        this.store.deleteRegistro(id);
+
+        // Queue for Sync
+        this.syncQueue.addOperation('DELETE', 'REGISTRO', { id });
     }
 
-    /**
-     * Guarda un borrador sin fecha/hora definida
-     */
     saveBorrador(data: {
         nombre: string;
         areaIds: string[];
@@ -174,62 +207,41 @@ export class AgendaService {
             isAllDay: false,
             createdAt: new Date(),
             updatedAt: new Date(),
-            // Opcional: asignar primera área si existe
             areaId: data.areaIds[0],
-            // Opcional: asignar primer contexto si existe
             contextoId: data.contextoIds[0]
         };
 
-        // Agregar a registros sin validar conflictos (no tiene fecha/hora)
-        this._registros.update(r => [...r, borrador]);
-
+        this.store.addRegistro(borrador);
         return borrador;
     }
 
-    // --- Persistencia ---
-    private async loadConfig() {
-        const { value } = await Preferences.get({ key: this.STORAGE_KEY });
-        if (value) {
-            try {
-                this._config.set(JSON.parse(value));
-            } catch (e) {
-                console.error('Error loading agenda config', e);
+    // --- Private Notification Handlers ---
+
+    private async handleNotificationSetup(registro: Registro) {
+        if (registro.reminderEnabled && registro.reminderTime) {
+            const notifId = await this.reminderService.scheduleFor(registro);
+            if (notifId) {
+                // Update the store with the new notification ID
+                this.store.updateRegistro(registro.id, { notificationId: notifId });
             }
         }
     }
 
-    private async saveConfig(config: AgendaConfig) {
-        await Preferences.set({
-            key: this.STORAGE_KEY,
-            value: JSON.stringify(config)
-        });
-    }
+    private async handleNotificationUpdate(oldReg: Registro, newReg: Registro) {
+        const timeChanged = oldReg.startTime?.getTime() !== newReg.startTime?.getTime();
+        const settingsChanged = oldReg.reminderEnabled !== newReg.reminderEnabled || oldReg.reminderTime !== newReg.reminderTime;
 
-    private getDefaultConfig(): AgendaConfig {
-        return {
-            areas: [
-                { id: 'area_trabajo', name: 'Trabajo', icon: 'briefcase-outline', color: '#1e88e5', order: 1, isActive: true },
-                { id: 'area_familiar', name: 'Familiar', icon: 'people-outline', color: '#e53935', order: 2, isActive: true },
-                { id: 'area_personal', name: 'Personal', icon: 'person-outline', color: '#43a047', order: 3, isActive: true },
-                { id: 'area_social', name: 'Social', icon: 'chatbubbles-outline', color: '#fb8c00', order: 4, isActive: true }
-            ],
-            contextos: [],
-            tipos: [
-                { id: 'tipo_evento', baseType: RegistroTipoBase.EVENTO, name: 'Evento', icon: 'calendar-outline', color: '#3949ab', isActive: true },
-                { id: 'tipo_tarea', baseType: RegistroTipoBase.TAREA, name: 'Tarea', icon: 'checkbox-outline', color: '#00897b', isActive: true },
-                { id: 'tipo_recordatorio', baseType: RegistroTipoBase.RECORDATORIO, name: 'Recordatorio', icon: 'notifications-outline', color: '#fdd835', isActive: true },
-                { id: 'tipo_tlibre', baseType: RegistroTipoBase.TIEMPO_LIBRE, name: 'Tiempo Libre', icon: 'leaf-outline', color: '#7cb342', isActive: true }
-            ],
-            settings: {
-                showSplash: true,
-                showQuickAccess: true,
-                pomodoroCycles: {
-                    focus: 25,
-                    shortBreak: 5,
-                    longBreak: 15
+        if (timeChanged || settingsChanged) {
+            if (oldReg.notificationId) {
+                await this.reminderService.cancelFor(oldReg.notificationId);
+            }
+
+            if (newReg.reminderEnabled && newReg.reminderTime) {
+                const notifId = await this.reminderService.scheduleFor(newReg);
+                if (notifId) {
+                    this.store.updateRegistro(newReg.id, { notificationId: notifId });
                 }
             }
-        };
+        }
     }
-
 }

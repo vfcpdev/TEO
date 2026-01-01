@@ -1,15 +1,15 @@
-import { Component, inject, signal, OnDestroy } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { ModalController } from '@ionic/angular/standalone';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonFooter,
   IonButton, IonInput, IonItem, IonLabel, IonCheckbox,
-  IonIcon
+  IonIcon, IonToggle
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AgendaService } from '../../../core/services/agenda.service';
 import { addIcons } from 'ionicons';
-import { folderOutline, folderOpenOutline, documentOutline, calendarOutline, timeOutline, checkmarkCircle } from 'ionicons/icons';
+import { folderOutline, folderOpenOutline, documentOutline, calendarOutline, timeOutline, checkmarkCircle, notificationsOutline, alarmOutline } from 'ionicons/icons';
 import { DateTimePickerModalComponent } from '../date-time-picker-modal/date-time-picker-modal.component';
 
 interface TreeNode {
@@ -60,6 +60,24 @@ interface TreeNode {
 
         <div class="duration-display" *ngIf="fechaInicio && fechaFin">
           <p>Duración: <strong>{{ calculateDuration() }}</strong></p>
+        </div>
+      </div>
+
+      <!-- Recordatorio -->
+      <div class="form-section">
+        <h3>Recordatorio</h3>
+        <ion-item>
+          <ion-icon slot="start" name="notifications-outline" color="warning"></ion-icon>
+          <ion-label>Activar recordatorio</ion-label>
+          <ion-toggle [(ngModel)]="reminderEnabled"></ion-toggle>
+        </ion-item>
+
+        <div *ngIf="reminderEnabled" class="reminder-options">
+          <ion-item>
+            <ion-icon slot="start" name="alarm-outline"></ion-icon>
+            <ion-label>Avisar con antelación (min)</ion-label>
+            <ion-input type="number" [(ngModel)]="reminderTime" placeholder="15"></ion-input>
+          </ion-item>
         </div>
       </div>
 
@@ -247,10 +265,11 @@ interface TreeNode {
     IonItem,
     IonLabel,
     IonCheckbox,
-    IonIcon
+    IonIcon,
+    IonToggle
   ]
 })
-export class AgendarWizardComponent implements OnDestroy {
+export class AgendarWizardComponent {
   private modalCtrl = inject(ModalController);
   private agendaService = inject(AgendaService);
 
@@ -258,10 +277,13 @@ export class AgendarWizardComponent implements OnDestroy {
   fechaInicio: string = '';
   fechaFin: string = '';
 
+  reminderEnabled = false;
+  reminderTime = 15;
+
   treeNodes = signal<TreeNode[]>([]);
 
   constructor() {
-    addIcons({ folderOutline, folderOpenOutline, documentOutline, calendarOutline, timeOutline, checkmarkCircle });
+    addIcons({ folderOutline, folderOpenOutline, documentOutline, calendarOutline, timeOutline, checkmarkCircle, notificationsOutline, alarmOutline });
     this.loadTreeData();
 
     // Initialize defaults if needed
@@ -273,8 +295,6 @@ export class AgendarWizardComponent implements OnDestroy {
     end.setHours(end.getHours() + 1);
     this.fechaFin = end.toISOString();
   }
-
-  ngOnDestroy() { }
 
   private loadTreeData() {
     const areas = this.agendaService.areas() || [];
@@ -385,7 +405,9 @@ export class AgendarWizardComponent implements OnDestroy {
       fechaInicio: this.fechaInicio,
       fechaFin: this.fechaFin,
       areaIds: selectedAreas,
-      contextoIds: selectedContextos
+      contextoIds: selectedContextos,
+      reminderEnabled: this.reminderEnabled,
+      reminderTime: this.reminderEnabled ? this.reminderTime : null
     };
 
     await this.modalCtrl.dismiss(result);

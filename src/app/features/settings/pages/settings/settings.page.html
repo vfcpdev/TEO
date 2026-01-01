@@ -59,20 +59,9 @@
         <div class="interface-module">
           <h3>Configuración de Diseño</h3>
 
-          <div class="interface-option">
-            <div class="option-info">
-              <ion-icon name="moon" color="dark"></ion-icon>
-              <div class="option-text">
-                <h4>Modo Oscuro</h4>
-                <p>Cambiar apariencia de la app</p>
-              </div>
-            </div>
-            <div class="toggle-wrapper" style="display: flex; align-items: center; gap: 8px;">
-              <ion-button fill="clear" size="small" (click)="presentThemePopover($event); $event.stopPropagation();">
-                <ion-icon name="add-circle-outline" slot="icon-only"></ion-icon>
-              </ion-button>
-              <ion-toggle [checked]="settingsService.darkMode()" (ionChange)="toggleTheme($event)"></ion-toggle>
-            </div>
+          <!-- Theme Selector Component -->
+          <div class="theme-selector-wrapper">
+            <app-theme-selector></app-theme-selector>
           </div>
 
           <div class="interface-option">
@@ -110,6 +99,14 @@
           </div>
 
         </div>
+        } @else if (selectedModule === 'data') {
+        <div class="data-module">
+          <app-export-import></app-export-import>
+        </div>
+        } @else if (selectedModule === 'integrations') {
+        <div class="integrations-module">
+          <app-integrations></app-integrations>
+        </div>
         }
       </div>
     </div>
@@ -140,21 +137,9 @@
       <div class="interface-module">
         <h3>Configuración de Diseño</h3>
 
-        <!-- Dark Mode -->
-        <div class="interface-option">
-          <div class="option-info">
-            <ion-icon name="moon" color="dark"></ion-icon>
-            <div class="option-text">
-              <h4>Modo Oscuro</h4>
-              <p>Cambiar apariencia de la app</p>
-            </div>
-          </div>
-          <div class="toggle-wrapper" style="display: flex; align-items: center; gap: 8px;">
-            <ion-button fill="clear" size="small" (click)="presentThemePopover($event); $event.stopPropagation();">
-              <ion-icon name="add-circle-outline" slot="icon-only"></ion-icon>
-            </ion-button>
-            <ion-toggle [checked]="settingsService.darkMode()" (ionChange)="toggleTheme($event)"></ion-toggle>
-          </div>
+        <!-- Theme Selector Component -->
+        <div class="theme-selector-wrapper">
+          <app-theme-selector></app-theme-selector>
         </div>
 
         <!-- Splash Screen -->
@@ -195,11 +180,19 @@
         </div>
 
       </div>
+      } @else if (selectedModule === 'data') {
+      <div class="module-content-mobile">
+        <app-export-import></app-export-import>
+      </div>
+      } @else if (selectedModule === 'integrations') {
+      <div class="module-content-mobile">
+        <app-integrations></app-integrations>
+      </div>
       } @else {
       <div class="module-content-mobile">
         <div class="empty-state-module-mobile">
           <ion-icon
-            [name]="selectedModule === 'courses' ? 'book-outline' : (selectedModule === 'students' ? 'people-outline' : 'settings-outline')"
+            [name]="selectedModule === 'courses' ? 'book-outline' : (selectedModule === 'students' ? 'people-outline' : (selectedModule === 'data' ? 'server-outline' : 'settings-outline'))"
             color="medium"></ion-icon>
           <p>Módulo de {{getSelectedModuleTitle()}} limpiado</p>
         </div>

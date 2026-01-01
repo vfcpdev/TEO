@@ -50,7 +50,7 @@ import {
   checkboxOutline,
   closeOutline,
   swapHorizontalOutline,
-  closeCircleOutline, constructOutline
+  closeCircleOutline, constructOutline, funnel
 } from 'ionicons/icons';
 
 import { AgendaService } from '../core/services/agenda.service';
@@ -60,17 +60,19 @@ import { CourseService } from '../features/courses/services/course.service';
 import { PlaceService } from '../features/places/services/place.service';
 import { ErrorLoggerService } from '../core/services/error-logger.service';
 import { FreeTimeGeneratorService } from '../core/services/free-time-generator.service';
-import { BufferVisualizerComponent } from '../shared/components/buffer-visualizer/buffer-visualizer.component';
 import { Registro } from '../models/registro.model';
 import { SettingsService } from '../core/services/settings.service';
 
 import { DayViewComponent } from '../features/agenda/components/day-view/day-view.component';
 import { WeekViewComponent } from '../features/agenda/components/week-view/week-view.component';
 import { MonthViewComponent } from '../features/agenda/components/month-view/month-view.component';
+import { AgendaFiltersComponent, FilterState } from '../features/agenda/components/agenda-filters/agenda-filters.component';
+import { AgendaSearchComponent } from '../features/agenda/components/agenda-search/agenda-search.component';
 import { FabOptionsComponent } from '../shared/components/fab-options/fab-options.component';
 import { DayDetailDrawerComponent } from '../features/agenda/components/day-detail-drawer/day-detail-drawer.component';
 import { BorradorWizardComponent } from '../shared/components/borrador-wizard/borrador-wizard.component';
 import { AgendarWizardComponent } from '../shared/components/agendar-wizard/agendar-wizard.component';
+import { ReportsComponent } from '../features/analytics/components/reports/reports.component';
 import { RegistroStatus, RegistroPrioridad } from '../models/registro.model';
 
 // Interface para items del timeline (cursos + eventos manuales + tiempo libre)
@@ -103,13 +105,13 @@ export interface TimelineItem {
     IonTitle,
     IonContent,
     IonButtons,
+    IonButton,
     IonIcon,
     IonMenuButton,
     IonSegmentButton,
     IonSegment,
     RouterModule,
     IonLabel,
-    BufferVisualizerComponent,
     IonFab,
     IonFabButton,
     IonGrid,
@@ -119,7 +121,10 @@ export interface TimelineItem {
     DayViewComponent,
     WeekViewComponent,
     MonthViewComponent,
-    DayDetailDrawerComponent
+    AgendaFiltersComponent,
+    AgendaSearchComponent,
+    DayDetailDrawerComponent,
+    ReportsComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -176,11 +181,40 @@ export class HomePage implements OnInit, ViewWillEnter, OnDestroy {
     return `${capitalizedDate} | ${timePart}`;
   });
 
-  vistaActual = signal<'agenda' | 'dia' | 'semana' | 'mes' | 'anio' | 'estados'>('agenda');
+  vistaActual = signal<'agenda' | 'dia' | 'semana' | 'mes' | 'anio' | 'estados' | 'stats'>('agenda');
 
   // Signals para registros
   registros = computed(() => this.agendaService.registros());
-  registrosFiltrados = computed(() => this.registros());
+
+  // Filtros y búsqueda
+  showFilters = signal(false);
+  activeFilters = signal<FilterState | null>(null);
+
+  registrosFiltrados = computed(() => {
+    const filters = this.activeFilters();
+    const allRegistros = this.registros();
+
+    if (!filters) return allRegistros;
+
+    return allRegistros.filter(reg => {
+      // Filter by areas
+      if (filters.areaIds.length > 0 && reg.areaId && !filters.areaIds.includes(reg.areaId)) {
+        return false;
+      }
+
+      // Filter by contextos
+      if (filters.contextoIds.length > 0 && reg.contextoId && !filters.contextoIds.includes(reg.contextoId)) {
+        return false;
+      }
+
+      // Filter by tipos
+      if (filters.tipoIds.length > 0 && reg.tipoId && !filters.tipoIds.includes(reg.tipoId)) {
+        return false;
+      }
+
+      return true;
+    });
+  });
 
   // SELECCIÓN
   selectionMode = signal<boolean>(false);
@@ -190,7 +224,7 @@ export class HomePage implements OnInit, ViewWillEnter, OnDestroy {
   today = new Date();
 
   constructor() {
-    addIcons({ timeOutline, todayOutline, calendarOutline, calendarNumberOutline, add, chevronForwardOutline, constructOutline, homeOutline, personOutline, settingsOutline, calendar, personCircleOutline, informationCircleOutline, logOutOutline, checkmarkCircle, create, search, trashOutline, createOutline, checkboxOutline, closeOutline, swapHorizontalOutline, closeCircleOutline });
+    addIcons({ funnel, add, timeOutline, constructOutline, todayOutline, calendarOutline, calendarNumberOutline, chevronForwardOutline, homeOutline, personOutline, settingsOutline, calendar, personCircleOutline, informationCircleOutline, logOutOutline, checkmarkCircle, create, search, trashOutline, createOutline, checkboxOutline, closeOutline, swapHorizontalOutline, closeCircleOutline });
   }
 
   async ngOnInit() {
@@ -281,6 +315,34 @@ export class HomePage implements OnInit, ViewWillEnter, OnDestroy {
       return `${hours}h ${mins}m`;
     }
     return `${mins}m`;
+  }
+
+  // Filters and Search
+  toggleFilters() {
+    this.showFilters.update(v => !v);
+  }
+
+  applyFilters(filters: FilterState) {
+    this.activeFilters.set(filters);
+  }
+
+  onSearchResultSelected(result: any) {
+    if (result.type === 'registro') {
+      // Navigate to the day view with the event
+      const registro = result.data as Registro;
+      if (registro.startTime) {
+        this.selectedDate.set(new Date(registro.startTime));
+        this.vistaActual.set('dia');
+      }
+    } else if (result.type === 'area') {
+      // Filter by area
+      this.applyFilters({
+        areaIds: [result.id],
+        contextoIds: [],
+        tipoIds: [],
+        statusFilter: []
+      });
+    }
   }
 
   // FAB Options Modal
@@ -383,6 +445,8 @@ export class HomePage implements OnInit, ViewWillEnter, OnDestroy {
           isAllDay: false,
           areaId: data.areaIds[0],
           contextoId: data.contextoIds[0],
+          reminderEnabled: data.reminderEnabled,
+          reminderTime: data.reminderTime,
           createdAt: new Date(),
           updatedAt: new Date()
         });

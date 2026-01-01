@@ -1,7 +1,8 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, OnChanges, SimpleChanges, signal } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, OnChanges, SimpleChanges, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { Registro } from '../../../../models/registro.model';
+import { AgendaService } from '../../../../core/services/agenda.service';
 
 @Component({
   selector: 'app-week-view',
@@ -47,45 +48,96 @@ import { Registro } from '../../../../models/registro.model';
       display: flex;
       flex-direction: column;
       background: var(--ion-background-color);
-      border: 1px solid var(--ion-border-color);
-      border-radius: 12px;
-      height: 600px; /* Fixed height for scroll */
+      border: var(--border-width-thin) solid var(--ion-border-color);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-md);
       overflow: hidden;
+      height: 500px;
+    }
+    
+    @media (min-width: 768px) and (max-width: 1023px) {
+      .week-view-container {
+        height: 600px;
+      }
+    }
+    
+    @media (min-width: 1024px) {
+      .week-view-container {
+        height: 700px;
+      }
     }
 
     .week-header {
       display: grid;
-      grid-template-columns: 40px repeat(7, 1fr);
-      border-bottom: 1px solid var(--ion-border-color);
-      background: var(--ion-color-light);
-      padding: 8px 0;
+      grid-template-columns: 50px repeat(7, 1fr);
+      border-bottom: var(--border-width-thin) solid var(--ion-border-color);
+      background: var(--ion-color-step-50);
+      padding: var(--spacing-sm) 0;
       flex-shrink: 0;
     }
     
-    .time-col-header { width: 40px; }
+    .time-col-header { 
+      width: 50px; 
+    }
 
     .day-col {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      font-size: 11px;
+      gap: var(--spacing-xs);
+      font-size: var(--font-size-xs);
+      padding: var(--spacing-xs);
+      transition: background var(--transition-fast);
     }
     
-    .day-name { font-weight: 600; color: var(--ion-color-medium); }
-    .day-number { font-size: 14px; font-weight: bold; }
-    .day-indicator.active { width: 6px; height: 6px; background: var(--ion-color-primary); border-radius: 50%; margin-top: 2px; }
+    .day-col:hover {
+      background: var(--ion-color-step-100);
+    }
+    
+    .day-name { 
+      font-weight: var(--font-weight-semibold); 
+      color: var(--ion-color-medium); 
+      text-transform: uppercase;
+      letter-spacing: var(--letter-spacing-wide);
+    }
+    
+    .day-number { 
+      font-size: var(--font-size-body); 
+      font-weight: var(--font-weight-bold);
+      color: var(--ion-text-color);
+    }
+    
+    .day-indicator {
+      width: 6px; 
+      height: 6px; 
+      border-radius: 50%; 
+      opacity: 0;
+      transition: opacity var(--transition-fast);
+      
+      &.active { 
+        background: var(--ion-color-primary); 
+        opacity: 1;
+        animation: pulse 2s ease-in-out infinite;
+      }
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.2); opacity: 0.8; }
+    }
 
     .week-grid-body {
       flex: 1;
       overflow-y: auto;
       position: relative;
+      scroll-behavior: smooth;
     }
     
     .week-events-layer {
         position: absolute;
         top: 0;
-        left: 40px; /* Offset time col */
+        left: 50px;
         right: 0;
         bottom: 0;
         z-index: 10;
@@ -94,33 +146,77 @@ import { Registro } from '../../../../models/registro.model';
     
     .week-event {
         position: absolute;
-        background: var(--ion-color-primary);
-        color: white;
-        font-size: 9px;
-        border-radius: 2px;
-        padding: 1px 2px;
+        background: rgba(var(--ion-color-primary-rgb), var(--agenda-event-opacity));
+        border-left: 3px solid var(--ion-color-primary);
+        color: var(--ion-text-color);
+        font-size: var(--font-size-xs);
+        font-weight: var(--font-weight-medium);
+        border-radius: var(--radius-sm);
+        padding: var(--spacing-xs);
         overflow: hidden;
         pointer-events: auto;
-        opacity: 0.8;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        box-shadow: var(--shadow-xs);
+    }
+    
+    .week-event:hover {
+      transform: scale(1.02);
+      box-shadow: var(--shadow-md);
+      z-index: 20;
+      background: rgba(var(--ion-color-primary-rgb), calc(var(--agenda-event-opacity) + 0.05));
+    }
+    
+    .week-event:active {
+      transform: scale(0.98);
+    }
+    
+    .event-title {
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-weight: var(--font-weight-semibold);
     }
 
     .grid-row {
       display: grid;
-      grid-template-columns: 40px repeat(7, 1fr);
-      height: 40px; /* Compact height for week view */
-      border-bottom: 1px solid var(--ion-border-color);
+      grid-template-columns: 50px repeat(7, 1fr);
+      height: 40px;
+      border-bottom: var(--border-width-thin) solid var(--ion-border-color);
+      transition: background var(--transition-fast);
+    }
+    
+    .grid-row:hover {
+      background: rgba(var(--ion-color-primary-rgb), 0.02);
     }
     
     .time-label {
-        font-size: 9px; color: var(--ion-color-medium); text-align: center; margin-top: -6px;
+        font-size: var(--font-size-xs); 
+        font-weight: var(--font-weight-medium);
+        color: var(--ion-color-medium); 
+        text-align: center; 
+        margin-top: -6px;
+        font-variant-numeric: tabular-nums;
     }
-    .day-cell { border-right: 1px solid var(--ion-border-color); opacity: 0.3; }
+    
+    .day-cell { 
+      border-right: var(--border-width-thin) solid var(--ion-border-color); 
+      opacity: 0.3;
+      transition: opacity var(--transition-fast);
+    }
+    
+    .day-cell:hover {
+      opacity: 0.5;
+    }
   `]
 })
 export class WeekViewComponent implements OnChanges {
   @Input() registros: Registro[] = [];
   @Input() currentDate: Date = new Date();
   @Output() daySelected = new EventEmitter<Date>();
+
+  readonly agendaService = inject(AgendaService);
 
   dayNames = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
   // ...

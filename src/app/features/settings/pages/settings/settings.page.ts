@@ -72,7 +72,7 @@ import {
   closeCircleOutline,
   repeatOutline,
   checkmarkCircleOutline,
-  settingsOutline, closeSharp, rocket
+  settingsOutline, closeSharp, rocket, serverOutline
 } from 'ionicons/icons';
 import { AuthService } from '../../../../core/services/auth.service';
 import { ToastService } from '../../../../core/services/toast.service';
@@ -80,6 +80,9 @@ import { ProfileSettingsComponent } from '../../components/profile-settings/prof
 import { Preferences } from '@capacitor/preferences';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { SettingsService } from '../../../../core/services/settings.service';
+import { ThemeSelectorComponent } from '../../../../shared/components/theme-selector/theme-selector.component';
+import { ExportImportComponent } from '../../components/export-import/export-import.component'; // Import component
+import { IntegrationsComponent } from '../../components/integrations/integrations.component';
 
 export interface QuickAccessItem {
   id: string;
@@ -118,7 +121,10 @@ export interface QuickAccessItem {
     ReactiveFormsModule,
     AgendaMobileComponent,
     AgendaDesktopComponent,
-    ProfileSettingsComponent
+    ProfileSettingsComponent,
+    ThemeSelectorComponent,
+    ExportImportComponent,
+    IntegrationsComponent
   ]
 })
 export class SettingsPage implements OnInit, OnDestroy {
@@ -139,10 +145,13 @@ export class SettingsPage implements OnInit, OnDestroy {
   isDesktop = computed(() => this.platform.width() >= 992);
 
   // Módulos simplificados
+  // Módulos simplificados
   modules = [
     { id: 'agenda', title: 'Agenda', icon: 'calendar-outline', color: 'primary' },
     { id: 'profiles', title: 'Perfiles', icon: 'people-outline', color: 'secondary' },
-    { id: 'design', title: 'Diseño', icon: 'color-palette-outline', color: 'medium' }
+    { id: 'design', title: 'Diseño', icon: 'color-palette-outline', color: 'medium' },
+    { id: 'data', title: 'Datos', icon: 'server-outline', color: 'tertiary' },
+    { id: 'integrations', title: 'Integraciones', icon: 'cloud-outline', color: 'warning' }
   ];
 
   // Items de acceso rápido configurables
@@ -165,7 +174,7 @@ export class SettingsPage implements OnInit, OnDestroy {
   studentSubView = signal<'list' | 'attendance'>('list');
 
   constructor() {
-    addIcons({ moonOutline, sunnyOutline, closeSharp, bookOutline, peopleOutline, rocket, flash, closeOutline, checkmarkOutline, cloudUploadOutline, checkmark, close, settingsOutline, trashOutline, calendarOutline, checkboxOutline, colorPalette, informationCircleOutline, add, addCircleOutline, laptopOutline, createOutline, locationOutline, schoolOutline, linkOutline, documentTextOutline, handLeftOutline, cardOutline, mailOutline, homeOutline, timeOutline, personOutline, warningOutline, closeCircleOutline, squareOutline, checkmarkCircleOutline, repeatOutline, colorPaletteOutline, flashOutline, saveOutline, cloudDownloadOutline, logOut, person, moon, sunny });
+    addIcons({ serverOutline, moonOutline, sunnyOutline, closeSharp, bookOutline, peopleOutline, rocket, flash, closeOutline, checkmarkOutline, cloudUploadOutline, checkmark, close, settingsOutline, trashOutline, calendarOutline, checkboxOutline, colorPalette, informationCircleOutline, add, addCircleOutline, laptopOutline, createOutline, locationOutline, schoolOutline, linkOutline, documentTextOutline, handLeftOutline, cardOutline, mailOutline, homeOutline, timeOutline, personOutline, warningOutline, closeCircleOutline, squareOutline, checkmarkCircleOutline, repeatOutline, colorPaletteOutline, flashOutline, saveOutline, cloudDownloadOutline, logOut, person, moon, sunny });
   }
 
   async ngOnInit() {

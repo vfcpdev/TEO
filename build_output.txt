@@ -1,160 +1,37 @@
-> ng.cmd run app:build
+
+> teo@3.6.3 build
+> npm run copy:sqlwasm && nx build
+
+
+> teo@3.6.3 copy:sqlwasm
+> copyfiles -u 3 node_modules/sql.js/dist/sql-wasm.wasm src/assets
+
+
+> nx run app:build:production
+
 [33m❯[39m Building...
 [32m✔[39m Building...
-Application bundle generation failed. [6.066 seconds] - 2025-12-26T05:20:41.509Z
+[37mApplication bundle generation failed. [6.818 seconds] - 2026-01-01T05:10:30.162Z[39m
+[37m[39m
+▲ [WARNING] NG8113: IonCardHeader is not used within the template of AgendaDesktopComponent [plugin angular-compiler]
 
-▲ [WARNING] NG8113: IonAccordion is not used within the template of SettingsPage [plugin angular-compiler]
-
-    src/app/features/settings/pages/settings/settings.page.ts:156:4:
-      156 │     IonAccordion,
-          ╵     ~~~~~~~~~~~~
-
-
-▲ [WARNING] NG8113: IonAccordionGroup is not used within the template of SettingsPage [plugin angular-compiler]
-
-    src/app/features/settings/pages/settings/settings.page.ts:157:4:
-      157 │     IonAccordionGroup,
-          ╵     ~~~~~~~~~~~~~~~~~
+    src/app/features/agenda/components/agenda-desktop/agenda-desktop.component.ts:55:4:
+      55 │     IonCardHeader,
+         ╵     ~~~~~~~~~~~~~
 
 
-▲ [WARNING] NG8113: IonHeader is not used within the template of HomePage [plugin angular-compiler]
+▲ [WARNING] NG8113: IonCardTitle is not used within the template of AgendaDesktopComponent [plugin angular-compiler]
 
-    src/app/home/home.page.ts:107:4:
-      107 │     IonHeader,
-          ╵     ~~~~~~~~~
-
-
-▲ [WARNING] NG8113: IonToolbar is not used within the template of HomePage [plugin angular-compiler]
-
-    src/app/home/home.page.ts:108:4:
-      108 │     IonToolbar,
-          ╵     ~~~~~~~~~~
+    src/app/features/agenda/components/agenda-desktop/agenda-desktop.component.ts:56:4:
+      56 │     IonCardTitle,
+         ╵     ~~~~~~~~~~~~
 
 
-▲ [WARNING] NG8113: IonTitle is not used within the template of HomePage [plugin angular-compiler]
-
-    src/app/home/home.page.ts:109:4:
-      109 │     IonTitle,
-          ╵     ~~~~~~~~
-
-
-▲ [WARNING] NG8113: IonContent is not used within the template of HomePage [plugin angular-compiler]
-
-    src/app/home/home.page.ts:110:4:
-      110 │     IonContent,
-          ╵     ~~~~~~~~~~
-
-
-▲ [WARNING] NG8113: IonButtons is not used within the template of HomePage [plugin angular-compiler]
-
-    src/app/home/home.page.ts:111:4:
-      111 │     IonButtons,
-          ╵     ~~~~~~~~~~
-
-
-▲ [WARNING] NG8113: IonIcon is not used within the template of HomePage [plugin angular-compiler]
-
-    src/app/home/home.page.ts:112:4:
-      112 │     IonIcon,
-          ╵     ~~~~~~~
-
-
-▲ [WARNING] NG8113: IonMenuButton is not used within the template of HomePage [plugin angular-compiler]
-
-    src/app/home/home.page.ts:113:4:
-      113 │     IonMenuButton,
-          ╵     ~~~~~~~~~~~~~
-
-
-▲ [WARNING] NG8113: IonButton is not used within the template of HomePage [plugin angular-compiler]
-
-    src/app/home/home.page.ts:114:4:
-      114 │     IonButton,
-          ╵     ~~~~~~~~~
-
-
-▲ [WARNING] NG8113: IonInput is not used within the template of HomePage [plugin angular-compiler]
-
-    src/app/home/home.page.ts:115:4:
-      115 │     IonInput,
-          ╵     ~~~~~~~~
-
-
-▲ [WARNING] NG8113: IonItem is not used within the template of HomePage [plugin angular-compiler]
-
-    src/app/home/home.page.ts:116:4:
-      116 │     IonItem,
-          ╵     ~~~~~~~
-
-
-▲ [WARNING] NG8113: IonList is not used within the template of HomePage [plugin angular-compiler]
-
-    src/app/home/home.page.ts:117:4:
-      117 │     IonList,
-          ╵     ~~~~~~~
-
-
-▲ [WARNING] NG8113: IonLabel is not used within the template of HomePage [plugin angular-compiler]
-
-    src/app/home/home.page.ts:118:4:
-      118 │     IonLabel,
-          ╵     ~~~~~~~~
-
-
-▲ [WARNING] NG8113: IonDatetime is not used within the template of HomePage [plugin angular-compiler]
-
-    src/app/home/home.page.ts:119:4:
-      119 │     IonDatetime,
-          ╵     ~~~~~~~~~~~
-
-
-▲ [WARNING] NG8113: IonDatetimeButton is not used within the template of HomePage [plugin angular-compiler]
-
-    src/app/home/home.page.ts:120:4:
-      120 │     IonDatetimeButton,
-          ╵     ~~~~~~~~~~~~~~~~~
-
-
-▲ [WARNING] NG8113: IonSegmentButton is not used within the template of HomePage [plugin angular-compiler]
-
-    src/app/home/home.page.ts:121:4:
-      121 │     IonSegmentButton,
-          ╵     ~~~~~~~~~~~~~~~~
-
-
-▲ [WARNING] NG8113: IonModal is not used within the template of HomePage [plugin angular-compiler]
-
-    src/app/home/home.page.ts:122:4:
-      122 │     IonModal,
-          ╵     ~~~~~~~~
-
-
-▲ [WARNING] NG8113: IonSegment is not used within the template of HomePage [plugin angular-compiler]
-
-    src/app/home/home.page.ts:123:4:
-      123 │     IonSegment,
-          ╵     ~~~~~~~~~~
-
-
-▲ [WARNING] NG8113: IonFooter is not used within the template of HomePage [plugin angular-compiler]
-
-    src/app/home/home.page.ts:124:4:
-      124 │     IonFooter,
-          ╵     ~~~~~~~~~
-
-
-▲ [WARNING] NG8113: AnalogClockPickerComponent is not used within the template of HomePage [plugin angular-compiler]
+▲ [WARNING] NG8113: DayDetailDrawerComponent is not used within the template of HomePage [plugin angular-compiler]
 
     src/app/home/home.page.ts:126:4:
-      126 │     AnalogClockPickerComponent,
-          ╵     ~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-▲ [WARNING] NG8113: IonButton is not used within the template of AnalogClockPickerComponent [plugin angular-compiler]
-
-    src/app/shared/components/analog-clock-picker/analog-clock-picker.component.ts:11:41:
-      11 │     imports: [CommonModule, FormsModule, IonButton]
-         ╵                                          ~~~~~~~~~
+      126 │     DayDetailDrawerComponent,
+          ╵     ~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 ▲ [WARNING] The glob pattern import("./**/*.entry.js*") did not match any files [empty-glob]
@@ -164,21 +41,118 @@ Application bundle generation failed. [6.066 seconds] - 2025-12-26T05:20:41.509Z
           ╵   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-X [ERROR] NG5002: Unexpected closing block. The block may have been closed earlier. If you meant to write the } character, you should use the "&#125;" HTML entity instead. [plugin angular-compiler]
+X [ERROR] TS2339: Property 'COMPLETADO' does not exist on type 'typeof RegistroStatus'. [plugin angular-compiler]
 
-    src/app/home/home.page.html:280:10:
-      280 │           }
-          ╵           ^
-
-  Error occurs in the template of component HomePage.
-
-    src/app/home/home.page.ts:102:15:
-      102 │   templateUrl: 'home.page.html',
-          ╵                ~~~~~~~~~~~~~~~~
+    src/app/core/services/analytics.service.ts:57:81:
+      57 │ ...istros.filter(r => r.status === RegistroStatus.COMPLETADO).length;
+         ╵                                                   ~~~~~~~~~~
 
 
-[ERROR] An error occurred while running subprocess ng.
-        
-        ng.cmd run app:build exited with exit code 1.
-        
-        Re-running this command with the --verbose flag may provide more information.
+X [ERROR] TS2307: Cannot find module '../../../models/registro.model' or its corresponding type declarations. [plugin angular-compiler]
+
+    src/app/core/services/ics-export.service.ts:2:25:
+      2 │ import { Registro } from '../../../models/registro.model';
+        ╵                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2307: Cannot find module '../../../models/registro.model' or its corresponding type declarations. [plugin angular-compiler]
+
+    src/app/core/services/json-export.service.ts:2:25:
+      2 │ import { Registro } from '../../../models/registro.model';
+        ╵                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2012: Component imports must be standalone components, directives, pipes, or must be NgModules. [plugin angular-compiler]
+
+    src/app/features/analytics/components/reports/reports.component.ts:240:199:
+      240 │ ...egmentButton, IonLabel, IonIcon, IonProgressBar, ToastController]
+          ╵                                                     ~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'getTrend' does not exist on type 'AnalyticsService'. [plugin angular-compiler]
+
+    src/app/features/analytics/components/reports/reports.component.ts:327:40:
+      327 │ ...nd = this.analyticsService.getTrend(regs, start, end, 
+granular...
+          ╵                               ~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 't' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/features/analytics/components/reports/reports.component.ts:330:41:
+      330 │ ...maxVal = Math.max(...trend.map(t => t.value), 1); // Avoid div...
+          ╵                                   ^
+
+
+X [ERROR] TS7006: Parameter 't' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/features/analytics/components/reports/reports.component.ts:332:21:
+      332 │     return trend.map(t => ({
+          ╵                      ^
+
+
+X [ERROR] TS7006: Parameter 't' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/features/analytics/components/reports/reports.component.ts:366:18:
+      366 │     trend.forEach(t => {
+          ╵                   ^
+
+
+X [ERROR] TS2339: Property 'show' does not exist on type 'ToastService'. [plugin angular-compiler]
+
+    src/app/features/settings/components/export-import/export-import.component.ts:307:30:
+      307 │             this.toastService.show('No hay registros para exporta...
+          ╵                               ~~~~
+
+
+X [ERROR] TS2339: Property 'show' does not exist on type 'ToastService'. [plugin angular-compiler]
+
+    src/app/features/settings/components/export-import/export-import.component.ts:313:26:
+      313 │         this.toastService.show(`Exportados ${registros.length} ev...
+          ╵                           ~~~~
+
+
+X [ERROR] TS2339: Property 'show' does not exist on type 'ToastService'. [1m[plugin angular-compiler]
+
+    src/app/features/settings/components/export-import/export-import.component.ts:325:26:
+      325 │         this.toastService.show(`Backup completo exportado (${tota...
+          ╵                           ~~~~
+
+
+X [ERROR] TS2339: Property 'show' does not exist on type 'ToastService'. [plugin angular-compiler]
+
+    src/app/features/settings/components/export-import/export-import.component.ts:355:34:
+      355 │                 this.toastService.show(result.message, 'success');
+          ╵                                   ~~~~
+
+
+X [ERROR] TS2339: Property 'show' does not exist on type 'ToastService'. [plugin angular-compiler]
+
+    src/app/features/settings/components/export-import/export-import.component.ts:361:34:
+      361 │                 this.toastService.show(result.message, 'danger');
+          ╵                                   ~~~~
+
+
+X [ERROR] TS2339: Property 'show' does not exist on type 'ToastService'. [plugin angular-compiler]
+
+    src/app/features/settings/components/export-import/export-import.component.ts:367:30:
+      367 │             this.toastService.show('Error durante la importación...
+          ╵                               ~~~~
+
+
+
+
+
+ NX   Running target build for project app failed
+
+Failed tasks:
+
+- app:build:production
+
+Hint: run the command with --verbose for more details.
+
+
+ NX   Nx Cloud encountered some problems
+
+This workspace is more than three days old and is not connected. Workspaces must be connected within 3 days of creation. Claim your workspace at https://cloud.nx.app. (code: 401)
+

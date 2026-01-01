@@ -6,7 +6,8 @@
 
 :root {
   // ===== TYPOGRAPHY =====
-  --font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
 
   // Font Sizes - Mobile (Base 16px)
   --font-size-h1: 1.75rem; // 28px (Headline L)
@@ -200,4 +201,51 @@ body.dark {
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
   --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.5);
   --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.6);
+}
+
+// ===== AGENDA-SPECIFIC TOKENS =====
+:root {
+  // Timeline
+  --agenda-hour-height: 60px;
+  --agenda-hour-label-width: 50px;
+  --agenda-timeline-padding: 40px;
+  --agenda-current-time-color: var(--ion-color-danger);
+
+  // Events
+  --agenda-event-border-width: 4px;
+  --agenda-event-padding: 4px 8px;
+  --agenda-event-radius: var(--radius-sm);
+  --agenda-event-min-height: 20px;
+  --agenda-event-opacity: 0.15;
+
+  // Calendar
+  --agenda-calendar-gap: 1px;
+  --agenda-calendar-day-size: 40px;
+  --agenda-calendar-dot-size: 6px;
+
+  // Area/Context Pills
+  --agenda-pill-padding: 6px 16px;
+  --agenda-pill-radius: var(--radius-lg);
+  --agenda-pill-gap: 10px;
+
+  // Animations
+  --agenda-transition-event: var(--transition-fast);
+  --agenda-transition-hover: var(--transition-base);
+}
+
+// Tablet adjustments
+@media (min-width: 768px) and (max-width: 991px) {
+  :root {
+    --agenda-hour-height: 70px;
+    --agenda-calendar-day-size: 48px;
+  }
+}
+
+// Desktop adjustments
+@media (min-width: 992px) {
+  :root {
+    --agenda-hour-height: 80px;
+    --agenda-hour-label-width: 60px;
+    --agenda-calendar-day-size: 56px;
+  }
 }

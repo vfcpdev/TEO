@@ -91,6 +91,11 @@ export interface Registro {
     // Notas
     notes?: string;
 
+    // Recordatorios
+    reminderEnabled?: boolean;
+    reminderTime?: number; // minutos antes del evento
+    notificationId?: number; // ID de la notificación programada
+
     // Tareas (checklist)
     tareas?: RegistroTarea[];
 
