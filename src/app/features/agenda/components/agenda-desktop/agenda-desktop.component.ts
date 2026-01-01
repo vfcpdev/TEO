@@ -357,13 +357,23 @@ import { RegistroTipoBase } from '../../../../models/registro.model';
     .areas-sidebar .area-nav-item.active .name { color: var(--ion-text-color); font-weight: 700; }
     
     .areas-sidebar .area-nav-item.selected {
-        background: rgba(var(--ion-color-primary-rgb), 0.1);
+        background: rgba(var(--ion-color-primary-rgb), 0.08);
         border: 2px solid var(--ion-color-primary);
+        box-shadow: 0 0 0 1px rgba(var(--ion-color-primary-rgb), 0.1);
     }
     
     .areas-sidebar .area-nav-item.selected .name {
-        color: var(--ion-text-color);
+        color: var(--ion-text-color) !important;
         font-weight: 600;
+    }
+    
+    .areas-sidebar .area-nav-item.selected ion-icon {
+        opacity: 1;
+    }
+    
+    .areas-sidebar .area-nav-item.selected ion-badge {
+        --background: var(--ion-color-primary);
+        --color: white;
     }
     
     .areas-sidebar .area-nav-item .area-checkbox {
