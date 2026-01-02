@@ -318,6 +318,16 @@ export class HomePage implements OnInit, ViewWillEnter, OnDestroy {
     return `${mins}m`;
   }
 
+  getFormattedMonth(): string {
+    const now = new Date();
+    return now.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+  }
+
+  getFormattedDay(): string {
+    const now = new Date();
+    return now.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+  }
+
   // Filters and Search
   toggleFilters() {
     this.showFilters.update(v => !v);
@@ -368,28 +378,26 @@ export class HomePage implements OnInit, ViewWillEnter, OnDestroy {
   }
 
   async openDayDrawer(date: Date) {
-    const list = this.registros();
-    // Filter for that day
-    const target = new Date(date);
-    const dayRegistros = list.filter(r => {
-      if (!r.startTime) return false;
-      const d = new Date(r.startTime);
-      return d.getDate() === target.getDate() &&
-        d.getMonth() === target.getMonth() &&
-        d.getFullYear() === target.getFullYear();
-    });
-
     const modal = await this.modalController.create({
       component: DayDetailDrawerComponent,
       componentProps: {
-        date: date,
-        registros: dayRegistros
+        date: date
       },
       initialBreakpoint: 0.5,
-      breakpoints: [0, 0.5, 1],
+      breakpoints: [0, 0.5, 0.75, 1],
       cssClass: 'day-drawer-modal'
     });
     await modal.present();
+
+    const { data } = await modal.onWillDismiss();
+    if (data?.registro) {
+      this.editarRegistro(data.registro);
+    }
+  }
+
+  async openRegistroDrawer(registro: Registro) {
+    if (!registro.startTime) return;
+    await this.openDayDrawer(new Date(registro.startTime));
   }
 
   private async openBorradorQuick() {

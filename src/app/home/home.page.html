@@ -79,6 +79,12 @@
     <!-- VISTA AGENDA -->
     @if (vistaActual() === 'agenda') {
     <div class="vista-agenda">
+      <!-- Date Header -->
+      <div class="agenda-date-header">
+        <h2>{{ getFormattedMonth() }}</h2>
+        <p class="current-day">{{ getFormattedDay() }}</p>
+      </div>
+
       <!-- Si no hay registros próximos -->
       @if (registrosFiltrados().length === 0) {
       <div class="empty-state">
@@ -99,7 +105,7 @@
           </ion-row>
 
           @for (registro of registrosFiltrados(); track registro.id) {
-          <ion-row class="data-row" (click)="editarRegistro(registro)">
+          <ion-row class="data-row" (click)="openRegistroDrawer(registro)">
             <ion-col size="3" class="col-name text-truncate">{{ registro.name }}</ion-col>
             <ion-col size="3" class="text-truncate">{{ getAreaName(registro) }}</ion-col>
             <ion-col size="2">
