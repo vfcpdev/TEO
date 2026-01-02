@@ -98,7 +98,7 @@ export interface FilterState {
   styles: [`
     .filters-container {
     .filters-container {
-      padding: var(--spacing-md);
+      padding: var(--spacing-sm);
       background: var(--ion-background-color);
     }
       background: var(--ion-background-color);
@@ -108,15 +108,15 @@ export interface FilterState {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: var(--spacing-md);
-      padding-bottom: var(--spacing-sm);
+      margin-bottom: var(--spacing-sm);
+      padding-bottom: var(--spacing-xs);
       border-bottom: var(--border-width-thin) solid var(--ion-border-color);
       
       h3 {
         margin: 0;
       h3 {
         margin: 0;
-        font-size: var(--font-size-h5);
+        font-size: var(--font-size-body);
         font-weight: var(--font-weight-bold);
         color: var(--ion-text-color);
       }
@@ -134,16 +134,16 @@ export interface FilterState {
       h4 {
         display: flex;
         align-items: center;
-        gap: var(--spacing-sm);
-        margin: 0 0 var(--spacing-sm) 0;
-        font-size: var(--font-size-body);
+        gap: var(--spacing-xs);
+        margin: 0 0 var(--spacing-xs) 0;
+        font-size: var(--font-size-small);
         font-weight: var(--font-weight-semibold);
         color: var(--ion-color-medium);
         text-transform: uppercase;
         letter-spacing: var(--letter-spacing-wide);
         
         ion-icon {
-          font-size: 1.2rem;
+          font-size: 1rem;
         }
       }
     }
@@ -151,7 +151,7 @@ export interface FilterState {
     .chips-container {
       display: flex;
       flex-wrap: wrap;
-      gap: var(--spacing-sm);
+      gap: var(--spacing-xs);
     }
     
     ion-chip {
@@ -161,8 +161,8 @@ export interface FilterState {
       transition: all var(--transition-fast);
       border: 2px solid transparent;
       margin: 0;
-      height: 28px;
-      font-size: var(--font-size-small);
+      height: 24px;
+      font-size: var(--font-size-xs);
       
       &:hover {
         transform: translateY(-2px);

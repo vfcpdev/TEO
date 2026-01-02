@@ -80,16 +80,18 @@ interface SearchResult {
       --placeholder-color: var(--ion-color-medium);
       --placeholder-font-weight: var(--font-weight-medium);
       padding: 0;
+      height: 36px;
+      min-height: 36px !important;
     }
     
     .search-results {
       position: absolute;
-      top: calc(100% + var(--spacing-sm));
+      top: calc(100% + var(--spacing-xs));
       left: 0;
       right: 0;
       background: var(--ion-background-color);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-xl);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
       max-height: 400px;
       overflow-y: auto;
       z-index: 1000;
@@ -97,94 +99,114 @@ interface SearchResult {
       animation: slideDown var(--transition-base);
     }
     
-    @keyframes slideDown {
-      from {
-        opacity: 0;
-        transform: translateY(-8px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-    
     .results-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      div.results-header {
-      padding: var(--spacing-sm) var(--spacing-md);
+      padding: var(--spacing-xs) var(--spacing-sm);
+      border-bottom: var(--border-width-thin) solid var(--ion-border-color);
+      background: var(--ion-color-step-50);
+      position: sticky;
+      top: 0;
+      z-index: 1;
       
-      /* ... */
+      span {
+        font-size: var(--font-size-xs);
+        font-weight: var(--font-weight-semibold);
+        color: var(--ion-color-medium);
+        text-transform: uppercase;
+        letter-spacing: var(--letter-spacing-wide);
+      }
       
       ion-button {
         --padding-start: 0;
         --padding-end: 0;
         margin: 0;
-        height: 24px;
+        height: 20px;
+        min-height: 20px;
+      }
+      
+      ion-icon {
+        font-size: 1.2rem;
       }
     }
     
     .result-item {
       --background: transparent;
-    .result-item {
-      --padding-start: var(--spacing-md);
-      --padding-end: var(--spacing-md);
-      --min-height: 44px;
+      --padding-start: var(--spacing-sm);
+      --padding-end: var(--spacing-sm);
+      --min-height: 36px;
+      --inner-padding-end: 0;
+      transition: background var(--transition-fast);
+      cursor: pointer;
       
-      /* ... */
-
+      &:hover {
+        --background: var(--ion-color-step-50);
+      }
+      
+      &:active {
+        --background: var(--ion-color-step-100);
+      }
+      
       ion-icon[slot="start"] {
-        font-size: 1.25rem;
+        font-size: 1rem;
         margin-right: var(--spacing-sm);
       }
       
       ion-label {
+        margin: var(--spacing-xs) 0;
+        
         h3 {
-      ion-label {
-        h3 {
-          font-size: var(--font-size-body);
-          margin-bottom: 2px;
+          font-size: var(--font-size-small);
+          font-weight: var(--font-weight-semibold);
+          margin: 0;
+          color: var(--ion-text-color);
+          line-height: normal;
         }
         
         p {
-          font-size: var(--font-size-small);
-          color: var(--ion-color-medium);
           margin: 0;
+          font-size: var(--font-size-xxs);
+          line-height: normal;
+          color: var(--ion-color-medium);
         }
       }
       
       ion-badge {
-        font-size: var(--font-size-xs);
-        font-weight: var(--font-weight-semibold);
-        padding: var(--spacing-xs) var(--spacing-sm);
+        font-size: 10px;
+        font-weight: var(--font-weight-bold);
+        padding: 2px 6px;
         border-radius: var(--radius-sm);
       }
     }
     
     .no-results {
-    .no-results {
-      padding: var(--spacing-xl);
-      
-      /* ... */
+      padding: var(--spacing-lg);
+      text-align: center;
+      color: var(--ion-color-medium);
+      animation: fadeIn var(--transition-base);
       
       ion-icon {
-        font-size: 3rem;
-        margin-bottom: var(--spacing-md);
+        font-size: 2rem;
+        opacity: 0.5;
+        margin-bottom: var(--spacing-sm);
       }
       
       p {
-        font-size: var(--font-size-body);
+        margin: 0;
+        font-size: var(--font-size-small);
+        font-weight: var(--font-weight-medium);
       }
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     
     @keyframes fadeIn {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
-      }
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
   `]
 })
