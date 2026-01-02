@@ -11,35 +11,41 @@ import { AgendaService } from '../../../../core/services/agenda.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="week-view-container">
-      <!-- Encabezados -->
+      <!-- Encabezados de días clickeables -->
       <div class="week-header">
-        <div class="time-col-header"></div> <!-- Espacio para hora -->
-        <div class="day-col" *ngFor="let day of weekDays; let i = index">
+        <div class="day-col" 
+             *ngFor="let day of weekDays; let i = index"
+             [class.today]="isToday(day)"
+             [class.has-events]="getEventCount(day) > 0"
+             (click)="onDayClick(day)">
           <span class="day-name">{{ dayNames[i] }}</span>
           <span class="day-number">{{ day.getDate() }}</span>
           <div class="day-indicator" [class.active]="isToday(day)"></div>
+          @if (getEventCount(day) > 0) {
+            <span class="event-count">{{ getEventCount(day) }}</span>
+          }
         </div>
       </div>
 
+      <!-- Grid simplificado - celdas clickeables por hora -->
       <div class="week-grid-body">
-         <!-- Events Layer -->
-         <!-- Relative container where we place absolute events -->
-         <!-- Need to map Day Index (0-6) -> Left % -->
-         <!-- And Time -> Top px -->
-         
-         <div class="week-events-layer">
-            <div class="week-event" 
-                 *ngFor="let reg of weekRegistros()"
-                 [style]="getEventStyle(reg)">
-                 <span class="event-title">{{ reg.name }}</span>
-            </div>
-         </div>
+        <div class="hour-row" *ngFor="let hour of displayHours">
+          <div class="time-label">{{ hour }}:00</div>
+          <div class="day-cell" 
+               *ngFor="let day of weekDays"
+               [class.has-events]="hasEventsAtHour(day, hour)"
+               (click)="onDayClick(day)">
+            @if (hasEventsAtHour(day, hour)) {
+              <div class="event-dot"></div>
+            }
+          </div>
+        </div>
+      </div>
       
-         <!-- Grid lines -->
-         <div class="grid-row" *ngFor="let hour of hours">
-             <div class="time-label">{{ hour }}:00</div>
-             <div class="day-cell" *ngFor="let d of weekDays"></div>
-         </div>
+      <!-- Hint de interacción -->
+      <div class="interaction-hint">
+        <ion-icon name="hand-left-outline"></ion-icon>
+        Toca un día para ver detalles
       </div>
     </div>
   `,
@@ -48,37 +54,18 @@ import { AgendaService } from '../../../../core/services/agenda.service';
       display: flex;
       flex-direction: column;
       background: var(--ion-background-color);
-      border: var(--border-width-thin) solid var(--ion-border-color);
-      border-radius: var(--radius-xl);
+      border: 1px solid var(--ion-border-color);
+      border-radius: var(--radius-lg);
       box-shadow: var(--shadow-md);
       overflow: hidden;
-      height: 500px;
-    }
-    
-    @media (min-width: 768px) and (max-width: 1023px) {
-      .week-view-container {
-        height: 600px;
-      }
-    }
-    
-    @media (min-width: 1024px) {
-      .week-view-container {
-        height: 700px;
-      }
     }
 
     .week-header {
       display: grid;
-      grid-template-columns: var(--agenda-hour-label-width) repeat(7, 1fr);
-      border-bottom: var(--border-width-thin) solid var(--ion-border-color);
+      grid-template-columns: repeat(7, 1fr);
+      border-bottom: 2px solid var(--ion-color-primary);
       background: var(--ion-color-step-50);
       padding: var(--spacing-sm) 0;
-      flex-shrink: 0;
-    }
-    
-    .time-col-header { 
-      width: var(--agenda-hour-label-width); 
-      flex-shrink: 0;
     }
     
     .day-col {
@@ -87,103 +74,155 @@ import { AgendaService } from '../../../../core/services/agenda.service';
       align-items: center;
       justify-content: center;
       text-align: center;
+      padding: var(--spacing-sm);
+      cursor: pointer;
+      border-radius: var(--radius-md);
+      transition: all 0.2s ease;
       position: relative;
+      min-height: 70px;
+      
+      &:hover {
+        background: rgba(var(--ion-color-primary-rgb), 0.1);
+        transform: scale(1.02);
+      }
+      
+      &:active {
+        transform: scale(0.98);
+      }
+      
+      &.today {
+        background: rgba(var(--ion-color-primary-rgb), 0.15);
+        
+        .day-number {
+          color: var(--ion-color-primary);
+        }
+      }
+      
+      &.has-events {
+        .day-number {
+          font-weight: 800;
+        }
+      }
     }
     
     .day-name {
-      font-size: var(--font-size-xs);
+      font-size: 0.7rem;
       color: var(--ion-color-medium);
       text-transform: uppercase;
       font-weight: 600;
+      letter-spacing: 0.5px;
     }
     
     .day-number {
-      font-size: var(--font-size-h5);
+      font-size: 1.3rem;
       font-weight: 700;
       color: var(--ion-text-color);
+      margin-top: 2px;
     }
     
     .day-indicator {
-      width: 4px;
-      height: 4px;
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
       background: transparent;
       margin-top: 4px;
       
       &.active {
         background: var(--ion-color-primary);
-        transform: scale(1.5);
       }
     }
+    
+    .event-count {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      background: var(--ion-color-primary);
+      color: white;
+      font-size: 0.65rem;
+      font-weight: 700;
+      min-width: 18px;
+      height: 18px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 4px;
+    }
 
-    .week-events-layer {
-        position: absolute;
-        top: 0;
-        left: var(--agenda-hour-label-width);
-        right: 0;
-        bottom: 0;
-        z-index: 10;
-        pointer-events: none;
+    .week-grid-body {
+      flex: 1;
+      overflow-y: auto;
+      position: relative;
     }
     
-    .week-event {
-        position: absolute;
-        pointer-events: auto;
-        border-radius: var(--radius-sm);
-        padding: 2px 4px;
-        font-size: 10px;
-        overflow: hidden;
-        color: white;
-        background: var(--ion-color-primary); /* Default fallback */
-        border: 1px solid rgba(255,255,255,0.2);
-        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-        z-index: 1;
-        transition: transform 0.1s;
-        
-        &:hover {
-            z-index: 2;
-            transform: scale(1.02);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-        }
-        
-        .event-title {
-            font-weight: 600;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            line-height: 1.1;
-        }
-    }
-
-    .grid-row {
+    .hour-row {
       display: grid;
-      grid-template-columns: var(--agenda-hour-label-width) repeat(7, 1fr);
-      height: var(--agenda-hour-height); /* Dynamic height */
-      border-bottom: var(--border-width-thin) solid var(--ion-border-color);
-      transition: background var(--transition-fast);
-    }
-    
-    .grid-row:hover {
-      background: rgba(var(--ion-color-primary-rgb), 0.02);
+      grid-template-columns: 50px repeat(7, 1fr);
+      min-height: 40px;
+      border-bottom: 1px solid var(--ion-border-color);
     }
     
     .time-label {
-        font-size: var(--font-size-xs); 
-        font-weight: var(--font-weight-medium);
-        color: var(--ion-color-medium); 
-        text-align: center; 
-        margin-top: -6px;
-        font-variant-numeric: tabular-nums;
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: var(--ion-color-medium);
+      text-align: center;
+      padding-top: 4px;
+      background: var(--ion-color-step-50);
     }
     
-    .day-cell { 
-      border-right: var(--border-width-thin) solid var(--ion-border-color); 
-      opacity: 0.3;
-      transition: opacity var(--transition-fast);
+    .day-cell {
+      border-left: 1px solid var(--ion-border-color);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s ease;
+      
+      &:hover {
+        background: rgba(var(--ion-color-primary-rgb), 0.05);
+      }
+      
+      &.has-events {
+        background: rgba(var(--ion-color-primary-rgb), 0.08);
+      }
     }
     
-    .day-cell:hover {
-      opacity: 0.5;
+    .event-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--ion-color-primary);
+    }
+    
+    .interaction-hint {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--spacing-xs);
+      padding: var(--spacing-sm);
+      background: var(--ion-color-step-50);
+      color: var(--ion-color-medium);
+      font-size: 0.8rem;
+      border-top: 1px solid var(--ion-border-color);
+      
+      ion-icon {
+        font-size: 1rem;
+      }
+    }
+    
+    @media (min-width: 768px) {
+      .day-name {
+        font-size: 0.8rem;
+      }
+      
+      .day-number {
+        font-size: 1.5rem;
+      }
+      
+      .interaction-hint {
+        display: none;
+      }
     }
   `]
 })
@@ -196,19 +235,43 @@ export class WeekViewComponent implements OnChanges {
 
   dayNames = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
 
+  // Display hours from 6am to 10pm for a cleaner view
+  displayHours = Array.from({ length: 17 }, (_, i) => i + 6);
+
   // Base configuration - MUST MATCH CSS TOKENS
   // Mobile base: 60px height
   private readonly HOUR_HEIGHT = 60;
+
   onDayClick(day: Date) {
     this.daySelected.emit(day);
   }
-
-
 
   weekDays: Date[] = [];
   hours = Array.from({ length: 24 }, (_, i) => i);
 
   weekRegistros = signal<Registro[]>([]);
+
+  // Get count of events for a specific day
+  getEventCount(day: Date): number {
+    return this.weekRegistros().filter(r => {
+      if (!r.startTime) return false;
+      const d = new Date(r.startTime);
+      return d.getDate() === day.getDate() &&
+        d.getMonth() === day.getMonth() &&
+        d.getFullYear() === day.getFullYear();
+    }).length;
+  }
+
+  // Check if there are events at a specific hour for a day
+  hasEventsAtHour(day: Date, hour: number): boolean {
+    return this.weekRegistros().some(r => {
+      if (!r.startTime) return false;
+      const d = new Date(r.startTime);
+      return d.getDate() === day.getDate() &&
+        d.getMonth() === day.getMonth() &&
+        d.getHours() === hour;
+    });
+  }
 
   constructor() {
     this.generateWeek();
