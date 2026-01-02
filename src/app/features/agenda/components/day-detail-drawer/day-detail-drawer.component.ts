@@ -4,7 +4,7 @@ import { IonicModule, ModalController } from '@ionic/angular';
 import { Registro } from '../../../../models/registro.model';
 import { AgendaService } from '../../../../core/services/agenda.service';
 import { addIcons } from 'ionicons';
-import { chevronBack, chevronForward, closeOutline, calendarOutline, createOutline, trashOutline } from 'ionicons/icons';
+import { chevronBack, chevronForward, closeOutline, calendarOutline, createOutline, trashOutline, timeOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-day-detail-drawer',
@@ -187,6 +187,57 @@ import { chevronBack, chevronForward, closeOutline, calendarOutline, createOutli
         --padding-end: 12px;
       }
     }
+    
+    .registros-list {
+      padding: 0;
+    }
+    
+    .registro-item {
+      --padding-start: 0;
+      --inner-padding-end: 0;
+    }
+    
+    .registro-content {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: var(--spacing-md);
+      width: 100%;
+    }
+    
+    .registro-main {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .registro-name {
+      font-weight: 600;
+      font-size: 1rem;
+      color: var(--ion-text-color);
+      flex: 1;
+    }
+    
+    .registro-area {
+      font-size: 0.8rem;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: rgba(0,0,0,0.05);
+    }
+    
+    .registro-time {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      color: var(--ion-color-medium);
+      
+      ion-icon {
+        font-size: 1rem;
+      }
+    }
   `]
 })
 export class DayDetailDrawerComponent {
@@ -224,7 +275,7 @@ export class DayDetailDrawerComponent {
   });
 
   constructor() {
-    addIcons({ chevronBack, chevronForward, closeOutline, calendarOutline, createOutline, trashOutline });
+    addIcons({ chevronBack, chevronForward, closeOutline, calendarOutline, createOutline, trashOutline, timeOutline });
 
     // Initialize with input date
     effect(() => {
@@ -288,5 +339,15 @@ export class DayDetailDrawerComponent {
   deleteRegistro(registro: Registro, event: Event) {
     event.stopPropagation();
     this.agendaService.deleteRegistro(registro.id);
+  }
+
+  getAreaName(registro: Registro): string {
+    const area = this.agendaService.areas().find(a => a.id === registro.areaId);
+    return area?.name || 'Sin área';
+  }
+
+  getAreaColor(registro: Registro): string {
+    const area = this.agendaService.areas().find(a => a.id === registro.areaId);
+    return area?.color || 'var(--ion-color-medium)';
   }
 }
