@@ -261,6 +261,32 @@ export interface FilterState {
       }
     }
     
+    .display-options {
+      background: rgba(var(--ion-color-success-rgb), 0.05);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-sm);
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .option-toggle {
+      margin-top: var(--spacing-sm);
+    }
+    
+    .toggle-item {
+      --padding-start: 0;
+      --inner-padding-end: 0;
+      --background: transparent;
+      
+      ion-label {
+        font-size: 0.9rem;
+      }
+    }
+    
+    .free-time-icon {
+      color: var(--ion-color-success);
+      font-size: 1.3rem;
+    }
+    
     .filter-actions {
       margin-top: var(--spacing-lg);
       padding-top: var(--spacing-md);
@@ -299,6 +325,7 @@ export class AgendaFiltersComponent {
   private selectedAreas = signal<string[]>([]);
   private selectedContextos = signal<string[]>([]);
   private selectedTipos = signal<string[]>([]);
+  showFreeTime = signal<boolean>(false);
 
   isAreaSelected(id: string): boolean {
     return this.selectedAreas().includes(id);
@@ -330,16 +357,23 @@ export class AgendaFiltersComponent {
     );
   }
 
+  toggleFreeTime(event: any): void {
+    this.showFreeTime.set(event.detail.checked);
+    this.applyFilters();
+  }
+
   hasActiveFilters(): boolean {
     return this.selectedAreas().length > 0 ||
       this.selectedContextos().length > 0 ||
-      this.selectedTipos().length > 0;
+      this.selectedTipos().length > 0 ||
+      this.showFreeTime();
   }
 
   clearFilters(): void {
     this.selectedAreas.set([]);
     this.selectedContextos.set([]);
     this.selectedTipos.set([]);
+    this.showFreeTime.set(false);
     this.applyFilters();
   }
 
@@ -348,7 +382,8 @@ export class AgendaFiltersComponent {
       areaIds: this.selectedAreas(),
       contextoIds: this.selectedContextos(),
       tipoIds: this.selectedTipos(),
-      statusFilter: []
+      statusFilter: [],
+      showFreeTime: this.showFreeTime()
     });
   }
 }
