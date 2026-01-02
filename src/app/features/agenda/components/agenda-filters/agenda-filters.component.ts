@@ -97,10 +97,7 @@ export interface FilterState {
   `,
   styles: [`
     .filters-container {
-    .filters-container {
       padding: var(--spacing-sm);
-      background: var(--ion-background-color);
-    }
       background: var(--ion-background-color);
     }
     

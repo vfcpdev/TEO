@@ -148,7 +148,7 @@ export class SettingsPage implements OnInit, OnDestroy {
   // Módulos simplificados
   // Módulos simplificados
   modules = [
-    { id: 'agenda', title: 'Agenda', icon: 'calendar-outline', color: 'primary' },
+    { id: 'agenda', title: 'Registro', icon: 'calendar-outline', color: 'primary' },
     { id: 'profiles', title: 'Perfiles', icon: 'people-outline', color: 'secondary' },
     { id: 'design', title: 'Diseño', icon: 'color-palette-outline', color: 'medium' },
     { id: 'data', title: 'Datos', icon: 'server-outline', color: 'tertiary' },
