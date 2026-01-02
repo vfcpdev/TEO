@@ -114,8 +114,6 @@ export interface FilterState {
       
       h3 {
         margin: 0;
-      h3 {
-        margin: 0;
         font-size: var(--font-size-body);
         font-weight: var(--font-weight-bold);
         color: var(--ion-text-color);
@@ -131,13 +129,12 @@ export interface FilterState {
       margin-bottom: var(--spacing-lg);
       
       h4 {
-      h4 {
         display: flex;
         align-items: center;
         gap: var(--spacing-xs);
-        margin: 0 0 var(--spacing-xs) 0;
-        font-size: var(--font-size-small);
+        font-size: var(--font-size-body);
         font-weight: var(--font-weight-semibold);
+        margin-bottom: var(--spacing-sm);
         color: var(--ion-color-medium);
         text-transform: uppercase;
         letter-spacing: var(--letter-spacing-wide);
