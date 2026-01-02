@@ -234,6 +234,11 @@ export class HomePage implements OnInit, ViewWillEnter, OnDestroy {
       if (vista && ['agenda', 'dia', 'semana', 'mes'].includes(vista)) {
         this.vistaActual.set(vista as any);
       }
+
+      // Handle openFilters param from sidebar
+      if (params['openFilters'] === 'true') {
+        this.showFilters.set(true);
+      }
     });
 
     // Iniciar reloj optimizado fuera de Zone para no saturar la detección de cambios
