@@ -28,12 +28,21 @@
                 <ion-label>Usuario</ion-label>
               </ion-item>
             </ion-menu-toggle>
-            <ion-menu-toggle [autoHide]="false">
-              <ion-item button class="submenu-item" (click)="openFilters()">
-                <ion-icon slot="start" name="funnel-outline" color="primary"></ion-icon>
-                <ion-label>Filtros</ion-label>
-              </ion-item>
-            </ion-menu-toggle>
+          </ion-item-group>
+
+          <!-- Filtros Panel Colapsable -->
+          <ion-item-group>
+            <ion-item-divider button (click)="toggleFiltersPanel()">
+              <ion-icon slot="start" name="funnel-outline" color="primary"></ion-icon>
+              <ion-label>Filtros</ion-label>
+              <ion-icon slot="end" [name]="showFiltersPanel ? 'chevron-up' : 'chevron-down'"></ion-icon>
+            </ion-item-divider>
+
+            @if (showFiltersPanel) {
+            <div class="sidebar-filters-container">
+              <app-agenda-filters (filtersChanged)="onFiltersChanged($event)"></app-agenda-filters>
+            </div>
+            }
           </ion-item-group>
         </ion-list>
       </ion-content>

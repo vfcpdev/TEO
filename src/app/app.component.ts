@@ -37,7 +37,9 @@ import {
   moon,
   sunny,
   colorPalette,
-  funnelOutline
+  funnelOutline,
+  chevronUp,
+  chevronDown
 } from 'ionicons/icons';
 import { MENU_ITEMS, MenuItem } from './shared/constants/menu-items';
 import { Preferences } from '@capacitor/preferences';
@@ -50,6 +52,7 @@ import { SettingsService } from './core/services/settings.service';
 import { ThemePopoverComponent } from './features/settings/components/theme-popover/theme-popover.component';
 import { THEMES } from './core/constants/themes';
 import { SyncStatusComponent } from './shared/components/sync-status/sync-status.component';
+import { AgendaFiltersComponent, FilterState } from './features/agenda/components/agenda-filters/agenda-filters.component';
 
 @Component({
   selector: 'app-root',
@@ -73,7 +76,8 @@ import { SyncStatusComponent } from './shared/components/sync-status/sync-status
     RouterLink,
     FormsModule,
     FormsModule,
-    SyncStatusComponent
+    SyncStatusComponent,
+    AgendaFiltersComponent
   ],
 })
 
@@ -88,6 +92,8 @@ export class AppComponent implements OnInit {
   private readonly keyboardShortcuts = inject(KeyboardShortcutsService);
 
   menuItems: MenuItem[] = MENU_ITEMS;
+  showFiltersPanel = false;
+  private currentFilters: FilterState | null = null;
 
   constructor() {
     addIcons({
@@ -107,7 +113,9 @@ export class AppComponent implements OnInit {
       moon,
       sunny,
       colorPalette,
-      funnelOutline
+      funnelOutline,
+      chevronUp,
+      chevronDown
     });
   }
 
@@ -157,6 +165,20 @@ export class AppComponent implements OnInit {
   openFilters() {
     // Navigate to home with filters query param
     this.router.navigate(['/home'], { queryParams: { openFilters: true } });
+  }
+
+  toggleFiltersPanel() {
+    this.showFiltersPanel = !this.showFiltersPanel;
+  }
+
+  onFiltersChanged(filters: FilterState) {
+    this.currentFilters = filters;
+    // Navigate to home and apply filters
+    this.router.navigate(['/home'], {
+      queryParams: {
+        filters: JSON.stringify(filters)
+      }
+    });
   }
 
   async showAboutModal() {

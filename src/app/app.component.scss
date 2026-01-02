@@ -439,3 +439,58 @@ ion-menu ion-label {
     font-weight: 500;
   }
 }
+
+// ==========================================
+// SIDEBAR FILTERS CONTAINER
+// ==========================================
+.sidebar-filters-container {
+  padding: 0 8px 16px;
+  animation: slideDown 0.3s ease;
+  max-height: 60vh;
+  overflow-y: auto;
+
+  app-agenda-filters {
+    display: block;
+
+    .filters-container {
+      padding: 8px;
+      border-radius: 8px;
+      background: var(--ion-color-step-50);
+    }
+
+    .filters-header {
+      padding: 8px;
+
+      h3 {
+        font-size: 0.9rem;
+      }
+    }
+
+    .filter-section {
+      padding: 8px;
+
+      h4 {
+        font-size: 0.8rem;
+        margin-bottom: 8px;
+      }
+    }
+
+    .chips-container {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+    }
+
+    ion-chip {
+      min-height: 36px;
+      font-size: 0.75rem;
+    }
+
+    .filter-actions {
+      padding: 8px;
+
+      ion-button {
+        font-size: 0.85rem;
+      }
+    }
+  }
+}
