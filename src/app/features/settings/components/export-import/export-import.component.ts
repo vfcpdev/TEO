@@ -560,15 +560,21 @@ export class ExportImportComponent {
   async clearTestData() {
     try {
       const current = this.agendaService.registros();
-      const testCount = current.filter(r => r.id.startsWith('test-registro-')).length;
+      const testRegistros = current.filter(r => r.id.startsWith('test-registro-'));
+      const testCount = testRegistros.length;
 
       if (testCount === 0) {
         await this.toastService.warning('No hay datos de prueba para eliminar');
         return;
       }
 
-      await this.toastService.warning(
-        `🗑️ ${testCount} registros de prueba identificados`
+      // Delete each test registro
+      testRegistros.forEach(registro => {
+        this.agendaService.deleteRegistro(registro.id);
+      });
+
+      await this.toastService.success(
+        `🗑️ ${testCount} registros de prueba eliminados`
       );
     } catch (error) {
       await this.toastService.error('Error al limpiar datos de prueba');

@@ -4,7 +4,7 @@ import { IonicModule, ModalController } from '@ionic/angular';
 import { Registro } from '../../../../models/registro.model';
 import { AgendaService } from '../../../../core/services/agenda.service';
 import { addIcons } from 'ionicons';
-import { chevronBack, chevronForward, closeOutline, calendarOutline } from 'ionicons/icons';
+import { chevronBack, chevronForward, closeOutline, calendarOutline, createOutline, trashOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-day-detail-drawer',
@@ -40,7 +40,7 @@ import { chevronBack, chevronForward, closeOutline, calendarOutline } from 'ioni
       } @else {
         <div class="registros-container">
           @for (registro of dayRegistros(); track registro.id) {
-            <ion-card class="registro-card" (click)="onRegistroClick(registro)">
+            <ion-card class="registro-card">
               <ion-card-header>
                 <div class="card-header-content">
                   <ion-card-title>{{ registro.name }}</ion-card-title>
@@ -65,6 +65,16 @@ import { chevronBack, chevronForward, closeOutline, calendarOutline } from 'ioni
                       <span>{{ registro.notes }}</span>
                     </div>
                   }
+                </div>
+                <div class="card-actions">
+                  <ion-button fill="outline" size="small" color="primary" (click)="editRegistro(registro, $event)">
+                    <ion-icon name="create-outline" slot="start"></ion-icon>
+                    Editar
+                  </ion-button>
+                  <ion-button fill="outline" size="small" color="danger" (click)="deleteRegistro(registro, $event)">
+                    <ion-icon name="trash-outline" slot="start"></ion-icon>
+                    Eliminar
+                  </ion-button>
                 </div>
               </ion-card-content>
             </ion-card>
@@ -177,6 +187,20 @@ import { chevronBack, chevronForward, closeOutline, calendarOutline } from 'ioni
         }
       }
     }
+    .card-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--ion-border-color);
+      justify-content: flex-end;
+
+      ion-button {
+        margin: 0;
+        --padding-start: 12px;
+        --padding-end: 12px;
+      }
+    }
   `]
 })
 export class DayDetailDrawerComponent {
@@ -214,7 +238,7 @@ export class DayDetailDrawerComponent {
   });
 
   constructor() {
-    addIcons({ chevronBack, chevronForward, closeOutline, calendarOutline });
+    addIcons({ chevronBack, chevronForward, closeOutline, calendarOutline, createOutline, trashOutline });
 
     // Initialize with input date
     effect(() => {
@@ -268,5 +292,15 @@ export class DayDetailDrawerComponent {
       case 'cancelado': return 'danger';
       default: return 'medium';
     }
+  }
+
+  editRegistro(registro: Registro, event: Event) {
+    event.stopPropagation();
+    this.modalCtrl.dismiss({ registro, action: 'edit' });
+  }
+
+  deleteRegistro(registro: Registro, event: Event) {
+    event.stopPropagation();
+    this.agendaService.deleteRegistro(registro.id);
   }
 }
