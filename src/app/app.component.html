@@ -28,6 +28,12 @@
                 <ion-label>Usuario</ion-label>
               </ion-item>
             </ion-menu-toggle>
+            <ion-menu-toggle [autoHide]="false">
+              <ion-item button class="submenu-item" (click)="openFilters()">
+                <ion-icon slot="start" name="funnel-outline" color="primary"></ion-icon>
+                <ion-label>Filtros</ion-label>
+              </ion-item>
+            </ion-menu-toggle>
           </ion-item-group>
         </ion-list>
       </ion-content>

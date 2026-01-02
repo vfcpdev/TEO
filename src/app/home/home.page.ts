@@ -403,9 +403,11 @@ export class HomePage implements OnInit, ViewWillEnter, OnDestroy {
       componentProps: {
         date: date
       },
-      initialBreakpoint: 0.5,
+      initialBreakpoint: 0.75,
       breakpoints: [0, 0.5, 0.75, 1],
-      cssClass: 'day-drawer-modal'
+      cssClass: 'day-drawer-modal',
+      handle: true,
+      handleBehavior: 'cycle'
     });
     await modal.present();
 

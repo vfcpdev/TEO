@@ -36,7 +36,8 @@ import {
   constructOutline,
   moon,
   sunny,
-  colorPalette
+  colorPalette,
+  funnelOutline
 } from 'ionicons/icons';
 import { MENU_ITEMS, MenuItem } from './shared/constants/menu-items';
 import { Preferences } from '@capacitor/preferences';
@@ -105,7 +106,8 @@ export class AppComponent implements OnInit {
       constructOutline,
       moon,
       sunny,
-      colorPalette
+      colorPalette,
+      funnelOutline
     });
   }
 
@@ -150,6 +152,11 @@ export class AppComponent implements OnInit {
   async logout() {
     await Preferences.remove({ key: 'userName' });
     this.router.navigate(['/login']);
+  }
+
+  openFilters() {
+    // Navigate to home with filters query param
+    this.router.navigate(['/home'], { queryParams: { openFilters: true } });
   }
 
   async showAboutModal() {
