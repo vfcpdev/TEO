@@ -153,9 +153,7 @@ export class AppComponent implements OnInit {
     this.router.navigate(['/home'], { queryParams: { vista } });
   }
 
-  navigateToProfile() {
-    this.router.navigate(['/profile']);
-  }
+
 
   async logout() {
     await Preferences.remove({ key: 'userName' });

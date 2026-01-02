@@ -64,6 +64,7 @@ import { Registro } from '../models/registro.model';
 import { SettingsService } from '../core/services/settings.service';
 import { TestDataService } from '../core/services/test-data.service';
 
+
 import { DayViewComponent } from '../features/agenda/components/day-view/day-view.component';
 import { WeekViewComponent } from '../features/agenda/components/week-view/week-view.component';
 import { MonthViewComponent } from '../features/agenda/components/month-view/month-view.component';
@@ -122,7 +123,6 @@ export interface TimelineItem {
     DayViewComponent,
     WeekViewComponent,
     MonthViewComponent,
-    AgendaFiltersComponent,
     AgendaSearchComponent,
     ReportsComponent
   ],
@@ -189,6 +189,7 @@ export class HomePage implements OnInit, ViewWillEnter, OnDestroy {
 
   // Filtros y búsqueda
   showFilters = signal(false);
+  showSearchOverlay = signal(false);
   activeFilters = signal<FilterState | null>(null);
 
   registrosFiltrados = computed(() => {
@@ -225,7 +226,7 @@ export class HomePage implements OnInit, ViewWillEnter, OnDestroy {
   today = new Date();
 
   constructor() {
-    addIcons({ funnel, add, timeOutline, constructOutline, todayOutline, calendarOutline, calendarNumberOutline, chevronForwardOutline, homeOutline, personOutline, settingsOutline, calendar, personCircleOutline, informationCircleOutline, logOutOutline, checkmarkCircle, create, search, trashOutline, createOutline, checkboxOutline, closeOutline, swapHorizontalOutline, closeCircleOutline });
+    addIcons({ search, add, closeOutline, timeOutline, constructOutline, funnel, todayOutline, calendarOutline, calendarNumberOutline, chevronForwardOutline, homeOutline, personOutline, settingsOutline, calendar, personCircleOutline, informationCircleOutline, logOutOutline, checkmarkCircle, create, trashOutline, createOutline, checkboxOutline, swapHorizontalOutline, closeCircleOutline });
   }
 
   async ngOnInit() {
@@ -299,10 +300,6 @@ export class HomePage implements OnInit, ViewWillEnter, OnDestroy {
     return [];
   }
 
-  editarRegistro(registro: Registro) {
-    console.log('Edit', registro);
-  }
-
   formatDateWithTime(date: any): string {
     return date ? new Date(date).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) : '';
   }
@@ -356,6 +353,14 @@ export class HomePage implements OnInit, ViewWillEnter, OnDestroy {
   // Filters and Search
   toggleFilters() {
     this.showFilters.update(v => !v);
+  }
+
+  toggleSearch() {
+    this.showSearchOverlay.update(v => !v);
+  }
+
+  closeSearch() {
+    this.showSearchOverlay.set(false);
   }
 
   applyFilters(filters: FilterState) {
@@ -498,6 +503,46 @@ export class HomePage implements OnInit, ViewWillEnter, OnDestroy {
       }
     } catch (error) {
       console.error('[ERROR] Failed to schedule registro:', error);
+    }
+  }
+
+  async editarRegistro(registro: Registro) {
+    try {
+      const modal = await this.modalController.create({
+        component: AgendarWizardComponent,
+        componentProps: {
+          registro: registro
+        },
+        cssClass: 'agendar-wizard-modal'
+      });
+
+      await modal.present();
+
+      const { data } = await modal.onWillDismiss();
+
+      if (data) {
+        this.agendaService.updateRegistro({
+          ...registro,
+          name: data.nombre,
+          startTime: new Date(data.fechaInicio),
+          endTime: new Date(data.fechaFin),
+          areaId: data.areaIds[0],
+          contextoId: data.contextoIds[0],
+          reminderEnabled: data.reminderEnabled,
+          reminderTime: data.reminderTime,
+          updatedAt: new Date()
+        });
+
+        const toast = await this.toastController.create({
+          message: `Registro "${data.nombre}" actualizado`,
+          duration: 2000,
+          color: 'primary',
+          position: 'bottom'
+        });
+        await toast.present();
+      }
+    } catch (error) {
+      console.error('[ERROR] Failed to edit registro:', error);
     }
   }
 }

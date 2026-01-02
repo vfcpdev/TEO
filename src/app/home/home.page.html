@@ -43,36 +43,38 @@
       </ion-segment-button>
     </ion-segment>
   </ion-toolbar>
-
-  <!-- Search and Filters Toolbar -->
-  <ion-toolbar class="search-toolbar">
-    <div class="search-filters-container">
-      <div class="search-wrapper">
-        <app-agenda-search (resultSelected)="onSearchResultSelected($event)"></app-agenda-search>
-      </div>
-      <ion-buttons slot="end">
-        <ion-button (click)="toggleFilters()" [color]="showFilters() ? 'primary' : 'medium'">
-          <ion-icon slot="icon-only" name="funnel"></ion-icon>
-        </ion-button>
-      </ion-buttons>
-    </div>
-  </ion-toolbar>
-
-  <!-- Filters Panel (Collapsible) -->
-  @if (showFilters()) {
-  <div class="filters-panel">
-    <app-agenda-filters (filtersChanged)="applyFilters($event)"></app-agenda-filters>
-  </div>
-  }
 </ion-header>
 
 <ion-content>
-  <!-- FAB Add Button (Relocated to Top Right) -->
-  <ion-fab vertical="top" horizontal="end" slot="fixed" class="fab-top-right">
-    <ion-fab-button (click)="openFabOptions()" color="success">
-      <ion-icon name="add"></ion-icon>
-    </ion-fab-button>
+  <!-- FAB Add Button -->
+  <!-- FAB Group (Search and Add) -->
+  <!-- FAB Group (Search and Add) -->
+  <ion-fab vertical="top" horizontal="end" slot="fixed" class="main-fab-group">
+    <div class="fabs-wrapper">
+      <ion-fab-button (click)="toggleSearch()" color="primary">
+        <ion-icon name="search"></ion-icon>
+      </ion-fab-button>
+      <ion-fab-button (click)="openFabOptions()" color="success">
+        <ion-icon name="add"></ion-icon>
+      </ion-fab-button>
+    </div>
   </ion-fab>
+
+  <!-- Search Modal/Overlay -->
+  @if (showSearchOverlay()) {
+  <div class="search-overlay" (click)="closeSearch()">
+    <div class="search-modal" (click)="$event.stopPropagation()">
+      <div class="search-header">
+        <ion-icon name="search" color="primary"></ion-icon>
+        <h3>Buscar en Agenda</h3>
+        <ion-button fill="clear" (click)="closeSearch()">
+          <ion-icon name="close" slot="icon-only"></ion-icon>
+        </ion-button>
+      </div>
+      <app-agenda-search (resultSelected)="onSearchResultSelected($event)"></app-agenda-search>
+    </div>
+  </div>
+  }
 
   <div class="agenda-container">
 

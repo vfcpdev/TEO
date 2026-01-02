@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, Input, effect } from '@angular/core';
 import { ModalController } from '@ionic/angular/standalone';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonFooter,
@@ -11,6 +11,7 @@ import { AgendaService } from '../../../core/services/agenda.service';
 import { addIcons } from 'ionicons';
 import { folderOutline, folderOpenOutline, documentOutline, calendarOutline, timeOutline, checkmarkCircle, notificationsOutline, alarmOutline } from 'ionicons/icons';
 import { DateTimePickerModalComponent } from '../date-time-picker-modal/date-time-picker-modal.component';
+import { Registro } from '../../../models/registro.model';
 
 interface TreeNode {
   id: string;
@@ -272,6 +273,7 @@ interface TreeNode {
 export class AgendarWizardComponent {
   private modalCtrl = inject(ModalController);
   private agendaService = inject(AgendaService);
+  @Input() registro?: Registro;
 
   nombreRegistro = '';
   fechaInicio: string = '';
@@ -286,14 +288,44 @@ export class AgendarWizardComponent {
     addIcons({ folderOutline, folderOpenOutline, documentOutline, calendarOutline, timeOutline, checkmarkCircle, notificationsOutline, alarmOutline });
     this.loadTreeData();
 
-    // Initialize defaults if needed
-    const now = new Date();
-    now.setMinutes(0, 0, 0); // Round to hour
-    this.fechaInicio = now.toISOString();
+    // Initialize with input date or registro values
+    effect(() => {
+      if (this.registro) {
+        this.nombreRegistro = this.registro.name;
+        this.fechaInicio = this.registro.startTime ? new Date(this.registro.startTime).toISOString() : '';
+        this.fechaFin = this.registro.endTime ? new Date(this.registro.endTime).toISOString() : '';
+        this.reminderEnabled = !!this.registro.reminderEnabled;
+        this.reminderTime = this.registro.reminderTime || 15;
 
-    const end = new Date(now);
-    end.setHours(end.getHours() + 1);
-    this.fechaFin = end.toISOString();
+        // Match tree nodes selection
+        this.treeNodes.update(nodes => {
+          return nodes.map(node => {
+            if (this.registro?.areaId === node.id) {
+              node.selected = true;
+              node.expanded = true;
+            }
+            if (node.children) {
+              node.children.forEach(child => {
+                if (this.registro?.contextoId === child.id) {
+                  child.selected = true;
+                  node.expanded = true;
+                }
+              });
+            }
+            return node;
+          });
+        });
+      } else {
+        // Initialize defaults for new record
+        const now = new Date();
+        now.setMinutes(0, 0, 0);
+        this.fechaInicio = now.toISOString();
+
+        const end = new Date(now);
+        end.setHours(end.getHours() + 1);
+        this.fechaFin = end.toISOString();
+      }
+    });
   }
 
   private loadTreeData() {
