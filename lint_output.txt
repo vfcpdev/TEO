@@ -1,73 +1,31 @@
 
-> teo@1.0.0 lint
-> ng lint
+> teo@3.6.3 lint
+> nx lint
 
+
+> nx run app:lint
 
 Linting "app"...
+[0m[0m
+[0m[4mD:\TEO\src\app\features\agenda\components\day-view\day-view.component.ts[24m[0m
+[0m  [2m274:3[22m  [33mwarning[39m  Lifecycle interface 'OnInit' should be implemented for method 'ngOnInit'. (https://angular.dev/style-guide#use-lifecycle-hook-interfaces)                [2m@angular-eslint/use-lifecycle-interface[22m[0m
+[0m  [2m281:3[22m  [33mwarning[39m  Lifecycle interface 'AfterViewInit' should be implemented for method 'ngAfterViewInit'. (https://angular.dev/style-guide#use-lifecycle-hook-interfaces)  [2m@angular-eslint/use-lifecycle-interface[22m[0m
+[0m  [2m302:3[22m  [33mwarning[39m  Lifecycle interface 'OnDestroy' should be implemented for method 'ngOnDestroy'. (https://angular.dev/style-guide#use-lifecycle-hook-interfaces)          [2m@angular-eslint/use-lifecycle-interface[22m[0m
+[0m[0m
+[0m[33m[1m✖ 3 problems (0 errors, 3 warnings)[22m[39m[0m
+[0m[33m[1m[22m[39m[33m[1m  0 errors and 3 warnings potentially fixable with the `--fix` option.[22m[39m[0m
+[0m[33m[1m[22m[39m[0m
 
-D:\CLASSAPP\src\app\core\handlers\global-error.handler.ts
-   8:9  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
-   9:9  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
-  10:9  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
 
-D:\CLASSAPP\src\app\core\services\auth.service.ts
-  21:15  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
 
-D:\CLASSAPP\src\app\core\services\firestore-control.service.ts
-  18:15  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
+ NX   Successfully ran target lint for project app
 
-D:\CLASSAPP\src\app\data\repositories\attendance.repository.ts
-  12:15  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
 
-D:\CLASSAPP\src\app\data\repositories\base.repository.ts
-  27:15  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
 
-D:\CLASSAPP\src\app\data\repositories\bonus.repository.ts
-  12:15  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
+ NX   Nx Cloud wasn't able to store artifacts to the remote cache.
 
-D:\CLASSAPP\src\app\data\repositories\course-local.repository.ts
-  41:15  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
 
-D:\CLASSAPP\src\app\data\repositories\course.repository.ts
-  12:15  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
+ NX   Nx Cloud encountered some problems
 
-D:\CLASSAPP\src\app\data\repositories\place-local.repository.ts
-  30:15  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
-
-D:\CLASSAPP\src\app\data\repositories\place.repository.ts
-  12:15  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
-
-D:\CLASSAPP\src\app\data\repositories\student.repository.ts
-  12:15  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
-
-D:\CLASSAPP\src\app\data\repositories\topic.repository.ts
-  12:15  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
-
-D:\CLASSAPP\src\app\features\agenda\components\registros-dashboard\registros-dashboard.component.ts
-  229:5  error  Lifecycle methods should not be empty  @angular-eslint/no-empty-lifecycle-method
-
-D:\CLASSAPP\src\app\features\courses\services\course.service.ts
-  13:5  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
-  14:5  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
-
-D:\CLASSAPP\src\app\features\places\services\place.service.ts
-  10:15  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
-
-D:\CLASSAPP\src\app\features\profile\pages\profile\profile.page.ts
-  65:5  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
-  66:5  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
-
-D:\CLASSAPP\src\app\features\settings\components\profile-settings\profile-settings.component.ts
-  251:3  error  Lifecycle methods should not be empty  @angular-eslint/no-empty-lifecycle-method
-
-D:\CLASSAPP\src\app\features\students\components\student-xls-import-example.component.ts
-  140:9  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
-  141:9  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
-  142:9  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
-  143:9  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
-
-D:\CLASSAPP\src\app\features\students\services\student.service.ts
-  10:15  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
-
-✖ 26 problems (26 errors, 0 warnings)
+This workspace is more than three days old and is not connected. Workspaces must be connected within 3 days of creation. Claim your workspace at https://cloud.nx.app. (code: 401)
 

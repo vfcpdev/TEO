@@ -4,17 +4,17 @@ import { IonicModule } from '@ionic/angular';
 import { AgendaService } from '../../../../core/services/agenda.service';
 
 export interface FilterState {
-    areaIds: string[];
-    contextoIds: string[];
-    tipoIds: string[];
-    statusFilter: string[];
+  areaIds: string[];
+  contextoIds: string[];
+  tipoIds: string[];
+  statusFilter: string[];
 }
 
 @Component({
-    selector: 'app-agenda-filters',
-    standalone: true,
-    imports: [CommonModule, IonicModule],
-    template: `
+  selector: 'app-agenda-filters',
+  standalone: true,
+  imports: [CommonModule, IonicModule],
+  template: `
     <div class="filters-container">
       <div class="filters-header">
         <h3>Filtros</h3>
@@ -95,9 +95,12 @@ export interface FilterState {
       </div>
     </div>
   `,
-    styles: [`
+  styles: [`
     .filters-container {
-      padding: var(--spacing-lg);
+    .filters-container {
+      padding: var(--spacing-md);
+      background: var(--ion-background-color);
+    }
       background: var(--ion-background-color);
     }
     
@@ -105,13 +108,15 @@ export interface FilterState {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: var(--spacing-xl);
-      padding-bottom: var(--spacing-md);
+      margin-bottom: var(--spacing-md);
+      padding-bottom: var(--spacing-sm);
       border-bottom: var(--border-width-thin) solid var(--ion-border-color);
       
       h3 {
         margin: 0;
-        font-size: var(--font-size-h3);
+      h3 {
+        margin: 0;
+        font-size: var(--font-size-h5);
         font-weight: var(--font-weight-bold);
         color: var(--ion-text-color);
       }
@@ -123,13 +128,14 @@ export interface FilterState {
     }
     
     .filter-section {
-      margin-bottom: var(--spacing-2xl);
+      margin-bottom: var(--spacing-lg);
       
+      h4 {
       h4 {
         display: flex;
         align-items: center;
         gap: var(--spacing-sm);
-        margin: 0 0 var(--spacing-md) 0;
+        margin: 0 0 var(--spacing-sm) 0;
         font-size: var(--font-size-body);
         font-weight: var(--font-weight-semibold);
         color: var(--ion-color-medium);
@@ -155,6 +161,8 @@ export interface FilterState {
       transition: all var(--transition-fast);
       border: 2px solid transparent;
       margin: 0;
+      height: 28px;
+      font-size: var(--font-size-small);
       
       &:hover {
         transform: translateY(-2px);
@@ -189,8 +197,8 @@ export interface FilterState {
     }
     
     .filter-actions {
-      margin-top: var(--spacing-3xl);
-      padding-top: var(--spacing-lg);
+      margin-top: var(--spacing-xl);
+      padding-top: var(--spacing-md);
       border-top: var(--border-width-thin) solid var(--ion-border-color);
       
       ion-button {
@@ -211,63 +219,63 @@ export interface FilterState {
   `]
 })
 export class AgendaFiltersComponent {
-    readonly agendaService = inject(AgendaService);
+  readonly agendaService = inject(AgendaService);
 
-    @Output() filtersChanged = new EventEmitter<FilterState>();
+  @Output() filtersChanged = new EventEmitter<FilterState>();
 
-    private selectedAreas = signal<string[]>([]);
-    private selectedContextos = signal<string[]>([]);
-    private selectedTipos = signal<string[]>([]);
+  private selectedAreas = signal<string[]>([]);
+  private selectedContextos = signal<string[]>([]);
+  private selectedTipos = signal<string[]>([]);
 
-    isAreaSelected(id: string): boolean {
-        return this.selectedAreas().includes(id);
-    }
+  isAreaSelected(id: string): boolean {
+    return this.selectedAreas().includes(id);
+  }
 
-    isContextoSelected(id: string): boolean {
-        return this.selectedContextos().includes(id);
-    }
+  isContextoSelected(id: string): boolean {
+    return this.selectedContextos().includes(id);
+  }
 
-    isTipoSelected(id: string): boolean {
-        return this.selectedTipos().includes(id);
-    }
+  isTipoSelected(id: string): boolean {
+    return this.selectedTipos().includes(id);
+  }
 
-    toggleArea(id: string): void {
-        this.selectedAreas.update(areas =>
-            areas.includes(id) ? areas.filter(a => a !== id) : [...areas, id]
-        );
-    }
+  toggleArea(id: string): void {
+    this.selectedAreas.update(areas =>
+      areas.includes(id) ? areas.filter(a => a !== id) : [...areas, id]
+    );
+  }
 
-    toggleContexto(id: string): void {
-        this.selectedContextos.update(contextos =>
-            contextos.includes(id) ? contextos.filter(c => c !== id) : [...contextos, id]
-        );
-    }
+  toggleContexto(id: string): void {
+    this.selectedContextos.update(contextos =>
+      contextos.includes(id) ? contextos.filter(c => c !== id) : [...contextos, id]
+    );
+  }
 
-    toggleTipo(id: string): void {
-        this.selectedTipos.update(tipos =>
-            tipos.includes(id) ? tipos.filter(t => t !== id) : [...tipos, id]
-        );
-    }
+  toggleTipo(id: string): void {
+    this.selectedTipos.update(tipos =>
+      tipos.includes(id) ? tipos.filter(t => t !== id) : [...tipos, id]
+    );
+  }
 
-    hasActiveFilters(): boolean {
-        return this.selectedAreas().length > 0 ||
-            this.selectedContextos().length > 0 ||
-            this.selectedTipos().length > 0;
-    }
+  hasActiveFilters(): boolean {
+    return this.selectedAreas().length > 0 ||
+      this.selectedContextos().length > 0 ||
+      this.selectedTipos().length > 0;
+  }
 
-    clearFilters(): void {
-        this.selectedAreas.set([]);
-        this.selectedContextos.set([]);
-        this.selectedTipos.set([]);
-        this.applyFilters();
-    }
+  clearFilters(): void {
+    this.selectedAreas.set([]);
+    this.selectedContextos.set([]);
+    this.selectedTipos.set([]);
+    this.applyFilters();
+  }
 
-    applyFilters(): void {
-        this.filtersChanged.emit({
-            areaIds: this.selectedAreas(),
-            contextoIds: this.selectedContextos(),
-            tipoIds: this.selectedTipos(),
-            statusFilter: []
-        });
-    }
+  applyFilters(): void {
+    this.filtersChanged.emit({
+      areaIds: this.selectedAreas(),
+      contextoIds: this.selectedContextos(),
+      tipoIds: this.selectedTipos(),
+      statusFilter: []
+    });
+  }
 }

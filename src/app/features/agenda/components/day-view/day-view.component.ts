@@ -1,4 +1,4 @@
-import { Component, Input, computed, signal, ChangeDetectionStrategy, OnChanges, SimpleChanges, effect, ElementRef, AfterViewInit, ViewChild, inject } from '@angular/core';
+import { Component, Input, computed, signal, ChangeDetectionStrategy, OnChanges, SimpleChanges, effect, ElementRef, AfterViewInit, ViewChild, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { Registro } from '../../../../models/registro.model';
@@ -208,7 +208,7 @@ import { ToastService } from '../../../../core/services/toast.service';
     }
   `]
 })
-export class DayViewComponent implements OnChanges {
+export class DayViewComponent implements OnChanges, OnInit, AfterViewInit, OnDestroy {
   @Input() registros: Registro[] = [];
   @Input() currentDate: Date = new Date();
 

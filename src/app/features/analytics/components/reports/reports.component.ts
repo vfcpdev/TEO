@@ -1,6 +1,6 @@
 import { Component, inject, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonContent, IonCard, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonGrid, IonRow, IonCol, IonSegment, IonSegmentButton, IonLabel, IonIcon, IonProgressBar, IonButton, ToastController } from '@ionic/angular/standalone';
+import { IonCard, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonGrid, IonRow, IonCol, IonSegment, IonSegmentButton, IonLabel, IonIcon, IonProgressBar, IonButton, ToastController } from '@ionic/angular/standalone';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
 import { AgendaService } from '../../../../core/services/agenda.service';
 import { addIcons } from 'ionicons';
@@ -10,8 +10,7 @@ import { pieChartOutline, timeOutline, checkmarkDoneOutline, ribbonOutline, down
   selector: 'app-reports',
   standalone: true,
   template: `
-    <ion-content class="ion-padding">
-      <div class="reports-container">
+    <div class="reports-container">
         <!-- Header with Export -->
         <div class="reports-header">
             <ion-segment [value]="selectedRange()" (ionChange)="onRangeChange($event)" class="range-selector">
@@ -116,20 +115,22 @@ import { pieChartOutline, timeOutline, checkmarkDoneOutline, ribbonOutline, down
           </ion-card-content>
         </ion-card>
 
-      </div>
-    </ion-content>
+    </div>
   `,
   styles: [`
     .reports-container {
-      max-width: 800px;
+      max-width: 1000px;
       margin: 0 auto;
+      padding: 0 var(--spacing-sm);
     }
     
     .reports-header {
         display: flex;
         align-items: center;
-        gap: 8px;
-        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-md);
+        margin-bottom: var(--spacing-md);
     }
 
     .range-selector {
@@ -237,7 +238,7 @@ import { pieChartOutline, timeOutline, checkmarkDoneOutline, ribbonOutline, down
         font-weight: bold;
     }
   `],
-  imports: [CommonModule, IonContent, IonCard, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonGrid, IonRow, IonCol, IonSegment, IonSegmentButton, IonLabel, IonIcon, IonProgressBar, IonButton]
+  imports: [CommonModule, IonCard, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCardContent, IonGrid, IonRow, IonCol, IonSegment, IonSegmentButton, IonLabel, IonIcon, IonProgressBar, IonButton]
 })
 export class ReportsComponent {
   private analyticsService = inject(AnalyticsService);

@@ -69,7 +69,7 @@ import { AgendaService } from '../../../../core/services/agenda.service';
 
     .week-header {
       display: grid;
-      grid-template-columns: 50px repeat(7, 1fr);
+      grid-template-columns: var(--agenda-hour-label-width) repeat(7, 1fr);
       border-bottom: var(--border-width-thin) solid var(--ion-border-color);
       background: var(--ion-color-step-50);
       padding: var(--spacing-sm) 0;
@@ -77,112 +77,27 @@ import { AgendaService } from '../../../../core/services/agenda.service';
     }
     
     .time-col-header { 
-      width: 50px; 
+      width: var(--agenda-hour-label-width); 
     }
 
-    .day-col {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: var(--spacing-xs);
-      font-size: var(--font-size-xs);
-      padding: var(--spacing-xs);
-      transition: background var(--transition-fast);
-    }
-    
-    .day-col:hover {
-      background: var(--ion-color-step-100);
-    }
-    
-    .day-name { 
-      font-weight: var(--font-weight-semibold); 
-      color: var(--ion-color-medium); 
-      text-transform: uppercase;
-      letter-spacing: var(--letter-spacing-wide);
-    }
-    
-    .day-number { 
-      font-size: var(--font-size-body); 
-      font-weight: var(--font-weight-bold);
-      color: var(--ion-text-color);
-    }
-    
-    .day-indicator {
-      width: 6px; 
-      height: 6px; 
-      border-radius: 50%; 
-      opacity: 0;
-      transition: opacity var(--transition-fast);
-      
-      &.active { 
-        background: var(--ion-color-primary); 
-        opacity: 1;
-        animation: pulse 2s ease-in-out infinite;
-      }
-    }
-    
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.2); opacity: 0.8; }
-    }
+    /* ... */
 
-    .week-grid-body {
-      flex: 1;
-      overflow-y: auto;
-      position: relative;
-      scroll-behavior: smooth;
-    }
-    
     .week-events-layer {
         position: absolute;
         top: 0;
-        left: 50px;
+        left: var(--agenda-hour-label-width);
         right: 0;
         bottom: 0;
         z-index: 10;
         pointer-events: none;
     }
-    
-    .week-event {
-        position: absolute;
-        background: rgba(var(--ion-color-primary-rgb), var(--agenda-event-opacity));
-        border-left: 3px solid var(--ion-color-primary);
-        color: var(--ion-text-color);
-        font-size: var(--font-size-xs);
-        font-weight: var(--font-weight-medium);
-        border-radius: var(--radius-sm);
-        padding: var(--spacing-xs);
-        overflow: hidden;
-        pointer-events: auto;
-        cursor: pointer;
-        transition: all var(--transition-fast);
-        box-shadow: var(--shadow-xs);
-    }
-    
-    .week-event:hover {
-      transform: scale(1.02);
-      box-shadow: var(--shadow-md);
-      z-index: 20;
-      background: rgba(var(--ion-color-primary-rgb), calc(var(--agenda-event-opacity) + 0.05));
-    }
-    
-    .week-event:active {
-      transform: scale(0.98);
-    }
-    
-    .event-title {
-      display: block;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      font-weight: var(--font-weight-semibold);
-    }
+
+    /* ... */
 
     .grid-row {
       display: grid;
-      grid-template-columns: 50px repeat(7, 1fr);
-      height: 40px;
+      grid-template-columns: var(--agenda-hour-label-width) repeat(7, 1fr);
+      height: var(--agenda-hour-height); /* Dynamic height */
       border-bottom: var(--border-width-thin) solid var(--ion-border-color);
       transition: background var(--transition-fast);
     }
@@ -219,7 +134,10 @@ export class WeekViewComponent implements OnChanges {
   readonly agendaService = inject(AgendaService);
 
   dayNames = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
-  // ...
+
+  // Base configuration - MUST MATCH CSS TOKENS
+  // Mobile base: 60px height
+  private readonly HOUR_HEIGHT = 60;
   onDayClick(day: Date) {
     this.daySelected.emit(day);
   }
@@ -294,9 +212,15 @@ export class WeekViewComponent implements OnChanges {
     if (colIndex === -1) return { display: 'none' };
 
     // Calculate Top (Time)
-    // 40px per hour
+    // HOUR_HEIGHT per hour
+    // Logic must match CSS --agenda-hour-height
+    // Since we can't easily read CSS var in TS synchronously without computed styles,
+    // we assume the base logic and rely on CSS for visual scaling if needed, 
+    // OR ideally we use a uniform value.
+    // For now, let's use the Base value 60.
+
     const minutes = start.getHours() * 60 + start.getMinutes();
-    const top = (minutes / 60) * 40;
+    const top = (minutes / 60) * this.HOUR_HEIGHT;
 
     // Calculate Height
     let end: Date;
@@ -307,15 +231,10 @@ export class WeekViewComponent implements OnChanges {
       end = new Date(start.getTime() + 60 * 60000);
     }
     const durMin = (end.getTime() - start.getTime()) / 60000;
-    const height = (durMin / 60) * 40;
+    const height = (durMin / 60) * this.HOUR_HEIGHT;
 
     // Calculate Left/Width
     // 1 column is 100% / 7 approx 14.28%
-    // But we have total width to manage.
-    // Simplest: use percentage relative to events container width (which is week-grid-body - 40px)
-    // But week-events-layer is already offset by 40px.
-    // So width is 100%.
-    // Col width = 100% / 7.
 
     return {
       top: `${top}px`,
