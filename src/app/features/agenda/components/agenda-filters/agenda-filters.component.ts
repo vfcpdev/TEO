@@ -25,87 +25,107 @@ export interface FilterState {
         </ion-button>
       </div>
       
-      <div class="filter-section">
-        <h4>
-          <ion-icon name="grid-outline"></ion-icon>
-          Áreas
-        </h4>
-        <div class="chips-container">
-          @for (area of agendaService.areas(); track area.id) {
-            <ion-chip 
-              [class.selected]="isAreaSelected(area.id)"
-              [style.--chip-color]="area.color"
-              (click)="toggleArea(area.id)">
-              <ion-icon [name]="area.icon"></ion-icon>
-              <ion-label>{{ area.name }}</ion-label>
-              @if (isAreaSelected(area.id)) {
-                <ion-icon name="checkmark-circle" class="check-icon"></ion-icon>
-              }
-            </ion-chip>
-          }
-        </div>
-      </div>
-      
-      @if (agendaService.contextos().length > 0) {
-        <div class="filter-section">
-          <h4>
-            <ion-icon name="location-outline"></ion-icon>
-            Contextos
-          </h4>
-          <div class="chips-container">
-            @for (ctx of agendaService.contextos(); track ctx.id) {
-              <ion-chip 
-                [class.selected]="isContextoSelected(ctx.id)"
-                (click)="toggleContexto(ctx.id)">
-                <ion-label>{{ ctx.name }}</ion-label>
-                @if (isContextoSelected(ctx.id)) {
-                  <ion-icon name="checkmark-circle" class="check-icon"></ion-icon>
-                }
-              </ion-chip>
+      <ion-accordion-group [multiple]="true" [value]="['areas', 'tipos', 'opciones']">
+        <!-- Áreas Accordion -->
+        <ion-accordion value="areas">
+          <ion-item slot="header" class="accordion-header">
+            <ion-icon name="grid-outline" slot="start" color="primary"></ion-icon>
+            <ion-label>Áreas</ion-label>
+            @if (selectedAreas().length > 0) {
+              <ion-badge slot="end" color="primary">{{ selectedAreas().length }}</ion-badge>
             }
-          </div>
-        </div>
-      }
-      
-      <div class="filter-section">
-        <h4>
-          <ion-icon name="pricetags-outline"></ion-icon>
-          Tipos
-        </h4>
-        <div class="chips-container">
-          @for (tipo of agendaService.tipos(); track tipo.id) {
-            <ion-chip 
-              [class.selected]="isTipoSelected(tipo.id)"
-              [style.--chip-color]="tipo.color"
-              (click)="toggleTipo(tipo.id)">
-              <ion-icon [name]="tipo.icon"></ion-icon>
-              <ion-label>{{ tipo.name }}</ion-label>
-              @if (isTipoSelected(tipo.id)) {
-                <ion-icon name="checkmark-circle" class="check-icon"></ion-icon>
-              }
-            </ion-chip>
-          }
-        </div>
-      </div>
-      
-      <!-- Display Options -->
-      <div class="filter-section display-options">
-        <h4>
-          <ion-icon name="eye-outline"></ion-icon>
-          Opciones de Vista
-        </h4>
-        <div class="option-toggle">
-          <ion-item lines="none" class="toggle-item">
-            <ion-icon slot="start" name="time-outline" class="free-time-icon"></ion-icon>
-            <ion-label>Mostrar tiempo disponible</ion-label>
-            <ion-toggle 
-              [checked]="showFreeTime()" 
-              (ionChange)="toggleFreeTime($event)"
-              color="success">
-            </ion-toggle>
           </ion-item>
-        </div>
-      </div>
+          <div slot="content" class="accordion-content">
+            <div class="chips-container">
+              @for (area of agendaService.areas(); track area.id) {
+                <ion-chip 
+                  [class.selected]="isAreaSelected(area.id)"
+                  [style.--chip-color]="area.color"
+                  (click)="toggleArea(area.id)">
+                  <ion-icon [name]="area.icon"></ion-icon>
+                  <ion-label>{{ area.name }}</ion-label>
+                  @if (isAreaSelected(area.id)) {
+                    <ion-icon name="checkmark-circle" class="check-icon"></ion-icon>
+                  }
+                </ion-chip>
+              }
+            </div>
+          </div>
+        </ion-accordion>
+        
+        <!-- Contextos Accordion -->
+        @if (agendaService.contextos().length > 0) {
+          <ion-accordion value="contextos">
+            <ion-item slot="header" class="accordion-header">
+              <ion-icon name="location-outline" slot="start" color="secondary"></ion-icon>
+              <ion-label>Contextos</ion-label>
+              @if (selectedContextos().length > 0) {
+                <ion-badge slot="end" color="secondary">{{ selectedContextos().length }}</ion-badge>
+              }
+            </ion-item>
+            <div slot="content" class="accordion-content">
+              <div class="chips-container">
+                @for (ctx of agendaService.contextos(); track ctx.id) {
+                  <ion-chip 
+                    [class.selected]="isContextoSelected(ctx.id)"
+                    (click)="toggleContexto(ctx.id)">
+                    <ion-label>{{ ctx.name }}</ion-label>
+                    @if (isContextoSelected(ctx.id)) {
+                      <ion-icon name="checkmark-circle" class="check-icon"></ion-icon>
+                    }
+                  </ion-chip>
+                }
+              </div>
+            </div>
+          </ion-accordion>
+        }
+        
+        <!-- Tipos Accordion -->
+        <ion-accordion value="tipos">
+          <ion-item slot="header" class="accordion-header">
+            <ion-icon name="pricetags-outline" slot="start" color="tertiary"></ion-icon>
+            <ion-label>Tipos</ion-label>
+            @if (selectedTipos().length > 0) {
+              <ion-badge slot="end" color="tertiary">{{ selectedTipos().length }}</ion-badge>
+            }
+          </ion-item>
+          <div slot="content" class="accordion-content">
+            <div class="chips-container">
+              @for (tipo of agendaService.tipos(); track tipo.id) {
+                <ion-chip 
+                  [class.selected]="isTipoSelected(tipo.id)"
+                  [style.--chip-color]="tipo.color"
+                  (click)="toggleTipo(tipo.id)">
+                  <ion-icon [name]="tipo.icon"></ion-icon>
+                  <ion-label>{{ tipo.name }}</ion-label>
+                  @if (isTipoSelected(tipo.id)) {
+                    <ion-icon name="checkmark-circle" class="check-icon"></ion-icon>
+                  }
+                </ion-chip>
+              }
+            </div>
+          </div>
+        </ion-accordion>
+        
+        <!-- Opciones de Vista Accordion -->
+        <ion-accordion value="opciones">
+          <ion-item slot="header" class="accordion-header">
+            <ion-icon name="eye-outline" slot="start" color="success"></ion-icon>
+            <ion-label>Opciones de Vista</ion-label>
+          </ion-item>
+          <div slot="content" class="accordion-content display-options">
+            <ion-item lines="none" class="toggle-item">
+              <ion-icon slot="start" name="time-outline" class="free-time-icon"></ion-icon>
+              <ion-label>Mostrar tiempo disponible</ion-label>
+              <ion-toggle 
+                [checked]="showFreeTime()" 
+                (ionChange)="toggleFreeTime($event)"
+                color="success">
+              </ion-toggle>
+            </ion-item>
+          </div>
+        </ion-accordion>
+      </ion-accordion-group>
       
       <div class="filter-actions">
         <ion-button expand="block" (click)="applyFilters()" [disabled]="!hasActiveFilters()">
@@ -117,16 +137,24 @@ export interface FilterState {
   `,
   styles: [`
     .filters-container {
-      padding: var(--spacing-md);
+      padding: var(--spacing-sm);
       background: var(--ion-background-color);
       max-height: 70vh;
       overflow-y: auto;
+      
+      /* Hide scrollbar but keep functionality */
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE and Edge */
+      
+      &::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Opera */
+      }
       
       /* Mobile: Bottom sheet style */
       @media (max-width: 767px) {
         border-radius: 16px 16px 0 0;
         box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
-        padding: var(--spacing-lg) var(--spacing-md);
+        padding: var(--spacing-md) var(--spacing-sm);
       }
       
       /* Desktop: Sidebar/dropdown style */
@@ -140,33 +168,23 @@ export interface FilterState {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: var(--spacing-md);
-      padding-bottom: var(--spacing-sm);
-      border-bottom: 2px solid var(--ion-color-primary);
+      margin-bottom: var(--spacing-sm);
+      padding: var(--spacing-xs) var(--spacing-sm);
+      border-bottom: 1px solid var(--ion-border-color);
       
       h3 {
         margin: 0;
-        font-size: 1.1rem;
+        font-size: 1rem;
         font-weight: 700;
         color: var(--ion-text-color);
-        display: flex;
-        align-items: center;
-        gap: var(--spacing-xs);
-        
-        &::before {
-          content: '';
-          width: 4px;
-          height: 20px;
-          background: var(--ion-color-primary);
-          border-radius: 2px;
-        }
       }
       
       ion-button {
-        --padding-start: var(--spacing-md);
-        --padding-end: var(--spacing-md);
-        min-height: 44px;
+        --padding-start: var(--spacing-sm);
+        --padding-end: var(--spacing-sm);
+        min-height: 36px;
         font-weight: 600;
+        font-size: 0.85rem;
       }
     }
     
@@ -315,6 +333,55 @@ export interface FilterState {
         }
       }
     }
+    
+    // Accordion Styles
+    ion-accordion-group {
+      margin-bottom: var(--spacing-sm);
+    }
+    
+    ion-accordion {
+      margin-bottom: 4px;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid var(--ion-border-color);
+      
+      &::part(header) {
+        background: var(--ion-color-step-50);
+      }
+      
+      &.accordion-expanded::part(header) {
+        background: var(--ion-color-step-100);
+      }
+    }
+    
+    .accordion-header {
+      --padding-start: 10px;
+      --padding-end: 10px;
+      --min-height: 40px;
+      --background: transparent;
+      font-weight: 600;
+      
+      ion-icon[slot="start"] {
+        font-size: 1.1rem;
+        margin-right: 8px;
+      }
+      
+      ion-label {
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
+      
+      ion-badge {
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 2px 6px;
+      }
+    }
+    
+    .accordion-content {
+      padding: var(--spacing-xs) var(--spacing-sm);
+      background: var(--ion-background-color);
+    }
   `]
 })
 export class AgendaFiltersComponent {
@@ -322,9 +389,9 @@ export class AgendaFiltersComponent {
 
   @Output() filtersChanged = new EventEmitter<FilterState>();
 
-  private selectedAreas = signal<string[]>([]);
-  private selectedContextos = signal<string[]>([]);
-  private selectedTipos = signal<string[]>([]);
+  selectedAreas = signal<string[]>([]);
+  selectedContextos = signal<string[]>([]);
+  selectedTipos = signal<string[]>([]);
   showFreeTime = signal<boolean>(false);
 
   isAreaSelected(id: string): boolean {
