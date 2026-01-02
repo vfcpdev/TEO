@@ -8,6 +8,7 @@ export interface FilterState {
   contextoIds: string[];
   tipoIds: string[];
   statusFilter: string[];
+  showFreeTime?: boolean;
 }
 
 @Component({
@@ -84,6 +85,25 @@ export interface FilterState {
               }
             </ion-chip>
           }
+        </div>
+      </div>
+      
+      <!-- Display Options -->
+      <div class="filter-section display-options">
+        <h4>
+          <ion-icon name="eye-outline"></ion-icon>
+          Opciones de Vista
+        </h4>
+        <div class="option-toggle">
+          <ion-item lines="none" class="toggle-item">
+            <ion-icon slot="start" name="time-outline" class="free-time-icon"></ion-icon>
+            <ion-label>Mostrar tiempo disponible</ion-label>
+            <ion-toggle 
+              [checked]="showFreeTime()" 
+              (ionChange)="toggleFreeTime($event)"
+              color="success">
+            </ion-toggle>
+          </ion-item>
         </div>
       </div>
       
