@@ -78,9 +78,43 @@ import { AgendaService } from '../../../../core/services/agenda.service';
     
     .time-col-header { 
       width: var(--agenda-hour-label-width); 
+      flex-shrink: 0;
     }
-
-    /* ... */
+    
+    .day-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+    }
+    
+    .day-name {
+      font-size: var(--font-size-xs);
+      color: var(--ion-color-medium);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    
+    .day-number {
+      font-size: var(--font-size-h5);
+      font-weight: 700;
+      color: var(--ion-text-color);
+    }
+    
+    .day-indicator {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: transparent;
+      margin-top: 4px;
+      
+      &.active {
+        background: var(--ion-color-primary);
+        transform: scale(1.5);
+      }
+    }
 
     .week-events-layer {
         position: absolute;
@@ -91,8 +125,35 @@ import { AgendaService } from '../../../../core/services/agenda.service';
         z-index: 10;
         pointer-events: none;
     }
-
-    /* ... */
+    
+    .week-event {
+        position: absolute;
+        pointer-events: auto;
+        border-radius: var(--radius-sm);
+        padding: 2px 4px;
+        font-size: 10px;
+        overflow: hidden;
+        color: white;
+        background: var(--ion-color-primary); /* Default fallback */
+        border: 1px solid rgba(255,255,255,0.2);
+        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        z-index: 1;
+        transition: transform 0.1s;
+        
+        &:hover {
+            z-index: 2;
+            transform: scale(1.02);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .event-title {
+            font-weight: 600;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            line-height: 1.1;
+        }
+    }
 
     .grid-row {
       display: grid;
@@ -240,7 +301,13 @@ export class WeekViewComponent implements OnChanges {
       top: `${top}px`,
       height: `${height}px`,
       left: `${colIndex * (100 / 7)}%`,
-      width: `${100 / 7}%`
+      width: `${100 / 7}%`,
+      backgroundColor: reg.contextoId === 'registro' ? 'var(--ion-color-primary)' : (this.getAreaColor(reg) || 'var(--ion-color-primary)')
     };
+  }
+
+  getAreaColor(reg: Registro): string | undefined {
+    const area = this.agendaService.areas().find(a => a.id === reg.areaId);
+    return area?.color;
   }
 }

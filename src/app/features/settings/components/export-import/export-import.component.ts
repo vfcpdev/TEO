@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { IcsExportService } from '../../../../core/services/ics-export.service';
+import { IcsImportService } from '../../../../core/services/ics-import.service';
 import { JsonExportService } from '../../../../core/services/json-export.service';
 import { JsonImportService, ImportStrategy } from '../../../../core/services/json-import.service';
 import { AgendaService } from '../../../../core/services/agenda.service';
@@ -58,9 +59,21 @@ import { AlertController } from '@ionic/angular/standalone';
                 (change)="onFileSelected($event)"
                 style="display: none">
             
+            <input 
+                type="file" 
+                #icsInput 
+                accept=".ics,.ifb,.ical" 
+                (change)="onIcsSelected($event)"
+                style="display: none">
+
             <ion-button expand="block" fill="outline" (click)="fileInput.click()">
                 <ion-icon name="folder-open-outline" slot="start"></ion-icon>
-                Seleccionar JSON
+                Importar JSON (Backup)
+            </ion-button>
+            
+            <ion-button expand="block" fill="outline" (click)="icsInput.click()">
+                <ion-icon name="calendar-number-outline" slot="start"></ion-icon>
+                Importar ICS (Calendario)
             </ion-button>
             
             @if (selectedFile()) {
@@ -330,6 +343,7 @@ import { AlertController } from '@ionic/angular/standalone';
 export class ExportImportComponent {
   readonly agendaService = inject(AgendaService);
   private readonly icsExportService = inject(IcsExportService);
+  private readonly icsImportService = inject(IcsImportService);
   private readonly jsonExportService = inject(JsonExportService);
   private readonly jsonImportService = inject(JsonImportService);
   private readonly toastService = inject(ToastService);
@@ -367,6 +381,45 @@ export class ExportImportComponent {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       this.selectedFile.set(input.files[0]);
+    }
+  }
+
+  async onIcsSelected(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+      try {
+        this.importing.set(true);
+        const events = await this.icsImportService.parseIcsFile(file);
+
+        let count = 0;
+        events.forEach(ev => {
+          this.agendaService.addRegistro({
+            id: crypto.randomUUID(),
+            profileId: 'default', // TODO: User ID
+            name: ev.summary || 'Evento Importado',
+            status: 'pendiente',
+            priority: 'medium',
+            startTime: ev.dtStart,
+            endTime: ev.dtEnd || new Date(ev.dtStart.getTime() + 60 * 60 * 1000), // Default 1h if no end
+            isAllDay: ev.allDay,
+            notes: ev.description,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            contextoId: 'import_ics',
+            areaId: 'default_area' // Need a fallback area
+          } as any);
+          count++;
+        });
+
+        this.toastService.success(`Importados ${count} eventos de ${file.name}`);
+      } catch (e) {
+        console.error(e);
+        this.toastService.error('Error al importar archivo ICS');
+      } finally {
+        this.importing.set(false);
+        input.value = ''; // Reset
+      }
     }
   }
 

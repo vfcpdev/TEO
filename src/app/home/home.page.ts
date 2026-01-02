@@ -283,9 +283,11 @@ export class HomePage implements OnInit, ViewWillEnter, OnDestroy {
   }
 
   getAreaName(reg: Registro): string {
-    // TODO: Connect with real Area service if available.
-    // For now returning contextId or placeholder
-    return reg.contextoId || reg.areaId || 'General';
+    if (reg.areaId) {
+      const area = this.agendaService.areas().find(a => a.id === reg.areaId);
+      if (area) return area.name;
+    }
+    return reg.contextoId || 'General';
   }
 
   getDuration(reg: Registro): number {

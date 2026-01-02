@@ -92,16 +92,16 @@
         <ion-grid class="agenda-table">
           <ion-row class="header-row">
             <ion-col size="3">Evento</ion-col>
-            <ion-col size="2">Área</ion-col>
+            <ion-col size="3">Área</ion-col>
             <ion-col size="2">Hora</ion-col>
             <ion-col size="2">Duración</ion-col>
-            <ion-col size="3">Faltante</ion-col>
+            <ion-col size="2">Faltante</ion-col>
           </ion-row>
 
           @for (registro of registrosFiltrados(); track registro.id) {
           <ion-row class="data-row" (click)="editarRegistro(registro)">
-            <ion-col size="3" class="col-name">{{ registro.name }}</ion-col>
-            <ion-col size="2">{{ getAreaName(registro) }}</ion-col>
+            <ion-col size="3" class="col-name text-truncate">{{ registro.name }}</ion-col>
+            <ion-col size="3" class="text-truncate">{{ getAreaName(registro) }}</ion-col>
             <ion-col size="2">
               <div class="time-stack">
                 <span>{{ formatDateWithTime(registro.startTime) }}</span>
@@ -109,7 +109,7 @@
               </div>
             </ion-col>
             <ion-col size="2">{{ getDuration(registro) }} min</ion-col>
-            <ion-col size="3" class="col-remaining">
+            <ion-col size="2" class="col-remaining">
               <ion-badge color="primary" mode="ios">{{ getTimeRemaining(registro) }}</ion-badge>
             </ion-col>
           </ion-row>
