@@ -1,161 +1,246 @@
-import { Injectable, inject } from '@angular/core';
-import { AgendaService } from './agenda.service';
-import { RegistroStatus } from '../../models/registro.model';
+import { Injectable } from '@angular/core';
+import { Registro, RegistroStatus, RegistroPrioridad } from '../../models/registro.model';
 
 @Injectable({
     providedIn: 'root'
 })
 export class TestDataService {
-    private readonly agendaService = inject(AgendaService);
 
-    generateTestRegistros(): void {
+    constructor() { }
+
+    /**
+     * Genera registros de prueba con diferentes áreas, fechas y estados
+     */
+    generateTestRegistros(): Registro[] {
+        const registros: Registro[] = [];
         const now = new Date();
 
+        // Área IDs (asumiendo que existen en el sistema)
+        const areas = [
+            { id: 'area_trabajo', name: 'Trabajo' },
+            { id: 'area_familia', name: 'Familia' }
+        ];
+
+        // Contextos
+        const contextos = ['registro', 'borrador'];
+
+        // Nombres de eventos de ejemplo
+        const eventNames = {
+            trabajo: [
+                'Reunión de equipo',
+                'Presentación de proyecto',
+                'Revisión de código',
+                'Planificación sprint',
+                'Entrevista técnica'
+            ],
+            familia: [
+                'Cena familiar',
+                'Cumpleaños',
+                'Paseo al parque',
+                'Visita al médico',
+                'Compras del mes'
+            ]
+        };
+
+        // Generar 15 registros distribuidos en diferentes días
         const testData = [
-            // Borradores (5)
+            // Hoy
             {
-                name: 'Preparar presentación trimestral',
-                status: RegistroStatus.BORRADOR,
-                startTime: this.addDays(now, 5),
-                endTime: this.addDays(now, 7),
-                notes: 'Revisar datos de ventas y crear slides'
-            },
-            {
-                name: 'Reunión con equipo de diseño',
-                status: RegistroStatus.BORRADOR,
-                startTime: this.addDays(now, 3),
-                endTime: this.addDays(now, 3, 2),
-                notes: 'Discutir nuevas propuestas de UI'
-            },
-            {
-                name: 'Investigar nuevas tecnologías',
-                status: RegistroStatus.BORRADOR,
-                startTime: this.addDays(now, 10),
-                endTime: this.addDays(now, 12),
-                notes: 'Angular 18, Signals avanzados'
-            },
-            {
-                name: 'Planificar vacaciones',
-                status: RegistroStatus.BORRADOR,
-                startTime: this.addDays(now, 30),
-                endTime: this.addDays(now, 45),
-                notes: 'Buscar destinos y presupuesto'
-            },
-            {
-                name: 'Actualizar documentación',
-                status: RegistroStatus.BORRADOR,
-                startTime: this.addDays(now, 1),
-                endTime: this.addDays(now, 2),
-                notes: 'API docs y user guides'
-            },
-
-            // Confirmados (7)
-            {
-                name: 'Sprint Planning - Proyecto Alpha',
+                name: 'Despertar',
+                areaId: 'area_familia',
+                startHour: 8,
+                startMin: 0,
+                duration: 60,
                 status: RegistroStatus.CONFIRMADO,
-                startTime: this.addDays(now, 1, 9),
-                endTime: this.addDays(now, 1, 11),
-                notes: 'Definir tasks para próximo sprint'
+                dayOffset: 0,
+                contextoId: 'registro'
             },
             {
-                name: 'Dentista - Revisión semestral',
+                name: 'Reunión de equipo',
+                areaId: 'area_trabajo',
+                startHour: 10,
+                startMin: 0,
+                duration: 90,
                 status: RegistroStatus.CONFIRMADO,
-                startTime: this.addDays(now, 2, 14),
-                endTime: this.addDays(now, 2, 15),
-                notes: 'Dr. Martínez - Clínica Central'
+                dayOffset: 0,
+                contextoId: 'registro'
             },
             {
-                name: 'Curso Online: TypeScript Avanzado',
+                name: 'Almuerzo',
+                areaId: 'area_familia',
+                startHour: 13,
+                startMin: 0,
+                duration: 60,
                 status: RegistroStatus.CONFIRMADO,
-                startTime: this.addDays(now, 0, 19),
-                endTime: this.addDays(now, 0, 21),
-                notes: 'Módulo 3: Generics y Decoradores'
+                dayOffset: 0,
+                contextoId: 'registro'
+            },
+            // Mañana
+            {
+                name: 'Presentación de proyecto',
+                areaId: 'area_trabajo',
+                startHour: 9,
+                startMin: 30,
+                duration: 120,
+                status: 'pendiente' as RegistroStatus,
+                dayOffset: 1,
+                contextoId: 'registro'
             },
             {
-                name: 'Gimnasio - Entrenamiento personal',
+                name: 'Cena familiar',
+                areaId: 'area_familia',
+                startHour: 19,
+                startMin: 0,
+                duration: 90,
                 status: RegistroStatus.CONFIRMADO,
-                startTime: this.addDays(now, 1, 18),
-                endTime: this.addDays(now, 1, 19),
-                notes: 'Rutina de piernas'
+                dayOffset: 1,
+                contextoId: 'registro'
+            },
+            // Pasado mañana
+            {
+                name: 'Revisión de código',
+                areaId: 'area_trabajo',
+                startHour: 11,
+                startMin: 0,
+                duration: 60,
+                status: 'pendiente' as RegistroStatus,
+                dayOffset: 2,
+                contextoId: 'registro'
             },
             {
-                name: 'Cena familiar - Cumpleaños mamá',
+                name: 'Paseo al parque',
+                areaId: 'area_familia',
+                startHour: 16,
+                startMin: 30,
+                duration: 120,
                 status: RegistroStatus.CONFIRMADO,
-                startTime: this.addDays(now, 6, 20),
-                endTime: this.addDays(now, 6, '23:30' as any),
-                notes: 'Restaurante La Terraza'
+                dayOffset: 2,
+                contextoId: 'registro'
             },
+            // En 3 días
             {
-                name: 'Code Review - PR #453',
+                name: 'Planificación sprint',
+                areaId: 'area_trabajo',
+                startHour: 14,
+                startMin: 0,
+                duration: 90,
+                status: 'pendiente' as RegistroStatus,
+                dayOffset: 3,
+                contextoId: 'borrador'
+            },
+            // En 4 días
+            {
+                name: 'Entrevista técnica',
+                areaId: 'area_trabajo',
+                startHour: 10,
+                startMin: 30,
+                duration: 60,
                 status: RegistroStatus.CONFIRMADO,
-                startTime: this.addDays(now, 0, 15),
-                endTime: this.addDays(now, 0, 16),
-                notes: 'Revisar cambios en authentication module'
+                dayOffset: 4,
+                contextoId: 'registro'
             },
             {
-                name: 'Workshop: Metodologías Ágiles',
+                name: 'Cumpleaños',
+                areaId: 'area_familia',
+                startHour: 18,
+                startMin: 0,
+                duration: 180,
                 status: RegistroStatus.CONFIRMADO,
-                startTime: this.addDays(now, 4, 10),
-                endTime: this.addDays(now, 4, 17),
-                notes: 'Scrum y Kanban - Hotel Marriott'
+                dayOffset: 4,
+                contextoId: 'registro'
             },
-
-            // En Estudio (3)
+            // En 5 días
             {
-                name: 'Viaje a Cartagena',
-                status: RegistroStatus.ESTUDIO,
-                startTime: this.addDays(now, 20),
-                endTime: this.addDays(now, 25),
-                notes: 'Verificar conflicto con conferencia'
+                name: 'Visita al médico',
+                areaId: 'area_familia',
+                startHour: 9,
+                startMin: 0,
+                duration: 45,
+                status: 'pendiente' as RegistroStatus,
+                dayOffset: 5,
+                contextoId: 'registro'
             },
+            // En 7 días (próxima semana)
             {
-                name: 'Conferencia Tech Summit 2025',
-                status: RegistroStatus.ESTUDIO,
-                startTime: this.addDays(now, 22),
-                endTime: this.addDays(now, 24),
-                notes: 'Posible overlap con viaje'
+                name: 'Compras del mes',
+                areaId: 'area_familia',
+                startHour: 11,
+                startMin: 0,
+                duration: 120,
+                status: 'pendiente' as RegistroStatus,
+                dayOffset: 7,
+                contextoId: 'borrador'
             },
+            // En 10 días
             {
-                name: 'Mantenimiento servidor',
-                status: RegistroStatus.ESTUDIO,
-                startTime: this.addDays(now, 2, 2),
-                endTime: this.addDays(now, 2, 6),
-                notes: 'Coordinarse con DevOps'
+                name: 'Revisión trimestral',
+                areaId: 'area_trabajo',
+                startHour: 15,
+                startMin: 0,
+                duration: 90,
+                status: 'pendiente' as RegistroStatus,
+                dayOffset: 10,
+                contextoId: 'registro'
+            },
+            // En 14 días
+            {
+                name: 'Reunión con cliente',
+                areaId: 'area_trabajo',
+                startHour: 10,
+                startMin: 0,
+                duration: 120,
+                status: RegistroStatus.CONFIRMADO,
+                dayOffset: 14,
+                contextoId: 'registro'
+            },
+            // En 20 días
+            {
+                name: 'Evento familiar',
+                areaId: 'area_familia',
+                startHour: 17,
+                startMin: 0,
+                duration: 240,
+                status: 'pendiente' as RegistroStatus,
+                dayOffset: 20,
+                contextoId: 'borrador'
             }
         ];
 
-        testData.forEach(data => {
-            const registro = {
-                id: crypto.randomUUID(),
+        testData.forEach((data, index) => {
+            const startDate = new Date(now);
+            startDate.setDate(startDate.getDate() + data.dayOffset);
+            startDate.setHours(data.startHour, data.startMin, 0, 0);
+
+            const endDate = new Date(startDate);
+            endDate.setMinutes(endDate.getMinutes() + data.duration);
+
+            const registro: Registro = {
+                id: `test-registro-${index + 1}`,
+                profileId: 'default-profile',
                 name: data.name,
+                startTime: startDate,
+                endTime: endDate,
+                duration: data.duration,
                 status: data.status,
-                startTime: data.startTime,
-                endTime: data.endTime,
-                notes: data.notes,
+                priority: 'medium' as RegistroPrioridad,
+                isAllDay: false,
+                areaId: data.areaId,
+                contextoId: data.contextoId,
+                notes: `Registro de prueba generado automáticamente para ${data.name}`,
                 createdAt: now,
                 updatedAt: now
             };
 
-            this.agendaService.addRegistro(registro);
+            registros.push(registro);
         });
 
-        console.log(`✅ Generated ${testData.length} test registros`);
+        return registros;
     }
 
-    private addDays(date: Date, days: number, hour = 9): Date {
-        const result = new Date(date);
-        result.setDate(result.getDate() + days);
-
-        if (typeof hour === 'number') {
-            result.setHours(hour, 0, 0, 0);
-        }
-
-        return result;
-    }
-
-    clearAllRegistros(): void {
-        const registros = this.agendaService.registros();
-        registros.forEach(r => this.agendaService.deleteRegistro(r.id));
-        console.log('🗑️ Cleared all registros');
+    /**
+     * Limpia todos los registros de prueba
+     */
+    clearTestRegistros(allRegistros: Registro[]): Registro[] {
+        return allRegistros.filter(r => !r.id.startsWith('test-registro-'));
     }
 }

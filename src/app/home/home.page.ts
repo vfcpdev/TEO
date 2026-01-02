@@ -62,6 +62,7 @@ import { ErrorLoggerService } from '../core/services/error-logger.service';
 import { FreeTimeGeneratorService } from '../core/services/free-time-generator.service';
 import { Registro } from '../models/registro.model';
 import { SettingsService } from '../core/services/settings.service';
+import { TestDataService } from '../core/services/test-data.service';
 
 import { DayViewComponent } from '../features/agenda/components/day-view/day-view.component';
 import { WeekViewComponent } from '../features/agenda/components/week-view/week-view.component';
@@ -145,6 +146,7 @@ export class HomePage implements OnInit, ViewWillEnter, OnDestroy {
   private readonly registroEstadoService = inject(RegistroEstadoService);
   private readonly freeTimeGenerator = inject(FreeTimeGeneratorService);
   private readonly settingsService = inject(SettingsService);
+  private readonly testDataService = inject(TestDataService);
 
   showSplash = signal(false);
   darkMode = signal(false);
@@ -243,6 +245,24 @@ export class HomePage implements OnInit, ViewWillEnter, OnDestroy {
         });
       }, 1000);
     });
+
+    // Cargar datos de prueba (comentar esta línea en producción)
+    // this.loadTestData();
+  }
+
+  loadTestData() {
+    const testRegistros = this.testDataService.generateTestRegistros();
+    testRegistros.forEach(registro => {
+      this.agendaService.addRegistro(registro);
+    });
+    console.log(`✅ Cargados ${testRegistros.length} registros de prueba`);
+  }
+
+  clearTestData() {
+    const current = this.agendaService.registros();
+    const cleaned = this.testDataService.clearTestRegistros(current);
+    // Note: AgendaService would need a method to replace all registros
+    console.log('🗑️ Datos de prueba eliminados');
   }
 
   ngOnDestroy() {
@@ -318,14 +338,14 @@ export class HomePage implements OnInit, ViewWillEnter, OnDestroy {
     return `${mins}m`;
   }
 
-  getFormattedMonth(): string {
+  getFormattedDate(): string {
     const now = new Date();
-    return now.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
-  }
-
-  getFormattedDay(): string {
-    const now = new Date();
-    return now.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+    return now.toLocaleDateString('es-ES', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    });
   }
 
   // Filters and Search

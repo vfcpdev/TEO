@@ -179,19 +179,19 @@ ion-content {
 }
 
 .agenda-container {
-  padding: 16px;
-  margin-top: 10px; // Espacio extra para compensar el header translucido/doble toolbar
+  padding: 8px;
+  margin-top: 10px;
 
   // Tablet
   @include bp.respond-to('md') {
-    padding: 24px;
+    padding: 12px;
     max-width: 100%;
     margin: 10px auto 0;
   }
 
   // Desktop
   @include bp.respond-to('lg') {
-    padding: 32px;
+    padding: 16px;
     max-width: 100%;
   }
 }
@@ -204,24 +204,18 @@ ion-content {
 
 .agenda-date-header {
   margin-bottom: 24px;
-  padding: 16px;
+  padding: 12px 16px;
   background: var(--ion-color-primary);
   border-radius: var(--radius-lg);
   color: var(--ion-color-primary-contrast);
   text-align: center;
 
   h2 {
-    margin: 0 0 4px 0;
-    font-size: 1.2rem;
-    font-weight: 700;
-    text-transform: capitalize;
-  }
-
-  .current-day {
     margin: 0;
-    font-size: 0.9rem;
-    opacity: 0.9;
+    font-size: 1rem;
+    font-weight: 600;
     text-transform: capitalize;
+    line-height: 1.2;
   }
 }
 

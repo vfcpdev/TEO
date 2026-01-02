@@ -81,8 +81,7 @@
     <div class="vista-agenda">
       <!-- Date Header -->
       <div class="agenda-date-header">
-        <h2>{{ getFormattedMonth() }}</h2>
-        <p class="current-day">{{ getFormattedDay() }}</p>
+        <h2>{{ getFormattedDate() }}</h2>
       </div>
 
       <!-- Si no hay registros próximos -->
@@ -129,6 +128,10 @@
     <!-- VISTA HOY -->
     @if (vistaActual() === 'dia') {
     <div class="vista-dia">
+      <!-- Date Header -->
+      <div class="agenda-date-header">
+        <h2>{{ getFormattedDate() }}</h2>
+      </div>
       <app-day-view [registros]="registrosFiltrados()" [currentDate]="currentDate()"></app-day-view>
     </div>
     }
@@ -136,6 +139,10 @@
     <!-- VISTA SEMANA -->
     @if (vistaActual() === 'semana') {
     <div class="vista-semana">
+      <!-- Date Header -->
+      <div class="agenda-date-header">
+        <h2>{{ getFormattedDate() }}</h2>
+      </div>
       <app-week-view [registros]="registrosFiltrados()" (daySelected)="openDayDrawer($event)"></app-week-view>
     </div>
     }
@@ -143,6 +150,10 @@
     <!-- VISTA MES -->
     @if (vistaActual() === 'mes') {
     <div class="vista-mes">
+      <!-- Date Header -->
+      <div class="agenda-date-header">
+        <h2>{{ getFormattedDate() }}</h2>
+      </div>
       <app-month-view [registros]="registrosFiltrados()" [currentDate]="selectedDate()"
         (daySelected)="openDayDrawer($event)"></app-month-view>
     </div>

@@ -9,6 +9,7 @@ import { JsonImportService, ImportStrategy } from '../../../../core/services/jso
 import { AgendaService } from '../../../../core/services/agenda.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { AlertController } from '@ionic/angular/standalone';
+import { TestDataService } from '../../../../core/services/test-data.service';
 
 @Component({
   selector: 'app-export-import',
@@ -116,6 +117,31 @@ import { AlertController } from '@ionic/angular/standalone';
                 </div>
             }
             </div>
+        </div>
+
+        <!-- Test Data Section -->
+        <div class="section flex-item">
+            <h4>
+            <ion-icon name="flask-outline"></ion-icon>
+            Datos de Prueba
+            </h4>
+            
+            <div class="test-data-options">
+            <ion-button expand="block" fill="outline" color="tertiary" (click)="generateTestData()">
+                <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+                Generar Datos de Prueba
+            </ion-button>
+            
+            <ion-button expand="block" fill="outline" color="danger" (click)="clearTestData()">
+                <ion-icon name="trash-outline" slot="start"></ion-icon>
+                Limpiar Datos de Prueba
+            </ion-button>
+            </div>
+            
+            <p class="section-description">
+            <strong>Generar:</strong> Crea 15 registros de ejemplo en diferentes fechas y áreas.<br>
+            <strong>Limpiar:</strong> Identifica registros de prueba en el sistema.
+            </p>
         </div>
       </div>
       
@@ -348,6 +374,7 @@ export class ExportImportComponent {
   private readonly jsonImportService = inject(JsonImportService);
   private readonly toastService = inject(ToastService);
   private readonly alertController = inject(AlertController);
+  private readonly testDataService = inject(TestDataService);
 
   selectedFile = signal<File | null>(null);
   importing = signal(false);
@@ -514,5 +541,37 @@ export class ExportImportComponent {
     const month = String(now.getMonth() + 1).padStart(2, '0');
     const day = String(now.getDate()).padStart(2, '0');
     return `${year}${month}${day}`;
+  }
+
+  async generateTestData() {
+    try {
+      const testRegistros = this.testDataService.generateTestRegistros();
+      testRegistros.forEach(registro => {
+        this.agendaService.addRegistro(registro);
+      });
+      await this.toastService.success(
+        `✅ ${testRegistros.length} registros de prueba generados exitosamente`
+      );
+    } catch (error) {
+      await this.toastService.error('Error al generar datos de prueba');
+    }
+  }
+
+  async clearTestData() {
+    try {
+      const current = this.agendaService.registros();
+      const testCount = current.filter(r => r.id.startsWith('test-registro-')).length;
+
+      if (testCount === 0) {
+        await this.toastService.warning('No hay datos de prueba para eliminar');
+        return;
+      }
+
+      await this.toastService.warning(
+        `🗑️ ${testCount} registros de prueba identificados`
+      );
+    } catch (error) {
+      await this.toastService.error('Error al limpiar datos de prueba');
+    }
   }
 }
