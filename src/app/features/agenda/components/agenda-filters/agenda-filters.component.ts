@@ -2,6 +2,7 @@ import { Component, Output, EventEmitter, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { AgendaService } from '../../../../core/services/agenda.service';
+import { computed } from '@angular/core';
 
 export interface FilterState {
   areaIds: string[];
@@ -54,7 +55,7 @@ export interface FilterState {
         </ion-accordion>
         
         <!-- Contextos Accordion -->
-        @if (agendaService.contextos().length > 0) {
+        @if (visibleContextos().length > 0) {
           <ion-accordion value="contextos">
             <ion-item slot="header" class="accordion-header">
               <ion-icon name="location-outline" slot="start" color="secondary"></ion-icon>
@@ -65,9 +66,10 @@ export interface FilterState {
             </ion-item>
             <div slot="content" class="accordion-content">
               <div class="chips-container">
-                @for (ctx of agendaService.contextos(); track ctx.id) {
+                @for (ctx of visibleContextos(); track ctx.id) {
                   <ion-chip 
                     [class.selected]="isContextoSelected(ctx.id)"
+                    [style.--chip-color]="getContextColor(ctx)"
                     (click)="toggleContexto(ctx.id)">
                     <ion-label>{{ ctx.name }}</ion-label>
                     @if (isContextoSelected(ctx.id)) {
@@ -393,6 +395,27 @@ export class AgendaFiltersComponent {
   selectedContextos = signal<string[]>([]);
   selectedTipos = signal<string[]>([]);
   showFreeTime = signal<boolean>(false);
+
+  visibleContextos = computed(() => {
+    const allContextos = this.agendaService.contextos();
+    const selectedAreas = this.selectedAreas();
+
+    if (selectedAreas.length === 0) {
+      return allContextos;
+    }
+
+    return allContextos.filter(ctx =>
+      ctx.areaIds.some(areaId => selectedAreas.includes(areaId))
+    );
+  });
+
+  getContextColor(contexto: any): string {
+    if (contexto.areaIds && contexto.areaIds.length > 0) {
+      const area = this.agendaService.areas().find(a => a.id === contexto.areaIds[0]);
+      return area ? area.color : 'var(--ion-color-secondary)';
+    }
+    return 'var(--ion-color-secondary)';
+  }
 
   isAreaSelected(id: string): boolean {
     return this.selectedAreas().includes(id);

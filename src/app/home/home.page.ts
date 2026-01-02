@@ -54,12 +54,14 @@ import {
 } from 'ionicons/icons';
 
 import { AgendaService } from '../core/services/agenda.service';
+import { ReminderService } from '../core/services/reminder.service';
+import { FreeTimeGeneratorService } from '../core/services/free-time-generator.service';
 import { HolidayService } from '../core/services/holiday.service';
 import { RegistroEstadoService } from '../core/services/registro-estado.service';
 import { CourseService } from '../features/courses/services/course.service';
 import { PlaceService } from '../features/places/services/place.service';
 import { ErrorLoggerService } from '../core/services/error-logger.service';
-import { FreeTimeGeneratorService } from '../core/services/free-time-generator.service';
+
 import { Registro } from '../models/registro.model';
 import { SettingsService } from '../core/services/settings.service';
 import { TestDataService } from '../core/services/test-data.service';
@@ -141,10 +143,11 @@ export class HomePage implements OnInit, ViewWillEnter, OnDestroy {
   private readonly actionSheetController = inject(ActionSheetController);
   private readonly toastController = inject(ToastController);
   private readonly agendaService = inject(AgendaService);
+  private reminderService = inject(ReminderService);
+  private freeTimeService = inject(FreeTimeGeneratorService);
   private readonly holidayService = inject(HolidayService);
   private readonly errorLogger = inject(ErrorLoggerService);
   private readonly registroEstadoService = inject(RegistroEstadoService);
-  private readonly freeTimeGenerator = inject(FreeTimeGeneratorService);
   private readonly settingsService = inject(SettingsService);
   private readonly testDataService = inject(TestDataService);
 
@@ -192,29 +195,59 @@ export class HomePage implements OnInit, ViewWillEnter, OnDestroy {
   showSearchOverlay = signal(false);
   activeFilters = signal<FilterState | null>(null);
 
+  filtersState = signal<FilterState>({
+    areaIds: [],
+    contextoIds: [],
+    tipoIds: [],
+    statusFilter: [],
+    showFreeTime: false
+  });
+
+  // Computed filtered registries + Free Time
   registrosFiltrados = computed(() => {
-    const filters = this.activeFilters();
-    const allRegistros = this.registros();
+    const allRegistros = this.agendaService.registros();
+    const filters = this.filtersState(); // Use direct filter state since it's updated on every change
 
-    if (!filters) return allRegistros;
-
-    return allRegistros.filter(reg => {
-      // Filter by areas
-      if (filters.areaIds.length > 0 && reg.areaId && !filters.areaIds.includes(reg.areaId)) {
-        return false;
+    // 1. Filtrar registros regulares
+    let filtered = allRegistros.filter(reg => {
+      // Filter by Area
+      if (filters.areaIds && filters.areaIds.length > 0) {
+        if (!reg.areaId || !filters.areaIds.includes(reg.areaId)) return false;
       }
 
-      // Filter by contextos
-      if (filters.contextoIds.length > 0 && reg.contextoId && !filters.contextoIds.includes(reg.contextoId)) {
-        return false;
+      // Filter by Contexto
+      if (filters.contextoIds && filters.contextoIds.length > 0) {
+        if (!reg.contextoId || !filters.contextoIds.includes(reg.contextoId)) return false;
       }
 
-      // Filter by tipos
-      if (filters.tipoIds.length > 0 && reg.tipoId && !filters.tipoIds.includes(reg.tipoId)) {
-        return false;
+      // Filter by Tipo
+      if (filters.tipoIds && filters.tipoIds.length > 0) {
+        // Assuming tipoId might be implemented in future or check logic
+        // if (!reg.tipoId || !filters.tipoIds.includes(reg.tipoId)) return false;
+        // For now, if "tipos" filter maps to something else, adapt here.
       }
 
       return true;
+    });
+
+    // 2. Generar y mezclar tiempo libre si está activo
+    if (filters.showFreeTime) {
+      const today = new Date();
+      const nextWeek = new Date(today);
+      nextWeek.setDate(today.getDate() + 7);
+
+      const freeTimeBlocks = this.freeTimeService.generarTiempoLibre(today, nextWeek);
+
+      // Filter free time blocks to only show relevant ones (e.g. within selected view date range)
+      // For simplicity, we add them all and views handle date filtering
+      filtered = [...filtered, ...freeTimeBlocks];
+    }
+
+    // Sort all by start time
+    return filtered.sort((a, b) => {
+      const startA = a.startTime ? new Date(a.startTime).getTime() : 0;
+      const startB = b.startTime ? new Date(b.startTime).getTime() : 0;
+      return startA - startB;
     });
   });
 
@@ -364,7 +397,11 @@ export class HomePage implements OnInit, ViewWillEnter, OnDestroy {
   }
 
   applyFilters(filters: FilterState) {
-    this.activeFilters.set(filters);
+    this.filtersState.set(filters);
+  }
+
+  onFiltersChanged(newFilters: FilterState) {
+    this.filtersState.set(newFilters);
   }
 
   onSearchResultSelected(result: any) {
@@ -377,11 +414,12 @@ export class HomePage implements OnInit, ViewWillEnter, OnDestroy {
       }
     } else if (result.type === 'area') {
       // Filter by area
-      this.applyFilters({
+      this.filtersState.set({
         areaIds: [result.id],
         contextoIds: [],
         tipoIds: [],
-        statusFilter: []
+        statusFilter: [],
+        showFreeTime: false
       });
     }
   }
@@ -486,8 +524,7 @@ export class HomePage implements OnInit, ViewWillEnter, OnDestroy {
           isAllDay: false,
           areaId: data.areaIds[0],
           contextoId: data.contextoIds[0],
-          reminderEnabled: data.reminderEnabled,
-          reminderTime: data.reminderTime,
+          reminders: data.reminders,
           createdAt: new Date(),
           updatedAt: new Date()
         });
@@ -521,15 +558,14 @@ export class HomePage implements OnInit, ViewWillEnter, OnDestroy {
       const { data } = await modal.onWillDismiss();
 
       if (data) {
-        this.agendaService.updateRegistro({
+        this.agendaService.updateRegistro(registro.id, {
           ...registro,
           name: data.nombre,
           startTime: new Date(data.fechaInicio),
           endTime: new Date(data.fechaFin),
           areaId: data.areaIds[0],
           contextoId: data.contextoIds[0],
-          reminderEnabled: data.reminderEnabled,
-          reminderTime: data.reminderTime,
+          reminders: data.reminders,
           updatedAt: new Date()
         });
 

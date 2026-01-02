@@ -34,9 +34,12 @@ import { AgendaService } from '../../../../core/services/agenda.service';
           <div class="day-cell" 
                *ngFor="let day of weekDays"
                [class.has-events]="hasEventsAtHour(day, hour)"
+               [class.is-free-time]="hasFreeTimeAtHour(day, hour)"
                (click)="onDayClick(day)">
-            @if (hasEventsAtHour(day, hour)) {
-              <div class="event-dot"></div>
+            @for (reg of getEventsAtHour(day, hour); track reg.id) {
+               @if (!isFreeTime(reg)) {
+                 <div class="event-dot" [style.background-color]="getEventColor(reg)"></div>
+               }
             }
           </div>
         </div>
@@ -185,6 +188,11 @@ import { AgendaService } from '../../../../core/services/agenda.service';
       
       &.has-events {
         background: rgba(var(--ion-color-primary-rgb), 0.08);
+      }
+      
+      &.is-free-time {
+        background: rgba(var(--ion-color-success-rgb), 0.15) !important;
+        border: 1px dashed rgba(var(--ion-color-success-rgb), 0.3);
       }
     }
     
@@ -372,5 +380,43 @@ export class WeekViewComponent implements OnChanges {
   getAreaColor(reg: Registro): string | undefined {
     const area = this.agendaService.areas().find(a => a.id === reg.areaId);
     return area?.color;
+  }
+
+  getEventColor(reg: Registro): string {
+    const areaColor = this.getAreaColor(reg);
+    return areaColor || 'var(--ion-color-primary)';
+  }
+
+  isFreeTime(reg: Registro): boolean {
+    return (reg as any).esAutoGenerado === true;
+  }
+
+  hasFreeTimeAtHour(day: Date, hour: number): boolean {
+    return this.weekRegistros().some(r => {
+      if (!this.isFreeTime(r)) return false;
+
+      // Check overlap
+      if (!r.startTime || !r.endTime) return false;
+      const start = new Date(r.startTime);
+      const end = new Date(r.endTime);
+
+      const cellStart = new Date(day);
+      cellStart.setHours(hour, 0, 0, 0);
+      const cellEnd = new Date(cellStart);
+      cellEnd.setHours(hour + 1, 0, 0, 0);
+
+      // Simple overlap check
+      return start < cellEnd && end > cellStart;
+    });
+  }
+
+  getEventsAtHour(day: Date, hour: number): Registro[] {
+    return this.weekRegistros().filter(r => {
+      if (!r.startTime) return false;
+      const d = new Date(r.startTime);
+      return d.getDate() === day.getDate() &&
+        d.getMonth() === day.getMonth() &&
+        d.getHours() === hour;
+    });
   }
 }

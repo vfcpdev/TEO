@@ -11,6 +11,7 @@
 }
 
 // Header styles
+// Header styles
 ion-header {
   ion-toolbar {
     ion-title {
@@ -49,6 +50,36 @@ ion-header {
 
           @include bp.respond-to('lg') {
             font-size: 1.3rem;
+          }
+        }
+      }
+    }
+  }
+
+  // Styles for the tabs toolbar to ensure contrast
+  .view-tabs-toolbar {
+    --background: var(--ion-background-color);
+    border-bottom: 1px solid var(--ion-border-color);
+
+    .main-view-segment {
+      --background: transparent;
+
+      ion-segment-button {
+        --indicator-color: var(--ion-color-primary);
+        --color: var(--ion-color-medium);
+        --color-checked: var(--ion-color-primary);
+
+        ion-label {
+          font-size: 0.9rem;
+          font-weight: 500;
+          letter-spacing: 0.5px;
+        }
+
+        &[aria-checked="true"] {
+          ion-label {
+            font-weight: 700;
+            // Ensure high contrast for selected state based on theme
+            color: var(--ion-color-primary);
           }
         }
       }

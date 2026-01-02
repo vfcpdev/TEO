@@ -218,30 +218,19 @@ export class AgendaService {
     // --- Private Notification Handlers ---
 
     private async handleNotificationSetup(registro: Registro) {
-        if (registro.reminderEnabled && registro.reminderTime) {
-            const notifId = await this.reminderService.scheduleFor(registro);
-            if (notifId) {
-                // Update the store with the new notification ID
-                this.store.updateRegistro(registro.id, { notificationId: notifId });
-            }
-        }
+        // Schedule all reminders (legacy and multiple)
+        // ReminderService handles logic to not schedule duplicates if IDs match, or simply re-schedules
+        // For simplicity, we just call scheduleFor which handles both
+        await this.reminderService.scheduleFor(registro);
     }
 
     private async handleNotificationUpdate(oldReg: Registro, newReg: Registro) {
-        const timeChanged = oldReg.startTime?.getTime() !== newReg.startTime?.getTime();
-        const settingsChanged = oldReg.reminderEnabled !== newReg.reminderEnabled || oldReg.reminderTime !== newReg.reminderTime;
-
-        if (timeChanged || settingsChanged) {
-            if (oldReg.notificationId) {
-                await this.reminderService.cancelFor(oldReg.notificationId);
-            }
-
-            if (newReg.reminderEnabled && newReg.reminderTime) {
-                const notifId = await this.reminderService.scheduleFor(newReg);
-                if (notifId) {
-                    this.store.updateRegistro(newReg.id, { notificationId: notifId });
-                }
-            }
+        // Simple strategy: Cancel all old and schedule all new
+        // This avoids complex diffing logic
+        if (oldReg.notificationId || (oldReg.reminders && oldReg.reminders.length > 0)) {
+            await this.reminderService.cancelAllFor(oldReg);
         }
+
+        this.handleNotificationSetup(newReg);
     }
 }

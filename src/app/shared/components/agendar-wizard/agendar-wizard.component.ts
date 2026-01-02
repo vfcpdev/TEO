@@ -12,6 +12,7 @@ import { addIcons } from 'ionicons';
 import { folderOutline, folderOpenOutline, documentOutline, calendarOutline, timeOutline, checkmarkCircle, notificationsOutline, alarmOutline } from 'ionicons/icons';
 import { DateTimePickerModalComponent } from '../date-time-picker-modal/date-time-picker-modal.component';
 import { Registro } from '../../../models/registro.model';
+import { trashOutline, addCircleOutline } from 'ionicons/icons';
 
 interface TreeNode {
   id: string;
@@ -64,21 +65,32 @@ interface TreeNode {
         </div>
       </div>
 
-      <!-- Recordatorio -->
+      <!-- Recordatorios -->
       <div class="form-section">
-        <h3>Recordatorio</h3>
-        <ion-item>
+        <h3>Recordatorios</h3>
+        <ion-item lines="none">
           <ion-icon slot="start" name="notifications-outline" color="warning"></ion-icon>
-          <ion-label>Activar recordatorio</ion-label>
-          <ion-toggle [(ngModel)]="reminderEnabled"></ion-toggle>
+          <ion-label>Configurar avisos</ion-label>
+          <ion-button fill="clear" (click)="addReminder()">
+            <ion-icon name="add-circle-outline" slot="icon-only"></ion-icon>
+          </ion-button>
         </ion-item>
 
-        <div *ngIf="reminderEnabled" class="reminder-options">
-          <ion-item>
-            <ion-icon slot="start" name="alarm-outline"></ion-icon>
-            <ion-label>Avisar con antelación (min)</ion-label>
-            <ion-input type="number" [(ngModel)]="reminderTime" placeholder="15"></ion-input>
-          </ion-item>
+        <div class="reminders-list">
+          @for (reminder of reminders(); track reminder.id) {
+            <div class="reminder-item-row">
+                <ion-item lines="none" class="reminder-input-item">
+                    <ion-label position="stacked">Minutos antes</ion-label>
+                    <ion-input type="number" [(ngModel)]="reminder.time" placeholder="Ej: 15"></ion-input>
+                </ion-item>
+                <ion-button fill="clear" color="danger" (click)="removeReminder(reminder.id)">
+                    <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+                </ion-button>
+            </div>
+          }
+          @if (reminders().length === 0) {
+            <p class="no-reminders-text">Sin recordatorios configurados</p>
+          }
         </div>
       </div>
 
@@ -251,6 +263,27 @@ interface TreeNode {
     .save-button ion-icon {
       font-size: 20px;
     }
+
+    .reminder-item-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+        padding-left: 16px;
+    }
+    
+    .reminder-input-item {
+        flex: 1;
+        --background: var(--ion-color-light);
+        border-radius: 8px;
+    }
+    
+    .no-reminders-text {
+        padding-left: 16px;
+        font-size: 0.9rem;
+        color: var(--ion-color-medium);
+        font-style: italic;
+    }
   `],
   standalone: true,
   imports: [
@@ -266,8 +299,7 @@ interface TreeNode {
     IonItem,
     IonLabel,
     IonCheckbox,
-    IonIcon,
-    IonToggle
+    IonIcon
   ]
 })
 export class AgendarWizardComponent {
@@ -279,13 +311,12 @@ export class AgendarWizardComponent {
   fechaInicio: string = '';
   fechaFin: string = '';
 
-  reminderEnabled = false;
-  reminderTime = 15;
+  reminders = signal<{ id: string, time: number }[]>([]);
 
   treeNodes = signal<TreeNode[]>([]);
 
   constructor() {
-    addIcons({ folderOutline, folderOpenOutline, documentOutline, calendarOutline, timeOutline, checkmarkCircle, notificationsOutline, alarmOutline });
+    addIcons({ folderOutline, folderOpenOutline, documentOutline, calendarOutline, timeOutline, checkmarkCircle, notificationsOutline, alarmOutline, trashOutline, addCircleOutline });
     this.loadTreeData();
 
     // Initialize with input date or registro values
@@ -294,8 +325,16 @@ export class AgendarWizardComponent {
         this.nombreRegistro = this.registro.name;
         this.fechaInicio = this.registro.startTime ? new Date(this.registro.startTime).toISOString() : '';
         this.fechaFin = this.registro.endTime ? new Date(this.registro.endTime).toISOString() : '';
-        this.reminderEnabled = !!this.registro.reminderEnabled;
-        this.reminderTime = this.registro.reminderTime || 15;
+
+        // Load existing reminders (legacy + multiple)
+        const initialReminders = [];
+        if (this.registro.reminders && this.registro.reminders.length > 0) {
+          initialReminders.push(...this.registro.reminders.map(r => ({ id: r.id, time: r.time })));
+        } else if (this.registro.reminderEnabled && this.registro.reminderTime) {
+          // Convert legacy to new format
+          initialReminders.push({ id: crypto.randomUUID(), time: this.registro.reminderTime });
+        }
+        this.reminders.set(initialReminders);
 
         // Match tree nodes selection
         this.treeNodes.update(nodes => {
@@ -438,8 +477,7 @@ export class AgendarWizardComponent {
       fechaFin: this.fechaFin,
       areaIds: selectedAreas,
       contextoIds: selectedContextos,
-      reminderEnabled: this.reminderEnabled,
-      reminderTime: this.reminderEnabled ? this.reminderTime : null
+      reminders: this.reminders()
     };
 
     await this.modalCtrl.dismiss(result);
@@ -464,6 +502,17 @@ export class AgendarWizardComponent {
       return `${hours}h ${minutes}min`;
     }
     return `${minutes}min`;
+  }
+
+  addReminder() {
+    this.reminders.update(current => [
+      ...current,
+      { id: crypto.randomUUID(), time: 15 } // Default 15 min
+    ]);
+  }
+
+  removeReminder(id: string) {
+    this.reminders.update(current => current.filter(r => r.id !== id));
   }
 }
 

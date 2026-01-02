@@ -27,6 +27,7 @@ import { ToastService } from '../../../../core/services/toast.service';
         <div class="event-card" 
              *ngFor="let reg of dayRegistros()" 
              [style]="getEventStyle(reg)"
+             [class.free-time-block]="isFreeTime(reg)"
              (click)="onEventClick(reg)">
           <div class="event-content">
             <span class="event-title">{{ reg.name }}</span>
@@ -70,8 +71,8 @@ import { ToastService } from '../../../../core/services/toast.service';
       position: absolute;
       left: 0;
       right: 0;
-      background: rgba(var(--ion-color-primary-rgb), var(--agenda-event-opacity));
-      border-left: var(--agenda-event-border-width) solid var(--ion-color-primary);
+      background: var(--ion-color-light); /* Fallback */
+      border-left: var(--agenda-event-border-width) solid var(--ion-color-primary); /* Default, overridden by inline style */
       border-radius: var(--agenda-event-radius);
       padding: var(--agenda-event-padding);
       overflow: hidden;
@@ -87,8 +88,8 @@ import { ToastService } from '../../../../core/services/toast.service';
       &:hover {
         transform: translateY(-2px);
         box-shadow: var(--shadow-md);
-        background: rgba(var(--ion-color-primary-rgb), calc(var(--agenda-event-opacity) + 0.05));
         z-index: 10;
+        filter: brightness(0.95);
       }
       
       &:active {
@@ -366,10 +367,26 @@ export class DayViewComponent implements OnChanges, OnInit, AfterViewInit, OnDes
     const top = (startHour * this.HOUR_HEIGHT) + ((startMin / 60) * this.HOUR_HEIGHT);
     const height = durationMin; // 1 min = 1 px
 
+    const areaColor = this.getAreaColor(reg) || 'var(--ion-color-primary)';
+
+    // Convert hex/named color to rgba for background if possible, 
+    // but for simplicity we can use the opacity trick if the color is a CSS var that has an RGB partner.
+    // Since we don't know if 'area.color' is hex or var, we'll apply it directly to border
+    // and try to set background with some transparency if possible, or just use the color.
+
+    // A simple approach is to use border-left-color and a custom property for background
+
     return {
       top: `${top}px`,
-      height: `${height}px`
+      height: `${height}px`,
+      'border-left-color': areaColor,
+      '--event-color': areaColor // We can use this in CSS if we refactor, but inline style overrides
     };
+  }
+
+  getAreaColor(reg: Registro): string | undefined {
+    const area = this.agendaService.areas().find(a => a.id === reg.areaId);
+    return area?.color;
   }
 
   formatTime(date: Date | string | undefined): string {
@@ -380,6 +397,7 @@ export class DayViewComponent implements OnChanges, OnInit, AfterViewInit, OnDes
   }
 
   onEventClick(reg: Registro) {
+    if (this.isFreeTime(reg)) return;
     console.log('Event clicked:', reg);
   }
 
@@ -415,5 +433,8 @@ export class DayViewComponent implements OnChanges, OnInit, AfterViewInit, OnDes
       const timeStr = this.formatTime(newStartTime);
       this.toastService.success(`Evento movido a ${timeStr}`);
     }
+  }
+  isFreeTime(reg: Registro): boolean {
+    return (reg as any).esAutoGenerado === true;
   }
 }
