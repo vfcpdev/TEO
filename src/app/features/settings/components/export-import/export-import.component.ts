@@ -17,95 +17,92 @@ import { AlertController } from '@ionic/angular/standalone';
     <div class="export-import-container">
       <h3>Exportar / Importar Datos</h3>
       
-      <!-- Export Section -->
-      <div class="section">
-        <h4>
-          <ion-icon name="download-outline"></ion-icon>
-          Exportar
-        </h4>
-        
-        <div class="export-options">
-          <ion-button expand="block" fill="outline" (click)="exportToIcs()">
-            <ion-icon name="calendar-outline" slot="start"></ion-icon>
-            Exportar a ICS (iCalendar)
-          </ion-button>
-          
-          <ion-button expand="block" fill="outline" (click)="exportToJson()">
-            <ion-icon name="document-text-outline" slot="start"></ion-icon>
-            Exportar a JSON (Backup Completo)
-          </ion-button>
+      <div class="flex-layout">
+        <!-- Export Section -->
+        <div class="section flex-item">
+            <h4>
+            <ion-icon name="download-outline"></ion-icon>
+            Exportar
+            </h4>
+            
+            <div class="export-options">
+            <ion-button expand="block" fill="outline" (click)="exportToIcs()">
+                <ion-icon name="calendar-outline" slot="start"></ion-icon>
+                Exportar a ICS
+            </ion-button>
+            
+            <ion-button expand="block" fill="outline" (click)="exportToJson()">
+                <ion-icon name="document-text-outline" slot="start"></ion-icon>
+                Exportar a JSON
+            </ion-button>
+            </div>
+            
+            <p class="section-description">
+            <strong>ICS:</strong> Calendarios externos (Google, Outlook).<br>
+            <strong>JSON:</strong> Backup completo del sistema.
+            </p>
         </div>
         
-        <p class="section-description">
-          <strong>ICS:</strong> Compatible con Google Calendar, Outlook, etc.<br>
-          <strong>JSON:</strong> Incluye todas las configuraciones (áreas, contextos, tipos)
-        </p>
-      </div>
-      
-      <!-- Import Section -->
-      <div class="section">
-        <h4>
-          <ion-icon name="cloud-upload-outline"></ion-icon>
-          Importar
-        </h4>
-        
-        <div class="import-options">
-          <input 
-            type="file" 
-            #fileInput 
-            accept=".json" 
-            (change)="onFileSelected($event)"
-            style="display: none">
-          
-          <ion-button expand="block" fill="outline" (click)="fileInput.click()">
-            <ion-icon name="folder-open-outline" slot="start"></ion-icon>
-            Seleccionar Archivo JSON
-          </ion-button>
-          
-          @if (selectedFile()) {
-            <div class="file-info">
-              <ion-icon name="document"></ion-icon>
-              <span>{{ selectedFile()?.name }}</span>
-              <ion-button fill="clear" size="small" (click)="clearFile()">
-                <ion-icon name="close" slot="icon-only"></ion-icon>
-              </ion-button>
-            </div>
+        <!-- Import Section -->
+        <div class="section flex-item">
+            <h4>
+            <ion-icon name="cloud-upload-outline"></ion-icon>
+            Importar
+            </h4>
             
-            <div class="import-strategy">
-              <ion-label>Estrategia de importación:</ion-label>
-              <ion-segment [(ngModel)]="importStrategy" mode="ios">
-                <ion-segment-button value="merge">
-                  <ion-label>Combinar</ion-label>
-                </ion-segment-button>
-                <ion-segment-button value="replace">
-                  <ion-label>Reemplazar</ion-label>
-                </ion-segment-button>
-              </ion-segment>
-              <p class="strategy-description">
-                @if (importStrategy === 'merge') {
-                  <ion-icon name="information-circle-outline"></ion-icon>
-                  Se agregarán los nuevos datos sin eliminar los existentes
-                } @else {
-                  <ion-icon name="warning-outline" color="warning"></ion-icon>
-                  Se eliminarán todos los datos actuales y se reemplazarán
-                }
-              </p>
-            </div>
+            <div class="import-options">
+            <input 
+                type="file" 
+                #fileInput 
+                accept=".json" 
+                (change)="onFileSelected($event)"
+                style="display: none">
             
-            <ion-button 
-              expand="block" 
-              color="primary" 
-              (click)="importData()"
-              [disabled]="importing()">
-              @if (importing()) {
-                <ion-spinner name="crescent" slot="start"></ion-spinner>
-                Importando...
-              } @else {
-                <ion-icon name="cloud-upload" slot="start"></ion-icon>
-                Importar Datos
-              }
+            <ion-button expand="block" fill="outline" (click)="fileInput.click()">
+                <ion-icon name="folder-open-outline" slot="start"></ion-icon>
+                Seleccionar JSON
             </ion-button>
-          }
+            
+            @if (selectedFile()) {
+                <div class="file-info">
+                <ion-icon name="document"></ion-icon>
+                <span class="text-truncate">{{ selectedFile()?.name }}</span>
+                <ion-button fill="clear" size="small" (click)="clearFile()">
+                    <ion-icon name="close" slot="icon-only"></ion-icon>
+                </ion-button>
+                </div>
+                
+                <div class="import-strategy">
+                <ion-segment [(ngModel)]="importStrategy" mode="ios">
+                    <ion-segment-button value="merge">
+                    <ion-label>Combinar</ion-label>
+                    </ion-segment-button>
+                    <ion-segment-button value="replace">
+                    <ion-label>Reemplazar</ion-label>
+                    </ion-segment-button>
+                </ion-segment>
+                </div>
+                
+                <ion-button 
+                expand="block" 
+                color="primary" 
+                (click)="importData()"
+                [disabled]="importing()">
+                @if (importing()) {
+                    <ion-spinner name="crescent" slot="start"></ion-spinner>
+                    Importando...
+                } @else {
+                    <ion-icon name="cloud-upload" slot="start"></ion-icon>
+                    Importar Datos
+                }
+                </ion-button>
+            } @else {
+                <div class="empty-file-placeholder">
+                    <ion-icon name="document-outline"></ion-icon>
+                    <p>Selecciona un archivo .json de respaldo para restaurar tus datos.</p>
+                </div>
+            }
+            </div>
         </div>
       </div>
       
@@ -140,7 +137,8 @@ import { AlertController } from '@ionic/angular/standalone';
   styles: [`
     .export-import-container {
       padding: var(--spacing-lg);
-      max-width: 800px;
+      padding: var(--spacing-lg);
+      max-width: 1000px;
       margin: 0 auto;
       
       h3 {
@@ -150,13 +148,27 @@ import { AlertController } from '@ionic/angular/standalone';
         color: var(--ion-text-color);
       }
     }
+
+    .flex-layout {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--spacing-lg);
+        margin-bottom: var(--spacing-2xl);
+    }
     
     .section {
-      margin-bottom: var(--spacing-2xl);
+      margin-bottom: 0;
+      display: flex;
+      flex-direction: column;
       padding: var(--spacing-lg);
       background: var(--ion-background-color);
       border-radius: var(--radius-lg);
       border: 1px solid var(--ion-border-color);
+      
+      &.flex-item {
+          flex: 1;
+          min-width: 300px;
+      }
       
       h4 {
         display: flex;
@@ -212,6 +224,32 @@ import { AlertController } from '@ionic/angular/standalone';
         font-size: var(--font-size-small);
         font-weight: var(--font-weight-medium);
       }
+      
+      .text-truncate {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+      }
+    }
+    
+    .empty-file-placeholder {
+        text-align: center;
+        padding: var(--spacing-lg);
+        background: var(--ion-color-step-50);
+        border-radius: var(--radius-md);
+        border: 1px dashed var(--ion-color-medium);
+        
+        ion-icon {
+            font-size: 2rem;
+            color: var(--ion-color-medium);
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        p {
+            margin: 0;
+            font-size: var(--font-size-small);
+            color: var(--ion-color-medium);
+        }
     }
     
     .import-strategy {

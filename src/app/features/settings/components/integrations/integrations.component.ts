@@ -7,7 +7,7 @@ import {
     IonNote, IonCard, IonCardContent, ToastController, ModalController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { logoGoogle, linkOutline, checkmarkCircle, alertCircle, syncOutline } from 'ionicons/icons';
+import { logoGoogle, linkOutline, checkmarkCircle, alertCircle, syncOutline, mailOutline, documentTextOutline } from 'ionicons/icons';
 import { GoogleCalendarService } from '../../../../core/services/integrations/google-calendar.service';
 import { AgendaService } from '../../../../core/services/agenda.service';
 
@@ -16,62 +16,121 @@ import { AgendaService } from '../../../../core/services/agenda.service';
     standalone: true,
     template: `
     <ion-content class="ion-padding integration-content">
-      <ion-card class="integration-card">
-        <ion-card-content>
-          <div class="service-header">
-            <ion-icon name="logo-google" size="large" color="danger"></ion-icon>
-            <div class="service-info">
-              <h2>Google Calendar</h2>
-              <p>Sincroniza tus eventos automáticamente</p>
+      <div class="integrations-grid">
+        <!-- Google Calendar Card -->
+        <ion-card class="integration-card">
+            <ion-card-content>
+            <div class="service-header">
+                <ion-icon name="logo-google" size="large" color="danger"></ion-icon>
+                <div class="service-info">
+                <h2>Google Calendar</h2>
+                <p>Sincroniza tus eventos automáticamente</p>
+                </div>
             </div>
-          </div>
 
-          @if (googleService.isAuthenticated()) {
-            <div class="status-connected">
-              <ion-icon name="checkmark-circle" color="success"></ion-icon>
-              <span>Conectado</span>
-            </div>
-            
-            <div class="actions">
-                <ion-button expand="block" (click)="syncNow()" class="sync-btn">
-                    <ion-icon slot="start" name="sync-outline"></ion-icon>
-                    Sincronizar Ahora
-                </ion-button>
+            @if (googleService.isAuthenticated()) {
+                <div class="status-connected">
+                <ion-icon name="checkmark-circle" color="success"></ion-icon>
+                <span>Conectado</span>
+                </div>
                 
-                 <ion-button expand="block" fill="outline" color="medium" (click)="disconnect()">
-                    Desconectar
+                <div class="actions">
+                    <ion-button expand="block" (click)="syncNow()" class="sync-btn">
+                        <ion-icon slot="start" name="sync-outline"></ion-icon>
+                        Sincronizar Ahora
+                    </ion-button>
+                    
+                    <ion-button expand="block" fill="outline" color="medium" (click)="disconnect()">
+                        Desconectar
+                    </ion-button>
+                </div>
+
+            } @else {
+                <div class="auth-form">
+                <ion-note color="warning" class="info-note">
+                    <ion-icon name="alert-circle"></ion-icon>
+                    Modo Desarrollador: Access Token requerido.
+                </ion-note>
+                
+                <ion-item fill="outline" class="token-input">
+                    <ion-label position="stacked">Access Token</ion-label>
+                    <ion-input [(ngModel)]="tokenInput" placeholder="ya29..."></ion-input>
+                </ion-item>
+
+                <ion-button expand="block" (click)="connect()" [disabled]="!tokenInput">
+                    <ion-icon slot="start" name="link-outline"></ion-icon>
+                    Conectar
                 </ion-button>
-            </div>
+                </div>
+            }
+            </ion-card-content>
+        </ion-card>
 
-          } @else {
-            <div class="auth-form">
-               <ion-note color="warning" class="info-note">
-                  <ion-icon name="alert-circle"></ion-icon>
-                  Modo Desarrollador: Pega tu Access Token de Google aquí.
-               </ion-note>
-               
-               <ion-item fill="outline" class="token-input">
-                  <ion-label position="stacked">Access Token</ion-label>
-                  <ion-input [(ngModel)]="tokenInput" placeholder="ya29..."></ion-input>
-               </ion-item>
+        <!-- Outlook Calendar (Placeholder) -->
+        <ion-card class="integration-card coming-soon">
+            <ion-card-content>
+                <div class="service-header">
+                    <ion-icon name="mail-outline" size="large" color="primary"></ion-icon>
+                    <div class="service-info">
+                        <h2>Outlook Calendar</h2>
+                        <p>Sincronización con Microsoft Office 365</p>
+                    </div>
+                </div>
+                
+                <div class="actions">
+                    <ion-button expand="block" fill="outline" (click)="showComingSoon('Outlook')">
+                        Conectar
+                    </ion-button>
+                </div>
+            </ion-card-content>
+        </ion-card>
 
-               <ion-button expand="block" (click)="connect()" [disabled]="!tokenInput">
-                  <ion-icon slot="start" name="link-outline"></ion-icon>
-                  Conectar
-               </ion-button>
-               
-               <div class="help-text">
-                   <small>Ve a <a href="https://developers.google.com/oauthplayground" target="_blank">OAuth Playground</a>, selecciona Google Calendar API v3, autoriza y copia el Access Token.</small>
-               </div>
-            </div>
-          }
-        </ion-card-content>
-      </ion-card>
+        <!-- Notion (Placeholder) -->
+        <ion-card class="integration-card coming-soon">
+            <ion-card-content>
+                <div class="service-header">
+                    <ion-icon name="document-text-outline" size="large" color="dark"></ion-icon>
+                    <div class="service-info">
+                        <h2>Notion</h2>
+                        <p>Exporta tus eventos a bases de datos</p>
+                    </div>
+                </div>
+                
+                <div class="actions">
+                    <ion-button expand="block" fill="outline" (click)="showComingSoon('Notion')">
+                        Conectar
+                    </ion-button>
+                </div>
+            </ion-card-content>
+        </ion-card>
+      </div>
     </ion-content>
   `,
     styles: [`
+    .integrations-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: var(--spacing-lg);
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
     .integration-card {
         margin: 0;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .integration-card ion-card-content {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    
+    .coming-soon {
+        opacity: 0.8;
     }
     .service-header {
         display: flex;
@@ -133,7 +192,11 @@ export class IntegrationsComponent {
     tokenInput = '';
 
     constructor() {
-        addIcons({ logoGoogle, linkOutline, checkmarkCircle, alertCircle, syncOutline });
+        addIcons({ logoGoogle, linkOutline, checkmarkCircle, alertCircle, syncOutline, mailOutline, documentTextOutline });
+    }
+
+    showComingSoon(service: string) {
+        this.showToast(`${service} estará disponible próximamente`, 'medium');
     }
 
     async connect() {
@@ -190,7 +253,7 @@ export class IntegrationsComponent {
         this.modalCtrl.dismiss();
     }
 
-    private async showToast(msg: string, color: 'success' | 'danger' = 'success') {
+    private async showToast(msg: string, color: 'success' | 'danger' | 'medium' = 'success') {
         const t = await this.toastCtrl.create({
             message: msg,
             duration: 2000,
