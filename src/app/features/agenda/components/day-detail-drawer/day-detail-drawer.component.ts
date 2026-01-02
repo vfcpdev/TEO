@@ -38,48 +38,34 @@ import { chevronBack, chevronForward, closeOutline, calendarOutline, createOutli
           <p>No hay registros para este día</p>
         </div>
       } @else {
-        <div class="registros-container">
+        <ion-list class="registros-list">
           @for (registro of dayRegistros(); track registro.id) {
-            <ion-card class="registro-card">
-              <ion-card-header>
-                <div class="card-header-content">
-                  <ion-card-title>{{ registro.name }}</ion-card-title>
-                  <ion-chip [color]="getStatusColor(registro.status)" mode="ios">
-                    {{ registro.status }}
-                  </ion-chip>
-                </div>
-              </ion-card-header>
-              <ion-card-content>
-                <div class="registro-details">
-                  <div class="detail-row">
+            <ion-item-sliding>
+              <ion-item class="registro-item" lines="full">
+                <div class="registro-content">
+                  <div class="registro-main">
+                    <span class="registro-name">{{ registro.name }}</span>
+                    <span class="registro-area" [style.color]="getAreaColor(registro)">
+                      {{ getAreaName(registro) }}
+                    </span>
+                  </div>
+                  <div class="registro-time">
                     <ion-icon name="time-outline"></ion-icon>
-                    <span>{{ formatTime(registro.startTime) }} - {{ formatTime(registro.endTime) }}</span>
+                    {{ formatTime(registro.startTime) }} - {{ formatTime(registro.endTime) }}
                   </div>
-                  <div class="detail-row">
-                    <ion-icon name="hourglass-outline"></ion-icon>
-                    <span>{{ getDuration(registro) }} minutos</span>
-                  </div>
-                  @if (registro.notes) {
-                    <div class="detail-row notes">
-                      <ion-icon name="document-text-outline"></ion-icon>
-                      <span>{{ registro.notes }}</span>
-                    </div>
-                  }
                 </div>
-                <div class="card-actions">
-                  <ion-button fill="outline" size="small" color="primary" (click)="editRegistro(registro, $event)">
-                    <ion-icon name="create-outline" slot="start"></ion-icon>
-                    Editar
-                  </ion-button>
-                  <ion-button fill="outline" size="small" color="danger" (click)="deleteRegistro(registro, $event)">
-                    <ion-icon name="trash-outline" slot="start"></ion-icon>
-                    Eliminar
-                  </ion-button>
-                </div>
-              </ion-card-content>
-            </ion-card>
+              </ion-item>
+              <ion-item-options side="end">
+                <ion-item-option color="primary" (click)="editRegistro(registro, $event)">
+                  <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+                </ion-item-option>
+                <ion-item-option color="danger" (click)="deleteRegistro(registro, $event)">
+                  <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+                </ion-item-option>
+              </ion-item-options>
+            </ion-item-sliding>
           }
-        </div>
+        </ion-list>
       }
     </ion-content>
   `,
