@@ -49,6 +49,7 @@ import {
   createOutline,
   checkboxOutline,
   closeOutline,
+  close,
   swapHorizontalOutline,
   closeCircleOutline, constructOutline, funnel
 } from 'ionicons/icons';
@@ -259,7 +260,7 @@ export class HomePage implements OnInit, ViewWillEnter, OnDestroy {
   today = new Date();
 
   constructor() {
-    addIcons({ search, add, closeOutline, timeOutline, constructOutline, funnel, todayOutline, calendarOutline, calendarNumberOutline, chevronForwardOutline, homeOutline, personOutline, settingsOutline, calendar, personCircleOutline, informationCircleOutline, logOutOutline, checkmarkCircle, create, trashOutline, createOutline, checkboxOutline, swapHorizontalOutline, closeCircleOutline });
+    addIcons({ search, add, close, timeOutline, constructOutline, closeOutline, funnel, todayOutline, calendarOutline, calendarNumberOutline, chevronForwardOutline, homeOutline, personOutline, settingsOutline, calendar, personCircleOutline, informationCircleOutline, logOutOutline, checkmarkCircle, create, trashOutline, createOutline, checkboxOutline, swapHorizontalOutline, closeCircleOutline });
   }
 
   async ngOnInit() {

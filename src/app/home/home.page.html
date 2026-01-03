@@ -98,25 +98,25 @@
         <!-- Table Header -->
         <ion-grid class="agenda-table">
           <ion-row class="header-row">
-            <ion-col size="3">Evento</ion-col>
-            <ion-col size="3">Área</ion-col>
-            <ion-col size="2">Hora</ion-col>
-            <ion-col size="2">Duración</ion-col>
-            <ion-col size="2">Faltante</ion-col>
+            <ion-col size="5" size-md="3">Evento</ion-col>
+            <ion-col size="4" size-md="3">Área</ion-col>
+            <ion-col size="3" size-md="2">Hora</ion-col>
+            <ion-col size="2" size-md="2" class="ion-hide-sm-down">Duración</ion-col>
+            <ion-col size="2" size-md="2" class="ion-hide-sm-down">Faltante</ion-col>
           </ion-row>
 
           @for (registro of registrosFiltrados(); track registro.id) {
           <ion-row class="data-row" (click)="openRegistroDrawer(registro)">
-            <ion-col size="3" class="col-name text-truncate">{{ registro.name }}</ion-col>
-            <ion-col size="3" class="text-truncate">{{ getAreaName(registro) }}</ion-col>
-            <ion-col size="2">
+            <ion-col size="5" size-md="3" class="col-name text-truncate">{{ registro.name }}</ion-col>
+            <ion-col size="4" size-md="3" class="text-truncate">{{ getAreaName(registro) }}</ion-col>
+            <ion-col size="3" size-md="2">
               <div class="time-stack">
                 <span>{{ formatDateWithTime(registro.startTime) }}</span>
                 <span class="end-time">{{ formatDateWithTime(registro.endTime) }}</span>
               </div>
             </ion-col>
-            <ion-col size="2">{{ getDuration(registro) }} min</ion-col>
-            <ion-col size="2" class="col-remaining">
+            <ion-col size="2" size-md="2" class="ion-hide-sm-down">{{ getDuration(registro) }} min</ion-col>
+            <ion-col size="2" size-md="2" class="col-remaining ion-hide-sm-down">
               <ion-badge color="primary" mode="ios">{{ getTimeRemaining(registro) }}</ion-badge>
             </ion-col>
           </ion-row>

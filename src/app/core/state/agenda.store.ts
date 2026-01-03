@@ -202,6 +202,7 @@ export class AgendaStore {
                 { id: 'tipo_evento', baseType: RegistroTipoBase.EVENTO, name: 'Evento', icon: 'calendar-outline', color: '#3949ab', isActive: true },
                 { id: 'tipo_tarea', baseType: RegistroTipoBase.TAREA, name: 'Tarea', icon: 'checkbox-outline', color: '#00897b', isActive: true },
                 { id: 'tipo_recordatorio', baseType: RegistroTipoBase.RECORDATORIO, name: 'Recordatorio', icon: 'notifications-outline', color: '#fdd835', isActive: true },
+                { id: 'tipo_clase', baseType: RegistroTipoBase.EVENTO, name: 'Clase', icon: 'book-outline', color: '#5c6bc0', isActive: true, metadata: { isAcademic: true } },
                 { id: 'tipo_tlibre', baseType: RegistroTipoBase.TIEMPO_LIBRE, name: 'Tiempo Libre', icon: 'leaf-outline', color: '#7cb342', isActive: true }
             ],
             settings: {

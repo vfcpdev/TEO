@@ -36,6 +36,7 @@ export interface TipoConfig {
     isActive: boolean;
     defaultBufferBefore?: number;
     defaultBufferAfter?: number;
+    metadata?: Record<string, unknown>;
 }
 
 /**

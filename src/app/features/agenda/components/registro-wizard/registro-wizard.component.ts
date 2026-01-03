@@ -33,6 +33,8 @@ import {
 } from 'ionicons/icons';
 import { AgendaService } from '../../../../core/services/agenda.service';
 import { RegistroEstadoService } from '../../../../core/services/registro-estado.service';
+import { ConflictEngineService } from '../../../../core/services/conflict-engine.service';
+import { ConflictDetectionResult } from '../../../../models/conflict.model';
 import { Registro, RegistroStatus, RegistroPrioridad, RegistroArtefacto } from '../../../../models/registro.model';
 import { AreaConfig, TipoConfig, ContextoConfig } from '../../../../models/agenda.model';
 
@@ -181,6 +183,17 @@ import { AreaConfig, TipoConfig, ContextoConfig } from '../../../../models/agend
                  <ion-checkbox slot="start" [(ngModel)]="tempRegistro.isAllDay">Todo el día</ion-checkbox>
                </ion-item>
             </div>
+
+            <div class="buffer-controls" style="display: flex; gap: 10px; margin-top: 10px;">
+                 <ion-item fill="outline" class="input-item small-input" style="flex: 1;">
+                    <ion-label position="floating">Buffer Pre (min)</ion-label>
+                    <ion-input type="number" [(ngModel)]="tempRegistro.bufferBefore!.duration"></ion-input>
+                 </ion-item>
+                 <ion-item fill="outline" class="input-item small-input" style="flex: 1;">
+                    <ion-label position="floating">Buffer Post (min)</ion-label>
+                    <ion-input type="number" [(ngModel)]="tempRegistro.bufferAfter!.duration"></ion-input>
+                 </ion-item>
+            </div>
           </div>
         }
 
@@ -215,17 +228,76 @@ import { AreaConfig, TipoConfig, ContextoConfig } from '../../../../models/agend
                <ion-label position="floating">Notas Adicionales</ion-label>
                <ion-textarea [(ngModel)]="tempRegistro.notes" rows="3"></ion-textarea>
              </ion-item>
+
+             <!-- ARTEFACTOS -->
+             <div class="checklist-header" style="margin-top: 20px;">
+               <h3>Recursos / Artefactos</h3>
+               <ion-button fill="clear" size="small" (click)="addArtifact()">
+                 <ion-icon slot="icon-only" name="add-circle-outline"></ion-icon>
+                 Agregar
+               </ion-button>
+             </div>
+             
+             <!-- Add Artifact Form -->
+             <div class="artifact-form" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; padding: 10px; background: var(--ion-color-step-50); border-radius: 8px;">
+                <div style="display: flex; gap: 10px;">
+                    <ion-select [(ngModel)]="newArtifact.type" placeholder="Tipo" interface="popover" style="max-width: 100px;">
+                    <ion-select-option value="digital">Digital</ion-select-option>
+                    <ion-select-option value="fisico">Físico</ion-select-option>
+                    </ion-select>
+                    <ion-input [(ngModel)]="newArtifact.name" placeholder="Nombre (ej: Link Doc)"></ion-input>
+                </div>
+                <ion-input [(ngModel)]="newArtifact.value" placeholder="URL o Ubicación..."></ion-input>
+             </div>
+
+             <div class="checklist-items">
+                @if (tempRegistro.artefactos) {
+                    @for (art of tempRegistro.artefactos; track art.id; let i = $index) {
+                    <div class="task-row">
+                        <ion-icon [name]="art.tipo === 'digital' ? 'link-outline' : 'cube-outline'"></ion-icon>
+                        <div class="task-info" style="flex: 1; margin-left: 10px;">
+                            <span class="task-name" style="display: block; font-weight: 500;">{{ art.name }}</span>
+                            <span class="task-val" style="display: block; font-size: 0.8em; color: var(--ion-color-medium);">{{ art.value }}</span>
+                        </div>
+                        <ion-button fill="clear" color="danger" (click)="removeArtifact(i)">
+                            <ion-icon name="close-outline"></ion-icon>
+                        </ion-button>
+                    </div>
+                    }
+                }
+             </div>
           </div>
         }
 
         <!-- PASO 4: CONFLICTOS -->
         @if (currentStep() === 4) {
           <div class="step-section conflicts-section">
-             <div class="conflict-status success">
-               <ion-icon name="checkmark-circle-outline" class="status-icon"></ion-icon>
-               <h3>¡Todo Despejado!</h3>
-               <p>No se han detectado conflictos con otros registros.</p>
-             </div>
+             @if (conflictResult()?.hasConflicts) {
+                  <div class="conflict-status error animated-section" style="background: rgba(var(--ion-color-danger-rgb), 0.1); padding: 16px; border-radius: 12px; text-align: center;">
+                    <ion-icon name="alert-circle-outline" class="status-icon" style="font-size: 48px; color: var(--ion-color-danger);"></ion-icon>
+                    <h3 style="color: var(--ion-color-danger);">¡Conflictos Detectados!</h3>
+                    <p>Se encontraron {{ conflictResult()?.conflicts?.length }} conflictos.</p>
+                    
+                    <div class="conflict-list" style="text-align: left; margin-top: 10px;">
+                      @for (conflict of conflictResult()?.conflicts; track conflict.id) {
+                        <div class="conflict-item" style="background: white; padding: 10px; border-radius: 8px; margin-bottom: 8px;">
+                           <p style="margin: 0; font-weight: 600; font-size: 0.9em;">{{ conflict.message }}</p>
+                           <ul style="padding-left: 20px; font-size: 0.85em; color: var(--ion-color-medium);">
+                             @for (sug of conflict.suggestions; track sug.id) {
+                               <li>{{ sug.label }}: {{ sug.description }}</li>
+                             }
+                           </ul>
+                        </div>
+                      }
+                    </div>
+                  </div>
+              } @else {
+                  <div class="conflict-status success">
+                    <ion-icon name="checkmark-circle-outline" class="status-icon"></ion-icon>
+                    <h3>¡Todo Despejado!</h3>
+                    <p>No se han detectado conflictos con otros registros.</p>
+                  </div>
+              }
              
              <div class="priority-selector">
                 <ion-label>Prioridad del Registro:</ion-label>
@@ -295,70 +367,13 @@ import { AreaConfig, TipoConfig, ContextoConfig } from '../../../../models/agend
       </div>
     </div>
   `,
-  styles: [`
-    .wizard-container {
-      display: flex; flex-direction: column; height: 100%;
-      background: var(--ion-background-color);
-    }
-    .wizard-header {
-      padding: 16px; border-bottom: 1px solid var(--ion-color-step-100);
-      .header-top { display: flex; justify-content: space-between; align-items: center; }
-      .step-indicator {
-        display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 8px;
-        .step-count { font-size: 12px; color: var(--ion-color-medium); text-transform: uppercase; margin-bottom: 4px; }
-        .step-title { font-size: 18px; margin: 0; font-weight: 700; }
-      }
-    }
-    .wizard-content { flex: 1; overflow-y: auto; padding: 16px; }
-    .step-section { display: flex; flex-direction: column; gap: 16px; }
-    .input-item { --background: var(--ion-color-step-50); --border-radius: 8px; }
-    .grid-2-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .checklist-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-    .task-row {
-      display: flex; align-items: center; gap: 8px; background: var(--ion-color-step-50);
-      padding: 8px; border-radius: 8px; margin-bottom: 8px;
-      ion-input { --padding-start: 8px; }
-    }
-    .empty-msg { text-align: center; color: var(--ion-color-medium); font-style: italic; }
-    .conflict-status {
-      text-align: center; padding: 32px; border-radius: 16px;
-      background: var(--ion-color-success-contrast); border: 2px dashed var(--ion-color-success);
-      &.success { color: var(--ion-color-success); .status-icon { font-size: 48px; } }
-    }
-    .summary-card {
-      background: var(--ion-color-step-50); padding: 16px; border-radius: 12px;
-      .summary-row {
-        display: flex; justify-content: space-between; padding: 8px 0;
-        border-bottom: 1px solid var(--ion-color-step-100);
-        &:last-child { border-bottom: none; }
-      }
-    }
-    .status-selector {
-      .status-label { display: block; font-size: 12px; color: var(--ion-color-medium); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-      ion-segment { --background: var(--ion-color-step-50); border-radius: 8px; }
-      ion-segment-button { font-size: 13px; min-height: 36px; }
-    }
-    .optional-fields {
-      padding: 12px; background: var(--ion-color-step-50); border-radius: 12px;
-      .section-label { display: block; font-size: 12px; color: var(--ion-color-medium); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-    }
-    .chips-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;
-      ion-chip { margin: 0; cursor: pointer; }
-    }
-    .animated-section { animation: fadeIn 0.3s ease-out; margin-top: 8px; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-    .small-input { --padding-top: 4px; --padding-bottom: 4px; margin-bottom: 0px !important; }
-    .wizard-footer {
-      padding: 16px; border-top: 1px solid var(--ion-color-step-100);
-      display: flex; align-items: center;
-      .spacer { flex: 1; }
-    }
-  `],
+  styleUrls: ['./registro-wizard.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RegistroWizardComponent implements OnInit {
   readonly agendaService = inject(AgendaService);
   private readonly registroEstadoService = inject(RegistroEstadoService);
+  private readonly conflictEngine = inject(ConflictEngineService);
   private readonly modalCtrl = inject(ModalController);
 
   @Input() registroToEdit?: Registro;
@@ -390,7 +405,7 @@ export class RegistroWizardComponent implements OnInit {
     addIcons({
       arrowForwardOutline, arrowBackOutline, saveOutline, closeOutline,
       timeOutline, calendarOutline, checkmarkCircleOutline, alertCircleOutline,
-      addCircleOutline
+      addCircleOutline, informationCircleOutline
     });
   }
 
@@ -398,6 +413,8 @@ export class RegistroWizardComponent implements OnInit {
     if (this.registroToEdit) {
       this.isEditing = true;
       this.tempRegistro = JSON.parse(JSON.stringify(this.registroToEdit));
+      this.currentStep.set(1);
+
       if (this.tempRegistro.startTime) {
         const start = this.tempRegistro.startTime;
         this.selectedDateCheck = typeof start === 'string' ? start : (start as Date).toISOString();
@@ -406,16 +423,40 @@ export class RegistroWizardComponent implements OnInit {
       // Load course artifact if exists
       const courseArt = this.tempRegistro.artefactos?.find(a => a.name === 'course_metadata');
       if (courseArt && courseArt.metadata) {
-        this.courseMetadata = { ...courseArt.metadata };
+        this.courseMetadata = {
+          name: (courseArt.metadata['name'] as string) || '',
+          code: (courseArt.metadata['code'] as string) || ''
+        };
       }
+
+      // Initialize buffers if missing
+      if (!this.tempRegistro.bufferBefore) this.tempRegistro.bufferBefore = { duration: 0 };
+      if (!this.tempRegistro.bufferAfter) this.tempRegistro.bufferAfter = { duration: 0 };
+
     } else {
       this.tempRegistro.profileId = this.registroEstadoService.activeProfileId() || '';
+      // Defaults
+      this.tempRegistro.status = RegistroStatus.CONFIRMADO;
+      this.tempRegistro.priority = RegistroPrioridad.SOFT;
+      this.tempRegistro.isAllDay = false;
+      this.tempRegistro.tareas = [];
+      this.tempRegistro.artefactos = [];
+      this.tempRegistro.bufferBefore = { duration: 0 };
+      this.tempRegistro.bufferAfter = { duration: 0 };
     }
   }
 
   close() { this.modalCtrl.dismiss(); }
 
-  nextStep() { if (this.currentStep() < 5) this.currentStep.update(s => s + 1); }
+  nextStep() {
+    if (this.currentStep() < 5) {
+      if (this.currentStep() === 3) {
+        this.checkConflicts();
+      }
+      this.currentStep.update(v => v + 1);
+    }
+  }
+
   prevStep() { if (this.currentStep() > 1) this.currentStep.update(s => s - 1); }
 
   canProceed(): boolean {
@@ -510,6 +551,48 @@ export class RegistroWizardComponent implements OnInit {
 
   isClaseTypeSelected(): boolean {
     const tipo = this.agendaService.tipos().find(t => t.id === this.tempRegistro.tipoId);
-    return !!tipo && tipo.name.toLowerCase().includes('clase');
+    return !!tipo && (tipo.metadata?.['isAcademic'] === true || tipo.name.toLowerCase().includes('clase'));
+  }
+
+  // --- ARTEFACTOS GENÉRICOS ---
+  newArtifact = { name: '', value: '', type: 'digital' as const };
+
+  addArtifact() {
+    if (!this.newArtifact.name.trim()) return;
+
+    if (!this.tempRegistro.artefactos) this.tempRegistro.artefactos = [];
+
+    this.tempRegistro.artefactos.push({
+      id: crypto.randomUUID(),
+      tipo: this.newArtifact.type,
+      name: this.newArtifact.name,
+      value: this.newArtifact.value
+    });
+
+    // Reset form
+    this.newArtifact = { name: '', value: '', type: 'digital' };
+  }
+
+  removeArtifact(index: number) {
+    this.tempRegistro.artefactos?.splice(index, 1);
+  }
+
+  // --- CONFLICT ENGINE ---
+  conflictResult = signal<ConflictDetectionResult | null>(null);
+
+  private checkConflicts() {
+    const start = new Date(this.selectedDateCheck);
+    this.tempRegistro.startTime = start;
+
+    // Default duration to 60 if not set, for conflict check
+    const duration = this.tempRegistro.duration || 60;
+    this.tempRegistro.duration = duration;
+    this.tempRegistro.endTime = new Date(start.getTime() + duration * 60000);
+
+    const result = this.conflictEngine.detectConflicts(
+      this.tempRegistro as Registro,
+      this.agendaService.registros()
+    );
+    this.conflictResult.set(result);
   }
 }

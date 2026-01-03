@@ -14,7 +14,7 @@
 
 <ion-content class="settings-content">
   <!-- ========== LAYOUT DESKTOP ========== -->
-  <div class="desktop-layout ion-hide-lg-down">
+  <div class="desktop-layout ion-hide-md-down">
     <div class="desktop-tabs-container">
       <ion-segment [value]="selectedModule" (ionChange)="onSegmentChange($event)" class="desktop-tabs-segment">
         @for (module of modules; track module.id) {
