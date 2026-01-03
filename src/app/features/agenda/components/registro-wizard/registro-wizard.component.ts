@@ -29,7 +29,10 @@ import {
   calendarOutline,
   checkmarkCircleOutline,
   alertCircleOutline,
-  addCircleOutline
+  addCircleOutline,
+  informationCircleOutline,
+  linkOutline,
+  cubeOutline
 } from 'ionicons/icons';
 import { AgendaService } from '../../../../core/services/agenda.service';
 import { RegistroEstadoService } from '../../../../core/services/registro-estado.service';
@@ -405,7 +408,7 @@ export class RegistroWizardComponent implements OnInit {
     addIcons({
       arrowForwardOutline, arrowBackOutline, saveOutline, closeOutline,
       timeOutline, calendarOutline, checkmarkCircleOutline, alertCircleOutline,
-      addCircleOutline, informationCircleOutline
+      addCircleOutline, informationCircleOutline, linkOutline, cubeOutline
     });
   }
 

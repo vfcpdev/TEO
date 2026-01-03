@@ -50,6 +50,12 @@ export class ConflictEngineService {
             const overlapConflict = this.detectOverlap(newRegistro, existing);
             if (overlapConflict) {
                 conflicts.push(overlapConflict);
+            } else {
+                // FASE 1.3: Detección de buffers (Solo si no hay overlap directo)
+                const bufferConflict = this.detectBufferConflict(newRegistro, existing);
+                if (bufferConflict) {
+                    conflicts.push(bufferConflict);
+                }
             }
         }
 
@@ -111,6 +117,63 @@ export class ConflictEngineService {
             },
             message: `"${r1.name}" se solapa con "${r2.name}" por ${overlapDuration} minutos`,
             suggestions,
+            detectedAt: new Date()
+        };
+    }
+
+    /**
+     * Detecta conflictos por violación de buffer.
+     * Se produce cuando no hay overlap directo, pero los buffers se cruzan con el evento.
+     */
+    private detectBufferConflict(r1: Registro, r2: Registro): Conflict | null {
+        if (!r1.startTime || !r1.endTime || !r2.startTime || !r2.endTime) return null;
+
+        const start1 = this.toDate(r1.startTime);
+        const end1 = this.toDate(r1.endTime);
+        const start2 = this.toDate(r2.startTime);
+        const end2 = this.toDate(r2.endTime);
+
+        // Calcular tiempos efectivos con buffer
+        const buffer1Before = r1.bufferBefore?.duration || 0;
+        const buffer1After = r1.bufferAfter?.duration || 0;
+        const buffer2Before = r2.bufferBefore?.duration || 0;
+        const buffer2After = r2.bufferAfter?.duration || 0;
+
+        const effStart1 = new Date(start1.getTime() - buffer1Before * 60000);
+        const effEnd1 = new Date(end1.getTime() + buffer1After * 60000);
+
+        const effStart2 = new Date(start2.getTime() - buffer2Before * 60000);
+        const effEnd2 = new Date(end2.getTime() + buffer2After * 60000);
+
+        // Verificar intersección de zonas de influencia
+        // (EffStart1 < EffEnd2) && (EffStart2 < EffEnd1)
+        const hasBufferInterference = effStart1 < effEnd2 && effStart2 < effEnd1;
+
+        if (!hasBufferInterference) return null;
+
+        // Es un conflicto de buffer. Calculamos mensaje.
+
+        return {
+            id: `buffer_conflict_${r1.id}_${r2.id}`,
+            type: ConflictType.BUFFER,
+            severity: ConflictSeverity.WARNING, // Buffers suelen ser warnings, no errores bloqueantes
+            registros: [r1, r2],
+            message: `Conflicto de tiempos de preparación/descanso con "${r2.name}"`,
+            suggestions: [
+                {
+                    id: 'compress_buffers',
+                    label: 'Comprimir Tiempos',
+                    description: 'Reducir los tiempos de buffer para encajar',
+                    action: 'compress_buffers',
+                    impact: 'Se reducirá el tiempo de preparación o descanso'
+                },
+                {
+                    id: 'postpone_new',
+                    label: 'Aplazar Nuevo',
+                    description: `Guardar "${r1.name}" en borrador`,
+                    action: 'postpone_new'
+                }
+            ],
             detectedAt: new Date()
         };
     }
